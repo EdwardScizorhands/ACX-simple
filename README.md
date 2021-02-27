@@ -17,7 +17,7 @@ Git clone, then "load unpacked extension" the src/ directory.
 * This only shows the top level of posts.
 
 * You can't even reply! 
-* 
+
 * This does not show the name of the person who wrote it (but it does show their picture, if set).
 
 * I *think* this works just fine if ACX-tweaks is also installed.
