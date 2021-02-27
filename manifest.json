@@ -1,0 +1,40 @@
+{
+
+    "manifest_version": 2,
+    "version" : "0.3.8",
+    "name": "ACX Simple",
+    "description": "ACX Simple Interface",
+    "permissions": ["storage"], // maybe not needed
+    "background": {
+	"scripts": ["background.js"], // maybe not needed
+	"persistent": false
+    },
+    
+    "icons": {
+	"128" : "icons/acf-simple-128.png"
+    },
+    "browser_action": {
+	"default_icon": "icons/acf-128.png",
+	"default_popup": "popup.html",
+	"default_title": "Simple ACX"
+    },
+    
+    "content_scripts": [
+	{
+            "matches": [
+		"https://astralcodexten.substack.com/p/hidden-open-thread-1605*/comments"
+	    ],
+	    "js": ["./jquery-3.5.1.min.js", "takeover.js" ],
+	    "css": ["style.css"],
+	    "run_at": "document_start"
+	} ]
+    
+  //  "content_scripts": [        {            "matches": [
+    //            "https://astralcodexten.substack.com/*"             ],
+//            "js": ["lib/jquery-3.5.1.min.js", "js/options.js", "js/util.js", "js/styles.js", "js/content.js"],
+  //          "css": ["skin/css/style.css"],
+      //     "run_at": "document_start"
+//        }     ]
+    
+}    
+
