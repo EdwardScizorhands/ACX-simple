@@ -63,9 +63,11 @@ white-space: pre-line;
    <div class="comments-page" id=comments><b>comments:</b>
     <div class="container">
       <div class="comment-list-container">
+       <div class="comment-list">
         <div class="comment-list-items" id="comment-list-items">
      
         </div> <!-- .comment-list-items -->
+       </div> <!-- .comment-list -->
       </div> <!-- .comment-list-container -->
     </div> <!-- .container --> 
    </div> <!-- .comments-page -->
@@ -73,6 +75,37 @@ white-space: pre-line;
   </body>
 </html>`
 
+    /*
+      COMMENT-LIST-CONTAINER contains
+      1: div comment-list
+
+      EACH COMMENT-LIST contains (horizontally)
+      1: div comment-list-collapser          (line to click)
+      2: div comment-list-collapser hidden   (UNKNOWN)
+      3. div comment-list-items              (all the comments)
+
+      EACH COMMENT-LIST-ITEMS (vertically)
+      *. div comment
+
+      EACH COMMENT contains
+      1: div   comment-123        (anchor)
+      2: div   comment-123-reply  (anchor)
+      3: table comment-content
+      4: div   comment-list      IFF there are children
+  	
+      EACH COMMENT-CONTENT contains a TR which contains
+      1. td comment-head (picture)
+      2. td smurf   (the comment) (smurf is my name)
+      
+      EACH SMURF contains (vertically)
+      1. div comment-meta      (author and timestamp)
+      2. div comment-body      (actual contents of comment)
+      3. div comment-actions   (reply, parent, ❤)
+      
+      PLEASE TAKE NOTES, THERE WILL BE A SHORT QUIZ
+      
+       */
+    
     document.open()
     document.write(newHTML)
     document.close()
@@ -96,37 +129,50 @@ white-space: pre-line;
 
 	var cs = data.comments;
 
-	var publish_comment = function(c) {
-	    
-	    var ctable = jQuery("<table/>", { class: "comment-content" })
 
-	    // username, td1
-	    var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
-		append( jQuery('<img/>', { src: c.photo_url } ) );
-	    var td1 = jQuery('<td/>', { class: "comment-head" }).
-		append( jQuery('<div/>', { class: "user-head" }).
-			append ( jQuery('<a/>', { href: "" }).
-				 append( imgwrap )));
-	    // comment, td2
-	    var cbody = jQuery('<div/>', { class: "comment-body"} ).
-		append(	jQuery('<p/>').
-			text(c.body)
-	    );
-	    var td2 = jQuery('<td/>').
-		append(cbody);
+	// returns a function that appends to the comment
+	var append_comment_factory = function(parent_comment) {
+	    return function(c) {
 
-	    // TODO: load all the sub-comments here!!
-	
-	    var row = jQuery('<tr/>', {class:"comment-head"} ).
-		append(td1).
-		append(td2);
-	    
-	    ctable.append(row).
-		appendTo("#comment-list-items");
-	    
+
+		// I skipped comment-123 and comment-123-reply
+		var ctable = jQuery("<table/>", { class: "comment-content" })
+		
+		// username, td1
+		var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
+		    append( jQuery('<img/>', { src: c.photo_url } ) );
+		var td1 = jQuery('<td/>', { class: "comment-head" }).
+		    append( jQuery('<div/>', { class: "user-head" }).
+			    append ( jQuery('<a/>', { href: "" }).
+				     append( imgwrap )));
+		// comment, td2
+		var meta = jQuery('<div/>', { class: "comment-meta"}).
+		    text( c.name, { style: "font-weight: bold;" });
+		var cbody = jQuery('<div/>', { class: "comment-body"} ).
+		    append( jQuery('<p/>').
+			    text(c.body) );
+		var actions = jQuery('<div/>', { class: "comment-actions"} ).
+		    html( "<i>Reply</i>");
+		var td2 = jQuery('<td/>').
+		    append(meta).
+		    append(cbody).
+		    append(actions);
+
+		
+		// TODO: load all the sub-comments here!!
+		
+		var row = jQuery('<tr/>', {class:"comment-head"} ).
+		    append(td1).
+		    append(td2);
+		
+		ctable.append(row).
+		    appendTo(parent_comment);
+		
+		c.children.forEach( append_comment_factory(ctable) );
+	    }
 	}
-
-	cs.forEach( publish_comment );
+	
+	cs.forEach( append_comment_factory( $("#comment-list-items") ) );
 	
     }
     
