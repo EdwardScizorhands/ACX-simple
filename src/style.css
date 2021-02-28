@@ -296,3 +296,22 @@ blockquote blockquote {
             position: relative !important;
             right: 8px !important;
         }
+
+	/* stolen from main.css */
+/*
+.comment > .comment-list > .comment-list-collapser .comment-list-collapser-line {
+  width: 5px;
+  height: 100%;
+  background-color: var(--border_subtle);
+}
+
+.comment > .comment-list > .comment-list-collapser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 16px;
+  height: calc(100% - 11px);
+  width: 1px;
+  cursor: pointer;
+}
+*/
