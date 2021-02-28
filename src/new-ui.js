@@ -7,7 +7,7 @@ function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
     var id = c.id;
 
-    var comment = jQuery('<div/>')
+    var comment = jQuery('<div/>', { class: "comment" } )
     
     var div1 = jQuery('<div/>', { class: "comment-" + id } )
     var div2 = jQuery('<div/>', { class: "comment-" + id + "-reply" } )
@@ -37,7 +37,7 @@ function make_comment(c) {
     
     // TODO: load all the sub-comments here!!
     
-    var row = jQuery('<tr/>', {class:"comment-head"} ).
+    var row = jQuery('<tr/>' ).
 	append(td1).
 	append(td2);
 
@@ -49,12 +49,10 @@ function make_comment(c) {
 }
 
 function make_comment_list_from_array(cs) {
-    if (debug) {
-	console.log("cs is " + cs);
-	console.log(cs);
-    }
     var comment_list = jQuery( '<div/>', { class: "comment-list" } )
-    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ))
+    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ).
+			 append( jQuery('<div/>',
+					{ class: "comment-list-collapser-line"} )) )
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } )) // check this DTRT
 
     var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
@@ -207,8 +205,6 @@ white-space: pre-line;
 		}
 		// if we have children: append them
 		if (c.children.length > 0) {
-		    console.log("c.children is " + c.children);
-		    console.log(c.children);
 		    var cl = make_comment_list_from_array(c.children);
 		    ctable.append( cl );
 		}
