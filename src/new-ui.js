@@ -5,8 +5,12 @@ if (debug) {
 
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
+    var id = c.id;
 
+    var comment = jQuery('<div/>')
     
+    var div1 = jQuery('<div/>', { class: "comment-" + id } )
+    var div2 = jQuery('<div/>', { class: "comment-" + id + "-reply" } )
     // I skipped comment-123 and comment-123-reply
     var ctable = jQuery("<table/>", { class: "comment-content" })
     
@@ -39,7 +43,9 @@ function make_comment(c) {
 
     ctable.append(row);
 
-    return ctable;
+    comment.append(div1).append(div2).append(ctable);
+    
+    return comment;
 }
 
 function make_comment_list_from_array(cs) {
