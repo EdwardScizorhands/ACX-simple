@@ -3,6 +3,61 @@ if (debug) {
     console.log("intercept normal UI here");
 }
 
+function make_comment(c) {
+    // TODO: Is it faster to prebuild a comment, and then copy it?
+
+    
+    // I skipped comment-123 and comment-123-reply
+    var ctable = jQuery("<table/>", { class: "comment-content" })
+    
+    // username, td1
+    var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
+	append( jQuery('<img/>', { src: c.photo_url } ) );
+    var td1 = jQuery('<td/>', { class: "comment-head" }).
+	append( jQuery('<div/>', { class: "user-head" }).
+		append ( jQuery('<a/>', { href: "" }).
+			 append( imgwrap )));
+    // comment, td2
+    var meta = jQuery('<div/>', { class: "comment-meta"}).
+	text( c.name, { style: "font-weight: bold;" });
+    var cbody = jQuery('<div/>', { class: "comment-body"} ).
+	append( jQuery('<p/>').
+		text(c.body) );
+    var actions = jQuery('<div/>', { class: "comment-actions"} ).
+	html( "<i>Reply</i>");
+    var td2 = jQuery('<td/>').
+	append(meta).
+	append(cbody).
+	append(actions);
+    
+    
+    // TODO: load all the sub-comments here!!
+    
+    var row = jQuery('<tr/>', {class:"comment-head"} ).
+	append(td1).
+	append(td2);
+
+    ctable.append(row);
+
+    return ctable;
+}
+
+function make_comment_list_from_array(cs) {
+    var comment_list = jQuery( '<div/>', { class: "comment-list" } )
+    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ))
+    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } )) // check this DTRT
+
+    var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
+    cs.each( function(c) {
+	comment_list_items.append( make_comment(c) );
+    } )
+
+    comment_list.append( comment_list_items );
+
+    return comment_list;
+}
+
+
 var post_title = document.URL.split("/")[4];
 var hpt = btoa(post_title);
 var post_id = localStorage.getItem(hpt);
@@ -85,7 +140,7 @@ white-space: pre-line;
       3. div comment-list-items              (all the comments)
 
       EACH COMMENT-LIST-ITEMS (vertically)
-      *. div comment
+      *. div comment                         (1 or more -- right?)
 
       EACH COMMENT contains
       1: div   comment-123        (anchor)
@@ -135,43 +190,21 @@ white-space: pre-line;
 	    return function(c) {
 
 
-		// I skipped comment-123 and comment-123-reply
-		var ctable = jQuery("<table/>", { class: "comment-content" })
-		
-		// username, td1
-		var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
-		    append( jQuery('<img/>', { src: c.photo_url } ) );
-		var td1 = jQuery('<td/>', { class: "comment-head" }).
-		    append( jQuery('<div/>', { class: "user-head" }).
-			    append ( jQuery('<a/>', { href: "" }).
-				     append( imgwrap )));
-		// comment, td2
-		var meta = jQuery('<div/>', { class: "comment-meta"}).
-		    text( c.name, { style: "font-weight: bold;" });
-		var cbody = jQuery('<div/>', { class: "comment-body"} ).
-		    append( jQuery('<p/>').
-			    text(c.body) );
-		var actions = jQuery('<div/>', { class: "comment-actions"} ).
-		    html( "<i>Reply</i>");
-		var td2 = jQuery('<td/>').
-		    append(meta).
-		    append(cbody).
-		    append(actions);
+		var ctable = make_comment(c);
+		ctable.appendTo(parent_comment);
 
-		
-		// TODO: load all the sub-comments here!!
-		
-		var row = jQuery('<tr/>', {class:"comment-head"} ).
-		    append(td1).
-		    append(td2);
-		
-		ctable.append(row).
-		    appendTo(parent_comment);
-		
+		// temporarily remove
 		c.children.forEach( append_comment_factory(ctable) );
 	    }
 	}
+
+	// how to do this right:
+	// 1. for each comment-array, make a COMMENT-LIST object
+	//     (verify that for one-comment arrays)
+	// 2. append that comment-list into (a) parent COMMENT
+	//     or (b) COMMENT-LIST-CONTAINER (for first array)
 	
+
 	cs.forEach( append_comment_factory( $("#comment-list-items") ) );
 	
     }
