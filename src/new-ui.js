@@ -49,12 +49,16 @@ function make_comment(c) {
 }
 
 function make_comment_list_from_array(cs) {
+    if (debug) {
+	console.log("cs is " + cs);
+	console.log(cs);
+    }
     var comment_list = jQuery( '<div/>', { class: "comment-list" } )
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ))
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } )) // check this DTRT
 
     var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
-    cs.each( function(c) {
+    cs.forEach( function(c) {
 	comment_list_items.append( make_comment(c) );
     } )
 
@@ -197,10 +201,20 @@ white-space: pre-line;
 
 
 		var ctable = make_comment(c);
+
+		if (debug) {
+		    console.log("length of children is " + c.children.length);
+		}
+		// if we have children: append them
+		if (c.children.length > 0) {
+		    console.log("c.children is " + c.children);
+		    console.log(c.children);
+		    var cl = make_comment_list_from_array(c.children);
+		    ctable.append( cl );
+		}
 		ctable.appendTo(parent_comment);
 
-		// temporarily remove
-		c.children.forEach( append_comment_factory(ctable) );
+//		c.children.forEach( append_comment_factory(ctable) );
 	    }
 	}
 
