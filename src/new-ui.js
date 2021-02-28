@@ -1,4 +1,4 @@
-var debug = 1;
+var debug = 0;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -28,7 +28,7 @@ function make_comment(c) {
 	append( jQuery('<p/>').
 		text(c.body) );
     var actions = jQuery('<div/>', { class: "comment-actions"} ).
-	html( "<i>Reply</i>");
+	html( '<a style="font-style:italic;" href="javascript:reply(' + id  + ')">Reply</a>');
     var td2 = jQuery('<td/>').
 	append(meta).
 	append(cbody).
@@ -122,7 +122,29 @@ white-space: pre-line;
 } </style>
   </head>
   <body>
+
+<script>
+function submit_comment(x) {
+  console.log(x);
+  return false;
+}
+
+function reply(id) {
+
+    console.log("replying to id " + id);
+    var newform = $("#commentor").clone();
+    console.log(newform);
+    $( "#comment-" + id ).parentElement.append(newform);
+
+}
+
 <div id=status>status goes here </div>
+<form id=commentor method="post" class="form comment-input" novalidate=""><div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
+<div>COMMENT:</div>
+</div></a></div></div><textarea name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div><button tabindex="0" class="button primary " type="submit" onclick="javascript:submit_comment(this)">Post</button></form>
+
+
+
    <div class="comments-page" id=comments><b>comments:</b>
     <div class="container">
       <div class="comment-list-container">
@@ -228,9 +250,16 @@ white-space: pre-line;
     var letrun = true;
     
     if (letrun) {
+
+//	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
 	
+	var site = "astralcodexten.substack.com";
+	var args = "?token=&all_comments=false&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
+	var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
+
+	    
 	$.ajax({
-	    url: "https://astralcodexten.substack.com/api/v1/post/" + post_id + "/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z",
+	    url: url,
 	    success: eatJson,
 	    dataType: "json"
 	})
