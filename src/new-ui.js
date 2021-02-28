@@ -1,4 +1,4 @@
-var debug = 0;
+var debug = 1;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -95,7 +95,8 @@ white-space: pre-line;
 	$( "#status" ).text(string);
 
 	var cs = data.comments;
-	cs.forEach(  function(c) {
+
+	var publish_comment = function(c) {
 	    
 	    var ctable = jQuery("<table/>", { class: "comment-content" })
 
@@ -123,7 +124,9 @@ white-space: pre-line;
 	    ctable.append(row).
 		appendTo("#comment-list-items");
 	    
-	} )
+	}
+
+	cs.forEach( publish_comment );
 	
     }
     
