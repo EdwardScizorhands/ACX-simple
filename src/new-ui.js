@@ -6,7 +6,8 @@ if (debug) {
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
     var id = c.id;
-
+    var dd = new Date(c.date);
+    
     var comment = jQuery('<div/>', { class: "comment" } )
     
     var div1 = jQuery('<div/>', { id: "comment-" + id } )
@@ -22,8 +23,12 @@ function make_comment(c) {
 		append ( jQuery('<a/>', { href: "" }).
 			 append( imgwrap )));
     // comment, td2
+    
     var meta = jQuery('<div/>', { class: "comment-meta"}).
-	text( c.name, { style: "font-weight: bold;" });
+	append( jQuery('<span/>', { style: "font-weight: bold;" } ).
+		text( c.name )).
+	append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
+		text( dd.toDateString() + " " + dd.toLocaleTimeString() ));
     var cbody = jQuery('<div/>', { class: "comment-body"} ).
 	append( jQuery('<p/>').
 		text(c.body) );
@@ -225,17 +230,45 @@ function new_comments(data) {
   var dad = parent_node.parentElement;
   console.log(dad);
   var kids = dad.childNodes;
-
+  for (var i = 0; i < kids.length; i++) {
+    console.log("number " + i + ": element is");
+    console.log(kids[i]);
+    console.log(kids[i].tagName);
+    console.log(kids[i].className);
+    console.log("*");
+  }
   // is this the right order if I already have child comments?
   if (kids[3] && kids[3].tagName == "FORM") {
     kids[3].remove(); 
   }
   if (kids[3] == undefined) {
-    var comment_list = jQuery( '<div/>', { class: "comment-list" });
-    dad.append(comment_list);
+//    var comment_list = jQuery( '<div/>', { class: "comment-list" });
+    var comment_list = jQuery( '<div class="comment-list">' +
+                                 '<div class="comment-list-collapser"></div>' +
+                                 '<div class="comment-list-collapser hidden"></div>' +
+                                 '<div class="comment-items">' +
+                                   '<div class="hidden dummy"></div>' +
+                                 '</div> ' +
+                               '</div>' );
+    // dummy so we can insert something before it                         
+
+    // why is this [0]? What broke?
+    dad.append(comment_list[0]);
   }
-//  kids[3].append(comment_block);
-  parent_node.append(comment_block);
+
+   console.log("INSERT ONTO THIS:");
+   console.log("kids[3] is " + kids[3]);
+   console.log(kids[3]);
+   console.log("kids[3].childNodes is " + kids[3].childNodes);
+   console.log(kids[3].childNodes);
+   console.log("kids[3].childNodes is " + kids[3].childNodes[2]);
+   console.log(kids[3].childNodes[2]);
+   var putHere = kids[3].childNodes[2];
+   console.log("HEY! :D");
+   console.log(putHere);
+  // insert into front or back??
+   putHere.insertBefore(comment_block, putHere.childNodes[0]);
+
   console.log("all done");
 }
 
