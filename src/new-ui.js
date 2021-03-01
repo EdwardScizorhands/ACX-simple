@@ -140,6 +140,81 @@ document.post_id = ` + post_id + `;
 
 
 <script>
+
+ // okay, I apologize sincerely for this duplicate code. I think I 
+ // can fix this by setting up listeners in *this* scope.
+
+
+function make_comment(c) {
+    // TODO: Is it faster to prebuild a comment, and then copy it?
+    var id = c.id;
+
+    var comment = jQuery('<div/>', { class: "comment" } )
+    
+    var div1 = jQuery('<div/>', { id: "comment-" + id } )
+    var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
+    // I skipped comment-123 and comment-123-reply
+    var ctable = jQuery("<table/>", { class: "comment-content" })
+    
+    // username, td1
+    var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
+	append( jQuery('<img/>', { src: c.photo_url } ) );
+    var td1 = jQuery('<td/>', { class: "comment-head" }).
+	append( jQuery('<div/>', { class: "user-head" }).
+		append ( jQuery('<a/>', { href: "" }).
+			 append( imgwrap )));
+    // comment, td2
+    var meta = jQuery('<div/>', { class: "comment-meta"}).
+	text( c.name, { style: "font-weight: bold;" });
+    var cbody = jQuery('<div/>', { class: "comment-body"} ).
+	append( jQuery('<p/>').
+		text(c.body) );
+    var actions = jQuery('<div/>', { class: "comment-actions"} ).
+	html( '<a style="font-style:italic;" href="javascript:reply(' + id  + ')">Reply</a>');
+    var td2 = jQuery('<td/>').
+	append(meta).
+	append(cbody).
+	append(actions);
+    
+    
+    // TODO: load all the sub-comments here!!
+    
+    var row = jQuery('<tr/>' ).
+	append(td1).
+	append(td2);
+
+    ctable.append(row);
+
+    comment.append(div1).append(div2).append(ctable);
+    
+    return comment;
+}
+
+// just takes 1 single comment
+function new_comments(data) {
+  // oh, shoot, I don't have my old function in scope :< 
+  console.log("NEW COMMENT");
+  console.log(data);
+  console.log("DONE");
+  var zap =  make_comment(data);
+  console.log("zap is " + zap);
+  console.log(zap);
+  // why am I getting back an *object* and not the *comment* ?
+  var comment_block = zap[0];
+  console.log("comment_block is " + comment_block);
+  console.log(comment_block);
+
+  var apath = data.ancestor_path;
+  var parent_array = apath.split(".");
+  var parent_id = parent_array[ parent_array.length - 1 ];
+  console.log("parent_id is " + parent_id);
+  var parent_node = document.getElementById("comment-" + parent_id);
+  console.log("parent_node is " + parent_node);
+  console.log(parent_node);
+  parent_node.append(comment_block);
+  console.log("all done");
+}
+
 function submit_comment(x) {
   console.log(x);
   document.thingy = x;
@@ -161,7 +236,7 @@ function submit_comment(x) {
            url: url,
            data: data,
            datatype: "json",
-           success: console.log 
+           success: new_comments
   // TODO: warn user on failure
 })
 
