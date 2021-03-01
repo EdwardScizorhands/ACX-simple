@@ -1201,6 +1201,8 @@ a[role='button'].small {
   vertical-align: top;
 }
 .comment .comment-head {
+    border: none !important;
+    background: none !important;
   padding-top: 1px;
   padding-right: 10px;
   width: 33px;

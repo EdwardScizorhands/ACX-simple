@@ -1,4 +1,4 @@
-var debug = 1;
+var debug = 0;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -125,7 +125,7 @@ if (post_id != null) {
     // TODO: put into its own file
     newHTML = `<html>
   <head>
-    <title>A Simple HTML Document</title>
+    <title>Simple ACX Comments</title>
 <style>.comment-body p {
 white-space: pre;
 white-space: pre-line;
@@ -222,6 +222,13 @@ function new_comments(data) {
   var parent_id = parent_array[ parent_array.length - 1 ];
   console.log("parent_id is " + parent_id);
   var parent_node = document.getElementById("comment-" + parent_id);
+  if (apath == "") { 
+     // no parent, must be top-level comment. 
+     // this will break if you try to make the FRIST comment
+    var root = document.getElementsByClassName("comment-list-container")[0];
+    root.insertBefore(comment_block, root.childNodes[0]);
+    return;
+  }
 
   console.log("parent_node is " + parent_node);
   console.log(parent_node);
@@ -230,12 +237,14 @@ function new_comments(data) {
   var dad = parent_node.parentElement;
   console.log(dad);
   var kids = dad.childNodes;
-  for (var i = 0; i < kids.length; i++) {
+  if (debug == 1) {
+   for (var i = 0; i < kids.length; i++) {
     console.log("number " + i + ": element is");
     console.log(kids[i]);
     console.log(kids[i].tagName);
     console.log(kids[i].className);
     console.log("*");
+   }
   }
   // is this the right order if I already have child comments?
   if (kids[3] && kids[3].tagName == "FORM") {
@@ -255,7 +264,7 @@ function new_comments(data) {
     // why is this [0]? What broke?
     dad.append(comment_list[0]);
   }
-
+   if (debug == 1) {
    console.log("INSERT ONTO THIS:");
    console.log("kids[3] is " + kids[3]);
    console.log(kids[3]);
@@ -263,9 +272,8 @@ function new_comments(data) {
    console.log(kids[3].childNodes);
    console.log("kids[3].childNodes is " + kids[3].childNodes[2]);
    console.log(kids[3].childNodes[2]);
+   }
    var putHere = kids[3].childNodes[2];
-   console.log("HEY! :D");
-   console.log(putHere);
   // insert into front or back??
    putHere.insertBefore(comment_block, putHere.childNodes[0]);
 
