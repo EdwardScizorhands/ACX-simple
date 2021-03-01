@@ -2,14 +2,16 @@
 
 Simple interface for ACX comments
 
-Installing this won't run anything unless you are using the "/comments" page.
+Installing this won't run anything unless you go to the comments-only page you probably weren't using.
+
+## How to install and use
+
+Grab the repository and then "load unpacked extension" in Chromium-based browsers on the "src" directory.
+
+Then add "/comments" to the end of a URL:
 
 * So if the URL ends in "open-thread-1620"
 * Change the end to go to "open-thread-1620/comments"
-
-## How to install
-
-Grab the repository and then "load unpacked extension" in Chromium-based browsers on the "src" directory.
 
 ## Notes
 
