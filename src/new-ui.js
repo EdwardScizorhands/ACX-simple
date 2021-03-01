@@ -9,8 +9,8 @@ function make_comment(c) {
 
     var comment = jQuery('<div/>', { class: "comment" } )
     
-    var div1 = jQuery('<div/>', { class: "comment-" + id } )
-    var div2 = jQuery('<div/>', { class: "comment-" + id + "-reply" } )
+    var div1 = jQuery('<div/>', { id: "comment-" + id } )
+    var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
     // I skipped comment-123 and comment-123-reply
     var ctable = jQuery("<table/>", { class: "comment-content" })
     
@@ -130,13 +130,15 @@ function submit_comment(x) {
 }
 
 function reply(id) {
-
+// raw JavaScript, not jQuery
     console.log("replying to id " + id);
-    var newform = $("#commentor").clone();
+    var newform = document.getElementById("commentor").cloneNode(true);
     console.log(newform);
-    $( "#comment-" + id ).parentElement.append(newform);
+    var target = document.getElementById(
+    document.getElementById("comment-"+ id).parentElement.append(newform);
 
 }
+</script>
 
 <div id=status>status goes here </div>
 <form id=commentor method="post" class="form comment-input" novalidate=""><div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
