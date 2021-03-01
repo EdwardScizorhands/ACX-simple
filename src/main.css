@@ -1,3 +1,28 @@
+:root       {
+	   --background_pop:#67bdfc;
+	   --cover_bg_color:#FFFFFF;
+	   --print_on_pop:#ffffff;
+	   --border_subtle:rgba(204, 204, 204, 0.6);
+	   --background_subtle:rgba(41, 76, 101, 0.4);
+	   --print_pop:#67bdfc;
+	   --cover_print_primary:#1a1a1a;
+	   --cover_print_secondary:#757575;
+	   --cover_border_color:#67bdfc;
+	   --web_bg_color:#ffffff;
+	   --background_contrast_1:#f2f2f2;
+	   --background_contrast_2:#e6e6e6;
+	   --background_contrast_3:#d1d1d1;
+	   --background_contrast_4:#b4b4b4;
+	   --background_contrast_5:#979797;
+	   --input_background:#ffffff;
+	   --cover_input_background:#ffffff;
+	   --web_bg_color_h:0;
+	   --web_bg_color_s:0%;
+	   --web_bg_color_l:100%;
+	   --print_on_web_bg_color:#1a1a1a;
+	   --print_secondary_on_web_bg_color:#767676;
+       }
+       
 @keyframes pop {
   0% {
     transform: scale(1);
@@ -17698,3 +17723,6 @@ div.pill svg {
 .signup .form .error {
   color: #ff0000;
 }
+
+
+       

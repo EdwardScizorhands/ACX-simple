@@ -217,12 +217,24 @@ function new_comments(data) {
   var parent_id = parent_array[ parent_array.length - 1 ];
   console.log("parent_id is " + parent_id);
   var parent_node = document.getElementById("comment-" + parent_id);
+
   console.log("parent_node is " + parent_node);
   console.log(parent_node);
 
   // find the parent, then make a 4th node if it doesn't exist.
-  parent_node.
+  var dad = parent_node.parentElement;
+  console.log(dad);
+  var kids = dad.childNodes;
 
+  // is this the right order if I already have child comments?
+  if (kids[3] && kids[3].tagName == "FORM") {
+    kids[3].remove(); 
+  }
+  if (kids[3] == undefined) {
+    var comment_list = jQuery( '<div/>', { class: "comment-list" });
+    dad.append(comment_list);
+  }
+//  kids[3].append(comment_block);
   parent_node.append(comment_block);
   console.log("all done");
 }
@@ -265,8 +277,14 @@ function reply(id) {
     console.log(newform);
     var target = document.getElementById("comment-" + id);
     console.log(target)
+    console.log("===")
+    console.log(jQuery);
+    console.log(jQuery());
+    console.log(jQuery().jquery);
 
-    target.parentElement.append(newform);
+//    target.parentElement.append(newform);
+//     targe.insertAfter(target.parentElement.childNodes[2]);   
+     $(newform).insertAfter(target.parentElement.childNodes[2]);   
 
 
 }
@@ -313,8 +331,10 @@ function reply(id) {
       1: div   comment-123        (anchor)
       2: div   comment-123-reply  (anchor)
       3: table comment-content
+      ? sometimes, a FORM element. What order?
       4: div   comment-list      IFF there are children
-  	
+
+	
       EACH COMMENT-CONTENT contains a TR which contains
       1. td comment-head (picture)
       2. td smurf   (the comment) (smurf is my name)
