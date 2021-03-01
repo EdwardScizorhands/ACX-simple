@@ -1,4 +1,4 @@
-var debug = 1;
+var debug = 0;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -240,10 +240,11 @@ function make_comment(c) {
     return comment;
 }
 
-var debug = 0; // second scope
 
 // just takes 1 single comment
 function new_comments(data) {
+  var debug = 0; // second scope
+
   // oh, shoot, I don't have my old function in scope :< 
   console.log("NEW COMMENT");
   console.log(data);
