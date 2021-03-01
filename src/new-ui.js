@@ -124,26 +124,74 @@ white-space: pre-line;
   <body>
 
 <script>
+
+document.post_id = ` + post_id + `;
+
+//Load jQuery library using plain JavaScript
+(function(){
+  var newscript = document.createElement('script');
+     newscript.type = 'text/javascript';
+     newscript.async = true;
+     newscript.src = 'https://code.jquery.com/jquery-3.5.1.js';
+  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(newscript);
+})();
+</script>
+
+
+
+<script>
 function submit_comment(x) {
   console.log(x);
-  return false;
+  document.thingy = x;
+  x.disabled = true; // no double posts.
+  var body = x.form.body.value;
+  var token = null;
+  var id = x.form.parent_id.value;
+  var post_id = document.post_id; // 
+  var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
+  // todo: make sure jQuery has loaded 
+
+  console.log("id is " + id);
+  var  data = { body: body,
+                token: token,
+                parent_id: id };
+  console.log("posting to " + url + " with " + data);
+  console.log(data);
+  $.ajax({ type: "POST",
+           url: url,
+           data: data,
+           datatype: "json",
+           success: console.log 
+  // TODO: warn user on failure
+})
+
+  console.log("done... what now?");
+  return true;
+
 }
 
 function reply(id) {
 // raw JavaScript, not jQuery
     console.log("replying to id " + id);
     var newform = document.getElementById("commentor").cloneNode(true);
+    newform.parent_id.value = id;
     console.log(newform);
-    var target = document.getElementById(
-    document.getElementById("comment-"+ id).parentElement.append(newform);
+    var target = document.getElementById("comment-" + id);
+    console.log(target)
+
+    target.parentElement.append(newform);
+
 
 }
 </script>
 
 <div id=status>status goes here </div>
-<form id=commentor method="post" class="form comment-input" novalidate=""><div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
-<div>COMMENT:</div>
-</div></a></div></div><textarea name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div><button tabindex="0" class="button primary " type="submit" onclick="javascript:submit_comment(this)">Post</button></form>
+<form id=commentor method="post" class="form comment-input" novalidate="">
+<input type=hidden value=123 name=parent_id />
+
+<div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
+<div>→</div>
+</div></a></div></div><textarea name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div><button tabindex="0" class="button primary " type="button" onclick="javascript:submit_comment(this)">Post</button></form>
 
 
 
