@@ -1,4 +1,4 @@
-var debug = 0;
+var debug = 1;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -7,6 +7,11 @@ function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
     var id = c.id;
     var dd = new Date(c.date);
+    if (debug > 0) {
+	console.log("in original make_comment " + id);
+	console.log("comment is " + c);
+	console.log(c);
+    }
     
     var comment = jQuery('<div/>', { class: "comment" } )
     
@@ -117,6 +122,38 @@ if (post_id == null) {
     });
     
 }
+
+function init_page() {
+    console.log("READY TO INIT");
+    //var x = $( '#test_new_comment' );
+    var x = document.getElementById( 'test_new_comment' );
+    console.log("x is " + x);
+    console.log(x);
+    x.click = make_comment;
+    x.onclick = make_comment;
+    x.onClick = make_comment;
+}
+
+function wait_to_init() {
+    console.log("initialing? in new-ui scope");
+    var t1 = document.getElementById("title1");
+    console.log("t1 is " + t1);
+    var t2 = document.getElementById("last");
+    console.log("t2 is " + t2);
+    if (t1 == null || t2 == null) {
+	console.log("not ready yet, try again!");
+	setTimeout( wait_to_init, 100);
+    } else {
+	init_page();
+    }
+
+}
+
+
+
+
+setTimeout( wait_to_init, 0);
+
 if (post_id != null) {
 
     console.log("post_title is " + post_title);
@@ -125,7 +162,7 @@ if (post_id != null) {
     // TODO: put into its own file
     newHTML = `<html>
   <head>
-    <title>Simple ACX Comments</title>
+    <title id=title1>Simple ACX Comments</title>
 <style>.comment-body p {
 white-space: pre;
 white-space: pre-line;
@@ -153,6 +190,8 @@ document.post_id = ` + post_id + `;
 
  // okay, I apologize sincerely for this duplicate code. I think I 
  // can fix this by setting up listeners in *this* scope.
+
+
 
 
 function make_comment(c) {
@@ -200,6 +239,8 @@ function make_comment(c) {
     
     return comment;
 }
+
+var debug = 0; // second scope
 
 // just takes 1 single comment
 function new_comments(data) {
@@ -353,6 +394,9 @@ function reply(id) {
     </div> <!-- .container --> 
    </div> <!-- .comments-page -->
    <div id=hidden>Loading comments, this will go faster in the future, I promise...</div>
+
+  <div id=test_new_comment />
+  <div id=last style="display:none;" />
   </body>
 </html>`
 
