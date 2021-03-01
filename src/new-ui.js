@@ -1,4 +1,4 @@
-var debug = 0;
+var debug = 1;
 if (debug) {
     console.log("intercept normal UI here");
 }
@@ -44,6 +44,11 @@ function make_comment(c) {
     ctable.append(row);
 
     comment.append(div1).append(div2).append(ctable);
+
+    if (c.children.length > 0) {
+	var cl = make_comment_list_from_array(c.children);
+	comment.append( cl );
+    }
     
     return comment;
 }
@@ -147,6 +152,7 @@ document.post_id = ` + post_id + `;
 
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
+   console.log("in dupe code!");
     var id = c.id;
 
     var comment = jQuery('<div/>', { class: "comment" } )
@@ -195,6 +201,8 @@ function new_comments(data) {
   // oh, shoot, I don't have my old function in scope :< 
   console.log("NEW COMMENT");
   console.log(data);
+  console.log("XXX");
+  console.log(JSON.stringify(data));
   console.log("DONE");
   var zap =  make_comment(data);
   console.log("zap is " + zap);
@@ -211,6 +219,10 @@ function new_comments(data) {
   var parent_node = document.getElementById("comment-" + parent_id);
   console.log("parent_node is " + parent_node);
   console.log(parent_node);
+
+  // find the parent, then make a 4th node if it doesn't exist.
+  parent_node.
+
   parent_node.append(comment_block);
   console.log("all done");
 }
@@ -351,10 +363,10 @@ function reply(id) {
 		    console.log("length of children is " + c.children.length);
 		}
 		// if we have children: append them
-		if (c.children.length > 0) {
-		    var cl = make_comment_list_from_array(c.children);
-		    ctable.append( cl );
-		}
+//		if (c.children.length > 0) {
+//		    var cl = make_comment_list_from_array(c.children);
+//		    ctable.append( cl );
+//		}
 		ctable.appendTo(parent_comment);
 
 //		c.children.forEach( append_comment_factory(ctable) );
