@@ -30,3 +30,10 @@ Then add "/comments" to the end of a URL:
 
 * There is an ugly background border just offset from photo images. I suck at CSS; can you figure out how to remedy this? I copied in both the main.css (from Substack) and the styles.css (from ACX-Tweaks) and edited both and something broke.
 
+* JavaScript scope. Hoo boy, this is always fun. I hate "new-ui.js" totally replace the standard UI with document.write(), and it also has some JavaScript functions to populate comments. However, the *scope* for the document I create is obviously different than the scope of my original file. I duplicated some code that I needed in both scopes. What's the best thing here?
+  * Cut-and-paste duplicate code. (What I'm currently doing, and wrong.)
+  * Create all the JavaScript in the second scope. This feels crude.
+  * Pass through bindings to preserve the original scope so I can still call it.
+  * Something else?
+
+* Possibly related to the above, but DOM objects made with jQuery in the first scope are directly useable, but in the second scope they come back as a one-element array. Why is that?
