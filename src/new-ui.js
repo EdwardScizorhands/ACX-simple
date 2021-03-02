@@ -1,7 +1,48 @@
+var firefox = true;
 var debug = 0;
+
 if (debug) {
     console.log("intercept normal UI here");
 }
+console.log("starting");
+window.stop();
+console.log("continuing...");
+
+window.fred = 0;
+function eat_page() {
+    window.fred += 1;
+    console.log("eat page?  " + window.fred);
+    if (window.fred > 20) {
+	setTimeout( phase_two, 0);
+	return;
+    }
+    if (document.body == null) {
+	console.log("not loaded yet");
+	setTimeout(eat_page, 1);
+	return;
+    }
+    console.log("prep");
+    console.log("document body is " + document.body);
+    console.log("document body.innerHTML is " + document.body.innerHTML);
+    
+    var s = document.body.innerHTML.substring(0,50);
+    console.log("CHECKING " + s);
+    if (s == "<h1>Loading ACX Simple</h1>") {
+	console.log("phase 1 done, go to phase 2");
+	setTimeout( eat_page, 0);
+//	setTimeout( phase_two, 0);
+	return;
+    }
+    document.body.textContent = "";
+    var header = document.createElement('h1');
+    header.textContent = "Loading ACX Simple";
+    document.body.appendChild(header);
+    setTimeout(eat_page, 1);
+}
+setTimeout(eat_page, 0);
+
+
+console.log("firefox dbugging");
 
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
@@ -81,25 +122,57 @@ function make_comment_list_from_array(cs) {
 }
 
 
-var post_title = document.URL.split("/")[4];
-var hpt = btoa(post_title);
-var post_id = localStorage.getItem(hpt);
-if (post_id == null) {
+var post_slug = document.URL.split("/")[4];
+var hpt = btoa(post_slug);
+var post_id = localStorage.getItem(hpt+"-id");
+var post_title = localStorage.getItem(hpt+"-title");
+
+if (post_id == null || post_title == null) {
+    setTimeout( check_jQuery, 0 );
+}
+
+function check_jQuery() {
+    var a = typeof jQuery;
+    console.log("a is " + a);
+    if (a == "undefined") {
+	setTimeout( check_jQuery, 1);
+    } else {
+	setTimeout( retrieve_meta_data, 1);
+    }
+}
+    
+function retrieve_meta_data() {
+
     console.log("could not find post_id");
     // Yo dawg, load the same page we are on
     // (Is there a better way to do this? Can I read the HTML somehow?)
-
+    
         
     var url = document.URL;
+    url = url.replace(/simple$/, 'comments');
 
     if (debug) {
-	console.log(document.URL);
-	console.log("wiping out document");
+	console.log(url);
+	console.log("wiping out document...?");
     }
-    document.open()
-    document.write("<html><body><p>hold on, one-time init for this page...</p></body></html>");
-    document.close()
 
+    if (firefox) {
+	//document.body.textContent = "";
+	//var header = document.createElement('h1');
+	//header.textContent = "This page has been eaten";
+	var body = document.createElement('body');
+	document.body = body;
+    }
+    console.log("burp");
+    if (!firefox) {
+	// 
+	document.open()
+	console.log("!");
+	document.write("<html><body><p>hold on, one-time init for this page...</p></body></html>");
+	document.close()
+    }
+    console.log("wiped?");
+    
     var eatHtml = function(data, status, xh) {
 	console.log("got html response");
 	if (debug) {
@@ -111,17 +184,29 @@ if (post_id == null) {
 	var j = data.indexOf(id_s, i) + id_s.length;
 	var post_id = parseInt(data.substr(j,20));
 	console.log("got a post_id of " + post_id);
-	localStorage.setItem(hpt, post_id);
+	var title_s = "<title data-preact-helmet>";
+	var k = data.indexOf(title_s) + title_s.length;
+	var post_title = data.substr(k, 15);
+
+	localStorage.setItem(hpt + "-id", post_id);
+	localStorage.setItem(hpt + "-title", post_title);
 	location.reload();
     }
-    
+
+    console.log("launching AJAX!!!22");
+    console.log("abc");
+    console.log("jquery is " + typeof jQuery);
     $.ajax({
 	url: url,
 	success: eatHtml,
 	dataType: "html"
     });
     
-}
+}//
+//else {
+//    console.log("post_title is " + post_title);
+//    console.log("post_id is " + post_id);
+//}
 
 function init_page() {
     console.log("READY TO INIT");
@@ -142,19 +227,22 @@ function wait_to_init() {
     console.log("t2 is " + t2);
     if (t1 == null || t2 == null) {
 	console.log("not ready yet, try again!");
-	setTimeout( wait_to_init, 100);
+	setTimeout( wait_to_init, 10);
     } else {
 	init_page();
     }
 
 }
 
+function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
 
 
-setTimeout( wait_to_init, 0);
+function phase_two() {
 
-if (post_id != null) {
+//    if (post_id != null) {
 
     console.log("post_title is " + post_title);
     console.log("post_id is " + post_id);
@@ -162,7 +250,7 @@ if (post_id != null) {
     // TODO: put into its own file
     newHTML = `<html>
   <head>
-    <title id=title1>Simple ACX Comments</title>
+    <title id=title1>Simple ACX: ` + escapeHTML(post_title) + `</title>
 <style>.comment-body p {
 white-space: pre;
 white-space: pre-line;
@@ -433,10 +521,24 @@ function reply(id) {
       PLEASE TAKE NOTES, THERE WILL BE A SHORT QUIZ
       
        */
-    
-    document.open()
-    document.write(newHTML)
-    document.close()
+
+    if (!firefox) {
+	document.open()
+	document.write(newHTML)
+	document.close()
+    }
+    console.log("466: document.body is " + document.body);
+    if (firefox) {
+//	console.log("eating body again!");
+//	document.body.textContent = "";
+//	var header = document.createElement('h1');
+//	header.textContent = "This page has been eaten, part 2";
+//	document.body.appendChild(header);
+	var body = document.createElement('body');
+	document.body = body;
+
+	document.body.innerHTML = newHTML;
+    }
     
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
@@ -490,17 +592,19 @@ function reply(id) {
 	
     }
     
+    
+    console.log("trying to load comments now...");
+    console.log("jquery is " + typeof jQuery);
     var letrun = true;
     
     if (letrun) {
-
 //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
 	
 	var site = "astralcodexten.substack.com";
-	var args = "?token=&all_comments=false&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
+	var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
 	var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
 
-	    
+	console.log("making ajax");
 	$.ajax({
 	    url: url,
 	    success: eatJson,

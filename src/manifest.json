@@ -1,10 +1,12 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.8.1",
+    "version" : "0.4.8.7",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
-    "permissions": ["storage"], // maybe not needed
+    "permissions": ["storage",
+		    "activeTab"
+		   ], // maybe not needed
     "icons": {
 	"128" : "icons/acf-simple-128.png"
     },
@@ -16,11 +18,15 @@
     "content_scripts": [
 	{
             "matches": [
-		"https://astralcodexten.substack.com/p/*/comments"
+		"https://astralcodexten.substack.com/p/*/comments",
+		"https://astralcodexten.substack.com/p/*/simple"
 	    ],
-	    "js": ["./jquery-3.5.1.min.js", "new-ui.js" ],
+	    "js": [
+		"new-ui.js",
+		"jquery-3.5.1.min.js"
+		  ],
 	    "css": ["style.css", "main.css"],
-	    "run_at": "document_start"
+	    "run_at": "document_start" // spin at start to stop crap
 	} ]
 }
 
