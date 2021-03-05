@@ -1,0 +1,9 @@
+version 0.4.9.1:
+
+  Firefox on 86 osx
+  Brave on Chromium 88 on osx
+  NOT Firefox 86 on Windows -> no post submission
+  Chrome 88 on Windows
+
+
+   
