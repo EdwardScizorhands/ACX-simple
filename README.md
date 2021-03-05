@@ -8,10 +8,10 @@ Installing this won't run anything unless you go to the comments-only page you p
 
 For Chrome:
 
-1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/test1). Go to the assets and grab the ACX-Simple-src.zip file.
-2. Unzip it.
-3. Go to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
-4. Select "Load Unpacked", and select the directory you unzipped in step 2.
+1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked) Then scroll down to the assets and grab the ACX-Simple-src.zip file.
+5. Unzip it.
+6. Go to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
+7. Select "Load Unpacked", and select the directory you unzipped in step 2.
 
 Then, whenever you want to use it, add "/comments" to the end of a URL:
 
