@@ -9,9 +9,15 @@ Installing this won't run anything unless you go to the comments-only page you p
 For Chrome:
 
 1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and grab the ACX-Simple-src.zip file.
-5. Unzip it.
-6. Go to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
-7. Select "Load Unpacked", and select the directory you unzipped in step 2.
+2. Unzip it.
+3. Browse to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
+4. Select "Load Unpacked", and select the directory you unzipped in step 2.
+
+For Firefox:
+
+1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and download the ACX-Simple-firefox.xpi
+2. Browse to about:debugging, click "This Firefox" on the left.
+3. Click "Load Temporary Add-on", and select the XPI file. 
 
 Then, whenever you want to use it, add "/comments" to the end of a URL:
 
