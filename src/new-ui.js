@@ -646,6 +646,8 @@ function make_comment_obsolete(c) {
     console.log("jquery is " + typeof jQuery);
     var letrun = true;
     
+    // TODO: make this call *first*, so we can be ready for it
+    
     if (letrun) {
 //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
 	
@@ -661,6 +663,13 @@ function make_comment_obsolete(c) {
 	})
 	
     }
+
+    // is this inefficient by making a reply function that will get cloned
+    // and overwritten on each "reply" ?
+    var root_reply = document.getElementById("commentor").post;
+    root_reply.addEventListener("click", function(){
+	submit_comment2(root_reply);
+    });
     
 }
 
