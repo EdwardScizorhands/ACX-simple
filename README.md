@@ -8,7 +8,7 @@ Installing this won't run anything unless you go to the comments-only page you p
 
 For Chrome:
 
-Go to the releases page. Install it.
+Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/test1). Install it.
 
 Then add "/comments" to the end of a URL:
 
