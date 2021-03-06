@@ -1,12 +1,11 @@
-var firefox = true;
 var debug = 0;
 
 if (debug) {
     console.log("intercept normal UI here");
 }
-console.log("starting");
+
 window.stop();
-console.log("continuing...");
+// firefox still loads some of the original page in the background
 
 window.fred = 0;
 function eat_page() {
@@ -309,18 +308,10 @@ function retrieve_meta_data() {
 	console.log("wiping out document...?");
     }
     
-    if (firefox) {
-	// deleted
-	var body = document.createElement('body');
-	document.body = body;
-    }
+    var body = document.createElement('body');
+    document.body = body;
     console.log("burp");
-    if (!firefox) {
-	document.open()
-	console.log("!");
-	document.write("<html><body><p>hold on, one-time init for this page...</p></body></html>");
-	document.close()
-    }
+
     console.log("wiped?");
     
     var eatHtml = function(data, status, xh) {
@@ -419,70 +410,8 @@ document.log("this code never runs.");
 //Load jQuery library using plain JavaScript
 </script>
 
-<script>
-
-console.log("defining reply");
-
-</script>
-
-<script>
- // okay, I apologize sincerely for this duplicate code. I think I 
- // can fix this by setting up listeners in *this* scope.
 
 
-
-
-function make_comment_obsolete(c) {
-    // TODO: Is it faster to prebuild a comment, and then copy it?
-   console.log("in dupe code!");
-    var id = c.id;
-
-    var comment = jQuery('<div/>', { class: "comment" } )
-    
-    var div1 = jQuery('<div/>', { id: "comment-" + id } )
-    var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
-    // I skipped comment-123 and comment-123-reply
-    var ctable = jQuery("<table/>", { class: "comment-content" })
-    
-    // username, td1
-    var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
-	append( jQuery('<img/>', { src: c.photo_url } ) );
-    var td1 = jQuery('<td/>', { class: "comment-head" }).
-	append( jQuery('<div/>', { class: "user-head" }).
-		append ( jQuery('<a/>', { href: "" }).
-			 append( imgwrap )));
-    // comment, td2
-    var meta = jQuery('<div/>', { class: "comment-meta"}).
-	text( c.name, { style: "font-weight: bold;" });
-    var cbody = jQuery('<div/>', { class: "comment-body"} ).
-	append( jQuery('<p/>').
-		text(c.body) );
-    var actions = jQuery('<div/>', { class: "comment-actions"} ).
-	html( '<a style="font-style:italic;" href="javascript:reply(' + id  + ')">Reply</a>');
-    var td2 = jQuery('<td/>').
-	append(meta).
-	append(cbody).
-	append(actions);
-    
-    
-    // TODO: load all the sub-comments here!!
-    
-    var row = jQuery('<tr/>' ).
-	append(td1).
-	append(td2);
-
-    ctable.append(row);
-
-    comment.append(div1).append(div2).append(ctable);
-    
-    return comment;
-}
-
-
-// just takes 1 single comment
-
-
-</script>
 
 <div id=status>status goes here </div>
 <form id=commentor method="post" class="form comment-input" novalidate="">
@@ -549,23 +478,11 @@ function make_comment_obsolete(c) {
       
        */
 
-    if (!firefox) {
-	document.open()
-	document.write(newHTML)
-	document.close()
-    }
     console.log("466: document.body is " + document.body);
-    if (firefox) {
-//	console.log("eating body again!");
-//	document.body.textContent = "";
-//	var header = document.createElement('h1');
-//	header.textContent = "This page has been eaten, part 2";
-//	document.body.appendChild(header);
-	var body = document.createElement('body');
-	document.body = body;
-
-	document.body.innerHTML = newHTML;
-    }
+    var body = document.createElement('body');
+    document.body = body;
+    
+    document.body.innerHTML = newHTML;
 
     function reply2(x) {
 	console.log("clicked on reply?");
