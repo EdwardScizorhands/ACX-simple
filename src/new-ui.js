@@ -121,13 +121,12 @@ function new_comments2(data) {
     
 }
 
-
-
 function submit_comment2(x) {
     if (debug > 0) {
 	console.log("trying to submit: " + x);
 	console.log(x);
-	document.abc = x; // so the console can play with it
+	document.abc = x; // so the console can play with it. (Does this work?)
+	   
     }
     x.disabled = true; // no double posts.
     var body = x.form.body.value;
@@ -160,8 +159,8 @@ function submit_comment2(x) {
 
 
 
-function reply3(xid) {
-    // raw JavaScript, not jQuery
+function reply(xid) {
+    // raw Jav<aScript, not jQuery
     if (debug > 0) {
 	console.log("reply3ing to id " + xid);
 	console.log(xid);
@@ -239,7 +238,7 @@ function make_comment(c) {
     var actions = jQuery('<div/>', { class: "comment-actions"} );
     var anchor = jQuery( '<a/>', { name: "comment-" + id }).
 	text( "REPLY" ).
-	click( reply3 ).
+	click( reply ).
 	appendTo( actions );
     
     var td2 = jQuery('<td/>').
@@ -338,7 +337,7 @@ function retrieve_meta_data() {
 
 	localStorage.setItem(hpt + "-id", post_id);
 	localStorage.setItem(hpt + "-title", post_title);
-	// TODO: disable this and debug extra crap that happens
+	// TODO: temporarily disable this, and debug extra crap that happens
 	location.reload();
     }
 
@@ -494,10 +493,6 @@ document.log("this code never runs.");
     
     document.body.innerHTML = newHTML;
 
-    function reply2(x) {
-	console.log("clicked on reply?");
-    }
-
     // is this the proper scope?
 
 
@@ -506,10 +501,13 @@ document.log("this code never runs.");
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
 	resdata = data;
-	if (debug) {
+	if (debug || true) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
 	    $("#hidden").hide().text(JSON.stringify(data));
+	    // In console, type:
+	    //    var b = JSON.parse($("#hidden").innerHTML)
+	    // to play with this.
 	    console.log("status is " + status);
 	    console.log("jqXHR is " + xh);
 	    console.log(xh);
@@ -520,7 +518,6 @@ document.log("this code never runs.");
 	console.log(string);
 	$( "#status" ).text(string);
 
-	$( "#status" ).click( reply2 );
 	var cs = data.comments;
 
 

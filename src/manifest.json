@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.9.4",
+    "version" : "0.4.9.5",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
     "permissions": ["storage",
