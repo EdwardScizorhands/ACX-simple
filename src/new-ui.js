@@ -9,6 +9,8 @@ window.stop();
 
 window.fred = 0;
 function eat_page() {
+    // This is more complex than it has to be. But it works.
+    // TODO: Figure out how to simplify but let it still work.
     window.fred += 1;
     //    console.log("eat page?  " + window.fred);
     if (window.fred > 20) {
@@ -41,116 +43,119 @@ function eat_page() {
 setTimeout(eat_page, 0);
 
 function new_comments2(data) {
+    if (debug > 0) {
+	console.log("New comment is " + data);
+	console.log(data);
+	console.log(JSON.stringify(data));
+    }
+    var zap =  make_comment(data);
+    if (debug >= 0) {
+	console.log("zap is " + zap);
+	console.log(zap);
+    }
+    // why am I getting back an *object* and not the *comment* ?
+    var comment_block = zap[0];
+    console.log("comment_block is " + comment_block);
+    console.log(comment_block);
+    
+    var apath = data.ancestor_path;
+    var parent_array = apath.split(".");
+    var parent_id = parent_array[ parent_array.length - 1 ];
+    console.log("parent_id is " + parent_id);
+    var parent_node = document.getElementById("comment-" + parent_id);
+    if (apath == "") { 
+	// no parent, must be top-level comment. 
+	// this will break if you try to make the FRIST comment
+	var root = document.getElementsByClassName("comment-list-container")[0];
+	root.insertBefore(comment_block, root.childNodes[0]);
+	return;
+    }
 
-  // oh, shoot, I don't have my old function in scope :< 
-  console.log("NEW COMMENT");
-  console.log(data);
-  console.log("XXX");
-  console.log(JSON.stringify(data));
-  console.log("DONE");
-  var zap =  make_comment(data);
-  console.log("zap is " + zap);
-  console.log(zap);
-  // why am I getting back an *object* and not the *comment* ?
-  var comment_block = zap[0];
-  console.log("comment_block is " + comment_block);
-  console.log(comment_block);
-
-  var apath = data.ancestor_path;
-  var parent_array = apath.split(".");
-  var parent_id = parent_array[ parent_array.length - 1 ];
-  console.log("parent_id is " + parent_id);
-  var parent_node = document.getElementById("comment-" + parent_id);
-  if (apath == "") { 
-     // no parent, must be top-level comment. 
-     // this will break if you try to make the FRIST comment
-    var root = document.getElementsByClassName("comment-list-container")[0];
-    root.insertBefore(comment_block, root.childNodes[0]);
-    return;
-  }
-
-  console.log("parent_node is " + parent_node);
-  console.log(parent_node);
-
-  // find the parent, then make a 4th node if it doesn't exist.
-  var dad = parent_node.parentElement;
-  console.log(dad);
-  var kids = dad.childNodes;
-  if (debug == 1) {
-   for (var i = 0; i < kids.length; i++) {
-    console.log("number " + i + ": element is");
-    console.log(kids[i]);
-    console.log(kids[i].tagName);
-    console.log(kids[i].className);
-    console.log("*");
-   }
-  }
-  // is this the right order if I already have child comments?
-  if (kids[3] && kids[3].tagName == "FORM") {
-    kids[3].remove(); 
-  }
-  if (kids[3] == undefined) {
-//    var comment_list = jQuery( '<div/>', { class: "comment-list" });
-    var comment_list = jQuery( '<div class="comment-list">' +
-                                 '<div class="comment-list-collapser"></div>' +
-                                 '<div class="comment-list-collapser hidden"></div>' +
-                                 '<div class="comment-items">' +
+    if (debug > 0) {
+	console.log("parent_node is " + parent_node);
+	console.log(parent_node);
+    }
+    // find the parent, then make a 4th node if it doesn't exist.
+    var dad = parent_node.parentElement;
+    var kids = dad.childNodes;
+    if (debug > 0) {
+	for (var i = 0; i < kids.length; i++) {
+	    console.log("number " + i + ": element is");
+	    console.log(kids[i]);
+	    console.log(kids[i].tagName);
+	    console.log(kids[i].className);
+	    console.log("*");
+	}
+    }
+    // is this the right order if I already have child comments?
+    if (kids[3] && kids[3].tagName == "FORM") {
+	kids[3].remove(); 
+    }
+    if (kids[3] == undefined) {
+	//    var comment_list = jQuery( '<div/>', { class: "comment-list" });
+	var comment_list = jQuery( '<div class="comment-list">' +
+                                   '<div class="comment-list-collapser"></div>' +
+                                   '<div class="comment-list-collapser hidden"></div>' +
+                                   '<div class="comment-items">' +
                                    '<div class="hidden dummy"></div>' +
-                                 '</div> ' +
-                               '</div>' );
-    // dummy so we can insert something before it                         
-
-    // why is this [0]? What broke?
-    dad.append(comment_list[0]);
-  }
-   if (debug == 1) {
-   console.log("INSERT ONTO THIS:");
-   console.log("kids[3] is " + kids[3]);
-   console.log(kids[3]);
-   console.log("kids[3].childNodes is " + kids[3].childNodes);
-   console.log(kids[3].childNodes);
-   console.log("kids[3].childNodes is " + kids[3].childNodes[2]);
-   console.log(kids[3].childNodes[2]);
-   }
-   var putHere = kids[3].childNodes[2];
-  // insert into front or back??
-   putHere.insertBefore(comment_block, putHere.childNodes[0]);
-
-  console.log("all done");
+                                   '</div> ' +
+				   '</div>' );
+	// dummy so we can insert something before it                         
+	
+	// why is this [0]? What broke?
+	dad.append(comment_list[0]);
+    }
+    if (debug > 0) {
+	console.log("INSERT ONTO THIS:");
+	console.log("kids[3] is " + kids[3]);
+	console.log(kids[3]);
+	console.log("kids[3].childNodes is " + kids[3].childNodes);
+	console.log(kids[3].childNodes);
+	console.log("kids[3].childNodes is " + kids[3].childNodes[2]);
+	console.log(kids[3].childNodes[2]);
+    }
+    var putHere = kids[3].childNodes[2];
+    // insert into front or back??
+    putHere.insertBefore(comment_block, putHere.childNodes[0]);
+    
+    
 }
 
 
 
 function submit_comment2(x) {
-    console.log("trying to submit");
-    console.log(x);
-  document.thingy = x;
-  x.disabled = true; // no double posts.
-  var body = x.form.body.value;
-  var token = null;
-  var id = x.form.parent_id.value;
-    var post_id = document.post_id; // whoops
+    if (debug > 0) {
+	console.log("trying to submit: " + x);
+	console.log(x);
+	document.abc = x; // so the console can play with it
+    }
+    x.disabled = true; // no double posts.
+    var body = x.form.body.value;
+    var token = null;
+    var id = x.form.parent_id.value;
+    var post_id = document.post_id; 
     
-  var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
-  // todo: make sure jQuery has loaded 
+    var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
 
-  console.log("id is " + id);
-  var  data = { body: body,
-                token: token,
-                parent_id: id };
-  console.log("posting to " + url + " with " + data);
-  console.log(data);
-  $.ajax({ type: "POST",
-           url: url,
-           data: data,
-           datatype: "json",
-           success: new_comments2
-  // TODO: warn user on failure
-	 });
-	   
-    console.log("done... what now?");
-    return true;
+    // TODO: make sure jQuery has loaded 
     
+    var  data = { body: body,
+                  token: token,
+                  parent_id: id };
+    if (debug > 0) {
+	console.log("id is " + id);
+	console.log("posting to " + url + " with " + data);
+	console.log(data);
+    }
+    $.ajax({ type: "POST",
+             url: url,
+             data: data,
+             datatype: "json",
+             success: new_comments2
+	     // TODO: warn user on failure
+	   });
+    
+    return true;
 }
 
 
@@ -188,8 +193,10 @@ function reply3(xid) {
     newform.cancel.addEventListener("click", function() { newform.remove(); });
     // deleted
     var ins = target.parentElement.childNodes[2];
-    console.log("going to put at " + ins);
-    console.log( ins );
+    if (debug > 0) {
+	console.log("going to put at " + ins);
+	console.log( ins );
+    }
     $(newform).insertAfter( ins );
     
 	
@@ -204,9 +211,10 @@ function make_comment(c) {
 	console.log("comment is " + c);
 	console.log(c);
     }
-    
+
+    // This is the object that gets returned.
     var comment = jQuery('<div/>', { class: "comment" } )
-    
+
     var div1 = jQuery('<div/>', { id: "comment-" + id } )
     var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
     var ctable = jQuery("<table/>", { class: "comment-content" })
@@ -238,7 +246,6 @@ function make_comment(c) {
 	append(meta).
 	append(cbody).
 	append(actions);
-    
     
     var row = jQuery('<tr/>' ).
 	append(td1).
@@ -331,6 +338,7 @@ function retrieve_meta_data() {
 
 	localStorage.setItem(hpt + "-id", post_id);
 	localStorage.setItem(hpt + "-title", post_title);
+	// TODO: disable this and debug extra crap that happens
 	location.reload();
     }
 
@@ -478,7 +486,9 @@ document.log("this code never runs.");
       
        */
 
-    console.log("466: document.body is " + document.body);
+    if (debug > 0) {
+	console.log("466: document.body should be null, is " + document.body);
+    }
     var body = document.createElement('body');
     document.body = body;
     
@@ -495,9 +505,9 @@ document.log("this code never runs.");
     
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
-	console.log("data length is " + typeof data);
 	resdata = data;
 	if (debug) {
+	    console.log("data is " + typeof data);
 	    console.log(data);
 	    $("#hidden").hide().text(JSON.stringify(data));
 	    console.log("status is " + status);
@@ -548,34 +558,33 @@ document.log("this code never runs.");
     
     
     console.log("trying to load comments now...");
-    console.log("jquery is " + typeof jQuery);
-    var letrun = true;
     
-    // TODO: make this call *first*, so we can be ready for it
+    // TODO: make this call *first*, since we will end up waiting for it
     
-    if (letrun) {
-//	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
-	
-	var site = "astralcodexten.substack.com";
-	var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
-	var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
-
+    //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
+    
+    var site = "astralcodexten.substack.com";
+    var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
+    var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
+    
+    if (debug) {
 	console.log("making ajax");
-	$.ajax({
-	    url: url,
-	    success: eatJson,
-	    dataType: "json"
-	})
-	
     }
-
+    $.ajax({
+	url: url,
+	success: eatJson,
+	dataType: "json"
+    })
+    
     // is this inefficient by making a reply function that will get cloned
     // and overwritten on each "reply" ?
+    // TODO: have a base "commentor" that everything, including this, gets cloned from
     var root_reply = document.getElementById("commentor").post;
     root_reply.addEventListener("click", function(){
 	submit_comment2(root_reply);
     });
     
 }
+
 
 
