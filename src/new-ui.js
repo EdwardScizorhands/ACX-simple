@@ -155,51 +155,46 @@ function submit_comment2(x) {
 }
 
 
-console.log("firefox dbugging");
 
-    function reply3(xid) {
-	// raw JavaScript, not jQuery
-	if (debug > 0) {
-	    console.log("reply3ing to id " + xid);
-	    console.log(xid);
-	    console.log("target is " + xid.target);
-	    console.log(xid.target);
-	    console.log("target.name is " + xid.target.name);
-	    console.log(xid.target.name);
-	}
-	var nid = xid.target.name; // "comment-123"
-	var id = nid.split("-")[1];
-	var newform = document.getElementById("commentor").cloneNode(true);
-	newform.parent_id.value = id;
-	var target = document.getElementById(nid);
-	if (debug > 0) {
-	    console.log(target)
-	    console.log("===")
-	    console.log(jQuery);
-	    console.log(jQuery());
-	    console.log(jQuery().jquery);
-
-	}
-	//	newform.post.click = submit_comment2;
-	if (debug > 0) {
-	    console.log("post button is " + newform.post);
-	    console.log(newform.post);
-	}
-	newform.post.addEventListener("click", function(){submit_comment2(newform.post); });
-	newform.cancel.style.display = "block";
-	newform.cancel.addEventListener("click", function() { newform.remove(); });
-//	newform.post.csubmit_comment2;
-	//    target.parentElement.append(newform);
-	//     targe.insertAfter(target.parentElement.childNodes[2]);   
-	var ins = target.parentElement.childNodes[2];
-	console.log("going to put at " + ins);
-	console.log( ins );
-	$(newform).insertAfter( ins );
-
-	console.log("missing paren? ");
-
+function reply3(xid) {
+    // raw JavaScript, not jQuery
+    if (debug > 0) {
+	console.log("reply3ing to id " + xid);
+	console.log(xid);
+	console.log("target is " + xid.target);
+	console.log(xid.target);
+	console.log("target.name is " + xid.target.name);
+	console.log(xid.target.name);
+    }
+    var nid = xid.target.name; // "comment-123"
+    var id = nid.split("-")[1];
+    var newform = document.getElementById("commentor").cloneNode(true);
+    newform.parent_id.value = id;
+    var target = document.getElementById(nid);
+    if (debug > 0) {
+	console.log(target)
+	console.log("===")
+	console.log(jQuery);
+	console.log(jQuery());
+	console.log(jQuery().jquery);
 	
     }
+    //	newform.post.click = submit_comment2;
+    if (debug > 0) {
+	console.log("post button is " + newform.post);
+	console.log(newform.post);
+    }
+    newform.post.addEventListener("click", function(){submit_comment2(newform.post); });
+    newform.cancel.style.display = "block";
+    newform.cancel.addEventListener("click", function() { newform.remove(); });
+    // deleted
+    var ins = target.parentElement.childNodes[2];
+    console.log("going to put at " + ins);
+    console.log( ins );
+    $(newform).insertAfter( ins );
+    
+	
+}
 
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
@@ -215,7 +210,6 @@ function make_comment(c) {
     
     var div1 = jQuery('<div/>', { id: "comment-" + id } )
     var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
-    // I skipped comment-123 and comment-123-reply
     var ctable = jQuery("<table/>", { class: "comment-content" })
     
     // username, td1
@@ -240,7 +234,6 @@ function make_comment(c) {
 	text( "REPLY" ).
 	click( reply3 ).
 	appendTo( actions );
-    //html( '<a style="font-style:italic;" href="javascript:reply(' + id  + ')">Reply</a>');
     
     var td2 = jQuery('<td/>').
 	append(meta).
@@ -248,16 +241,14 @@ function make_comment(c) {
 	append(actions);
     
     
-    // TODO: load all the sub-comments here!!
-    
     var row = jQuery('<tr/>' ).
 	append(td1).
 	append(td2);
-
+    
     ctable.append(row);
-
+    
     comment.append(div1).append(div2).append(ctable);
-
+    
     if (c.children.length > 0) {
 	var cl = make_comment_list_from_array(c.children);
 	comment.append( cl );
@@ -271,15 +262,15 @@ function make_comment_list_from_array(cs) {
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ).
 			 append( jQuery('<div/>',
 					{ class: "comment-list-collapser-line"} )) )
-    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } )) // check this DTRT
-
+    comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } ))
+    
     var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
     cs.forEach( function(c) {
 	comment_list_items.append( make_comment(c) );
     } )
-
+    
     comment_list.append( comment_list_items );
-
+    
     return comment_list;
 }
 
@@ -302,9 +293,9 @@ function check_jQuery() {
 	setTimeout( retrieve_meta_data, 1);
     }
 }
-    
-function retrieve_meta_data() {
 
+function retrieve_meta_data() {
+    
     console.log("could not find post_id");
     // Yo dawg, load the same page we are on
     // (Is there a better way to do this? Can I read the HTML somehow?)
@@ -312,22 +303,19 @@ function retrieve_meta_data() {
         
     var url = document.URL;
     url = url.replace(/simple$/, 'comments');
-
+    
     if (debug) {
 	console.log(url);
 	console.log("wiping out document...?");
     }
-
+    
     if (firefox) {
-	//document.body.textContent = "";
-	//var header = document.createElement('h1');
-	//header.textContent = "This page has been eaten";
+	// deleted
 	var body = document.createElement('body');
 	document.body = body;
     }
     console.log("burp");
     if (!firefox) {
-	// 
 	document.open()
 	console.log("!");
 	document.write("<html><body><p>hold on, one-time init for this page...</p></body></html>");
