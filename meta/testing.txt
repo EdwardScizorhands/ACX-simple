@@ -1,9 +1,23 @@
+
+version 0.4.9.7:
+  OSX:
+    Firefox 87
+    Brave on Chromium 88
+
+
 version 0.4.9.1:
 
-  Firefox on 86 osx
-  Brave on Chromium 88 on osx
-  NOT Firefox 86 on Windows -> no post submission
-  Chrome 88 on Windows
+  OSX: 
+    Firefox on 86
+    Brave on Chromium 88
+    Chrome 88 osx
+  Windows:
+    Firefox 86                   FAILS, NO POST SUBMISSION
+    Chrome 88 
+  Mobile:
+    anything??
 
 
-   
+To build:
+
+
