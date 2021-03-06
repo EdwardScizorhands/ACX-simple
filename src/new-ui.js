@@ -133,7 +133,7 @@ function submit_comment2(x) {
     var token = null;
     var id = x.form.parent_id.value;
     var post_id = document.post_id; 
-    
+
     var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
 
     // TODO: make sure jQuery has loaded 
@@ -157,7 +157,47 @@ function submit_comment2(x) {
     return true;
 }
 
+function do_delete(id) {
+    console.log("remove " + id + " from UI!");
+    // 1.  we set the author and body to "deleted"
+    // 2.  remove all reactions
+    // 3.  optional: totally remove from UI if all children deleted
+    var temp = document.getElementById("comment-" + id);
+    var comment = temp.parentNode;
+    console.log("comment is " + comment);
+    console.log(comment);
+    var content = comment.childNodes[2];
+    console.log("content is " + content);
+    console.log(content);
+    var smurf = content.childNodes[0].childNodes[1];
+    // 1a. delete author
+    var meta = smurf.childNodes[0];
+    meta.innerHTML = "<i>deleted</i>";
+    // 1b. delete body
+    var body = smurf.childNodes[1];
+    body.innerHTML = "<i>deleted</i>";
+    // 2. delete reactions
+    var actions = smurf.childNodes[2];
+    actions.remove();
+    console.log("comment deleted");
+    
+}
 
+
+function deleet(xid) {
+    console.log("delete " + xid);
+    if ( confirm("Do you wish to delete this comment?") ) {
+	var nid = xid.target.name; // "comment-123"
+	var id = nid.split("-")[1];
+	var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id;
+	$.ajax({ type: "DELETE",
+		 url: url,
+		 success: do_delete(id)
+		 // TODO: warn user on failure
+	   });
+    }
+
+}
 
 function reply(xid) {
     // raw Jav<aScript, not jQuery
@@ -226,25 +266,42 @@ function make_comment(c) {
 		append ( jQuery('<a/>', { href: "" }).
 			 append( imgwrap )));
     // comment, td2
-    
-    var meta = jQuery('<div/>', { class: "comment-meta"}).
-	append( jQuery('<span/>', { style: "font-weight: bold;" } ).
-		text( c.name )).
-	append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
-		text( dd.toDateString() + " " + dd.toLocaleTimeString() ));
-    var cbody = jQuery('<div/>', { class: "comment-body"} ).
-	append( jQuery('<p/>').
-		text(c.body) );
-    var actions = jQuery('<div/>', { class: "comment-actions"} );
-    var anchor = jQuery( '<a/>', { name: "comment-" + id }).
-	text( "REPLY" ).
-	click( reply ).
-	appendTo( actions );
-    
-    var td2 = jQuery('<td/>').
-	append(meta).
-	append(cbody).
-	append(actions);
+
+
+    var td2;
+    if (c.deleted) {
+	// TODO: make this neater
+	// TODO: hide if all children deleted
+	td2 = jQuery ('<td/>').
+	    text("deleted");
+    } else {
+	var meta = jQuery('<div/>', { class: "comment-meta"}).
+	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
+		    text( c.name )).
+	    append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
+		    text( dd.toDateString() + " " + dd.toLocaleTimeString() ));
+	var cbody = jQuery('<div/>', { class: "comment-body"} ).
+	    append( jQuery('<p/>').
+		    text(c.body) );
+	var actions = jQuery('<div/>', { class: "comment-actions"} );
+	var anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
+	    text( "REPLY" ).
+	    click( reply ).
+	    appendTo( actions );
+
+	jQuery( "<span>&nbsp;</span>" ).
+	    appendTo( actions );
+	
+	var anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
+	    text( "DELETE" ).
+	    click( deleet ).
+	    appendTo( actions );
+	
+	td2 = jQuery('<td/>').
+	    append(meta).
+	    append(cbody).
+	    append(actions);
+    }
     
     var row = jQuery('<tr/>' ).
 	append(td1).
@@ -472,7 +529,8 @@ document.log("this code never runs.");
       4: div   comment-list      IFF there are children
 
 	
-      EACH COMMENT-CONTENT contains a TR which contains
+      EACH COMMENT-CONTENT contains a TR 
+         ... which in turen contains
       1. td comment-head (picture)
       2. td smurf   (the comment) (smurf is my name)
       

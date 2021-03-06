@@ -11,7 +11,7 @@
 }
 
 .container .comment .comment .comment-actions > span:nth-child(2):after {
-    content: "Parent" !important;
+    /* content: "Parent" !important; */
     cursor: pointer;
     color: #888;
 }
