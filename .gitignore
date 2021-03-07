@@ -3,3 +3,4 @@ src.pem
 .DS_Store
 .*
 #*
+*.out

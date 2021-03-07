@@ -241,10 +241,35 @@ function reply(xid) {
 	
 }
 
+var global_latest = "";
+
+var comment_table = { }
+
 function make_comment(c) {
     // TODO: Is it faster to prebuild a comment, and then copy it?
     var id = c.id;
     var dd = new Date(c.date);
+    // ugh, the instant reply I get back doesn't have a date.
+    // so how do I properly check without double-posting it?
+    if (comment_table[id] == undefined && c.date != null) {
+	comment_table[id] = dd;
+	console.log("new comment");
+    } else {
+	// already populated!
+	console.log("existing comment");
+	return null; // this isn't right; we still need to iterate on the kids 
+    }
+    console.log("c.date is " + c.date);
+    console.log(c.date);
+    console.log("global_latest is " + global_latest);
+    console.log(global_latest);
+
+    if (c.date > global_latest) {
+	console.log("NEW LATEST POST! " + id);
+	console.log(dd);
+	global_latest = c.date;
+	console.log(global_latest);
+    } 
     if (debug > 0) {
 	console.log("in original make_comment " + id);
 	console.log("comment is " + c);
@@ -443,6 +468,59 @@ function escapeHTML(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function scan_c(c) {
+    var id = c.id; // compare to start of make_comment()
+    if (comment_table[id] == undefined) {
+	console.log("NEW DYNAMIC COMMENT");
+	var dd = new Date(c.date);
+	if (c.date > global_latest) {
+	    console.log("NEW LATEST POST2! " + id);
+	    console.log(dd);
+	    global_latest = c.date;
+	    console.log(global_latest);
+	}
+    } else {
+	console.log("existing comment");
+    }
+    c.children.forEach (scan_c); // recurse
+}
+
+// "scan" just means to iterate through themn
+function scan_comments(data) {
+    var comments = data["comments"];
+    if (comments !== undefined) {
+	comments.forEach ( scan_c );
+    }
+}
+
+function dump_it(data, status, xh ) {
+    if (false) {
+	console.log("jqXHR is " + xh);
+	console.log(xh);
+	console.log("==");
+	console.log(xh.getAllResponseHeaders());
+	console.log("==");
+    }
+    console.log(xh.getResponseHeader("date"));
+    console.log("==");
+    console.log(xh); 
+    console.log("DUMP IT " + JSON.stringify(data));
+    scan_comments(data);
+    setTimeout( spin_comments, 8000 );
+}
+
+function load_comments() {
+    
+    url = "https://astralcodexten.substack.com/api/v1/post/32218385/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=" + global_latest; // 2021-03-06T17%3A59%3A02.097Z"
+    $.ajax({
+	url: url,
+	success: dump_it,
+	dataType: "json"
+    })
+}
+function spin_comments() {
+    setTimeout( load_comments, 3000 );
+}
 
 
 function phase_two() {
@@ -559,7 +637,7 @@ document.log("this code never runs.");
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
 	resdata = data;
-	if (debug || true) {
+	if (debug) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
 	    $("#hidden").hide().text(JSON.stringify(data));
@@ -608,6 +686,13 @@ document.log("this code never runs.");
 	
 
 	cs.forEach( append_comment_factory( $("#comment-list-items") ) );
+
+
+	console.log("all comments populated");
+
+	spin_comments();
+	
+	console.log(comment_table);
 	
     }
     
