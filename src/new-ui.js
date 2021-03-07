@@ -320,7 +320,7 @@ function make_comment(c) {
 	    click( reply ).
 	    appendTo( actions );
 
-	jQuery( "<div>&nbsp;</div>" ).
+	jQuery( "<b>&nbsp;</b>" ).
 	    appendTo( actions );
 
 	// Only show DELETE on your own comments ;)
