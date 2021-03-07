@@ -1,4 +1,13 @@
 
+version 0.4.10.5
+  OSX:
+    Firefox 86, 87
+    Brave on Chromium 88
+  Windows:
+    Firefox 86
+    Chrome ??
+
+
 version 0.4.9.7:
   OSX:
     Firefox 87
