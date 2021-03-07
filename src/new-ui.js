@@ -253,7 +253,14 @@ function make_comment(c) {
     var dd = new Date(c.date);
     // ugh, the instant reply I get back doesn't have a date.
     // so how do I properly check without double-posting it?
-    if (comment_table[id] == undefined && c.date != null) {
+
+
+    //    console.log("id is " + id + " and c.date is " + c.date + " aand dd is " + dd);
+
+
+    if (comment_table[id] == undefined) {
+	// firefox distribution uses "c.date undefined"? 
+	//&& c.date != null && c.date != undefined)  <-- for dynamic loading
 	comment_table[id] = dd;
 	// console.log("new comment");
     } else {
