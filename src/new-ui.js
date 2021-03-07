@@ -1,4 +1,5 @@
 var debug = 0;
+var reload_comments = false;
 
 if (debug) {
     console.log("intercept normal UI here");
@@ -132,7 +133,7 @@ function submit_comment2(x) {
     var body = x.form.body.value;
     var token = null;
     var id = x.form.parent_id.value;
-    var post_id = document.post_id; 
+    var post_id = document.post_id;  // does this work?
 
     var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
 
@@ -192,9 +193,10 @@ function deleet(xid) {
 	var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id;
 	$.ajax({ type: "DELETE",
 		 url: url,
-		 success: do_delete(id)
+		 async: true, 
+		 success: function() { do_delete(id) }
 		 // TODO: warn user on failure
-	   });
+	       });
     }
 
 }
@@ -253,20 +255,24 @@ function make_comment(c) {
     // so how do I properly check without double-posting it?
     if (comment_table[id] == undefined && c.date != null) {
 	comment_table[id] = dd;
-	console.log("new comment");
+	// console.log("new comment");
     } else {
 	// already populated!
 	console.log("existing comment");
 	return null; // this isn't right; we still need to iterate on the kids 
     }
-    console.log("c.date is " + c.date);
-    console.log(c.date);
-    console.log("global_latest is " + global_latest);
-    console.log(global_latest);
-
+    if (reload_comments) {
+	console.log("c.date is " + c.date);
+	console.log(c.date);
+	console.log("global_latest is " + global_latest);
+	console.log(global_latest);
+    }
+    
     if (c.date > global_latest) {
-	console.log("NEW LATEST POST! " + id);
-	console.log(dd);
+	if (reload_comments) {
+	    console.log("NEW LATEST POST! " + id);
+	    console.log(dd);
+	}
 	global_latest = c.date;
 	console.log(global_latest);
     } 
@@ -314,14 +320,16 @@ function make_comment(c) {
 	    click( reply ).
 	    appendTo( actions );
 
-	jQuery( "<span>&nbsp;</span>" ).
+	jQuery( "<div>&nbsp;</div>" ).
 	    appendTo( actions );
-	
-	var anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
-	    text( "DELETE" ).
-	    click( deleet ).
-	    appendTo( actions );
-	
+
+	// Only show DELETE on your own comments ;)
+	if (c.user_id == my_user_id) {
+	    var anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
+		text( "DELETE" ).
+		click( deleet ).
+		appendTo( actions );
+	}
 	td2 = jQuery('<td/>').
 	    append(meta).
 	    append(cbody).
@@ -366,8 +374,9 @@ var post_slug = document.URL.split("/")[4];
 var hpt = btoa(post_slug);
 var post_id = localStorage.getItem(hpt+"-id");
 var post_title = localStorage.getItem(hpt+"-title");
+var my_user_id = localStorage.getItem("my_user_id");
 
-if (post_id == null || post_title == null) {
+if (post_id == null || post_title == null || my_user_id == null) {
     setTimeout( check_jQuery, 0 );
 }
 
@@ -419,6 +428,15 @@ function retrieve_meta_data() {
 
 	localStorage.setItem(hpt + "-id", post_id);
 	localStorage.setItem(hpt + "-title", post_title);
+
+	if (my_user_id == null) {
+	    var user_s = '<input type="hidden" name="user_id" value="'
+	    var u = data.indexOf(user_s) + user_s.length;
+	    var my_user_id = parseInt(data.substr(u, 20));
+	    localStorage.setItem("my_user_id", my_user_id);
+	}
+	
+	
 	// TODO: temporarily disable this, and debug extra crap that happens
 	location.reload();
     }
@@ -542,17 +560,6 @@ white-space: pre-line;
 } </style>
   </head>
   <body>
-
-<script>
-
-document.post_id = ` + post_id + `;
-//alert("xxx");
-document.log("this code never runs.");
-
-//Load jQuery library using plain JavaScript
-</script>
-
-
 
 
 <div id=status>status goes here </div>
@@ -690,10 +697,10 @@ document.log("this code never runs.");
 
 	console.log("all comments populated");
 
-	spin_comments();
-	
-	console.log(comment_table);
-	
+	if (reload_comments) {
+	    spin_comments();
+	    console.log(comment_table);
+	}
     }
     
     
