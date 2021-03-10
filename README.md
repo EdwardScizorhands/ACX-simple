@@ -11,7 +11,7 @@ For Chrome:
 1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and grab the latest ACX-Simple-src-(date).zip file.
 2. Unzip it.
 3. Browse to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
-4. Select "Load Unpacked", and select the directory you unzipped in step 2.
+4. Select "Load Unpacked", and select the **src** directory you unzipped in step 2.
 
 For Firefox:
 
