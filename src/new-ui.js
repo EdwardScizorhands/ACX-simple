@@ -277,9 +277,8 @@ function make_comment(c) {
     }
     
     if (c.date > global_latest) {
-	if (reload_comments) {
+	if (reload_comments && debug) {
 	    console.log("NEW LATEST POST! " + id);
-	    console.log(dd);
 	}
 	global_latest = c.date;
 	console.log(global_latest);
@@ -577,7 +576,7 @@ white-space: pre-line;
   <body>
 
 
-<div style="background-color:red; width:100%"><span id=status style="text-align:left;">status goes here</span><span style="float:right;">New Comments:<button name="checknow">Check Now</button></span></div>
+<div style="background-color:white; width:100%"><span id=status style="text-align:left;">status goes here</span><span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
 <form id=commentor method="post" class="form comment-input" novalidate="">
 <input type=hidden value=123 name=parent_id />
 
