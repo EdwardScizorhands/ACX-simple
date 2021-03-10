@@ -215,6 +215,7 @@ function reply(xid) {
     var nid = xid.target.name; // "comment-123"
     var id = nid.split("-")[1];
     var newform = document.getElementById("commentor").cloneNode(true);
+    //newform.style.display = "block";
     newform.parent_id.value = id;
     var target = document.getElementById(nid);
     if (debug > 0) {
@@ -266,7 +267,7 @@ function make_comment(c) {
 	// console.log("new comment");
     } else {
 	// already populated!
-	console.log("existing comment 1");
+	// console.log("existing comment 1");
 	return null; // this isn't right; we still need to iterate on the kids 
     }
     if (reload_comments & debug > 0) {
@@ -577,16 +578,18 @@ white-space: pre-line;
 
 
 <div style="background-color:white; width:100%"><span id=status style="text-align:left;">status goes here</span><span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
+<div style="display:none;">
 <form id=commentor method="post" class="form comment-input" novalidate="">
 <input type=hidden value=123 name=parent_id />
 
 <div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
 <div>→</div>
-</div></a></div></div><textarea name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div>
+</div></a></div></div><textarea style="resize:both; height:100px; width:50%;" name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div>
 <button tabindex="0" class="button primary " type="button" name="post"">Post</button>
 <button tabindex="0" class="button " style="display:none;" type="button" name="cancel"">Cancel</button>
 </form>
-
+</div>
+<p id=newrootcomment />
 
 
 
@@ -713,7 +716,9 @@ white-space: pre-line;
 
 	if (reload_comments) {
 	    spin_comments();
-	    console.log(comment_table);
+	    if (debug) {
+		console.log(comment_table);
+	    }
 	}
     }
     
@@ -740,7 +745,11 @@ white-space: pre-line;
     // is this inefficient by making a reply function that will get cloned
     // and overwritten on each "reply" ?
     // TODO: have a base "commentor" that everything, including this, gets cloned from
-    var root_reply = document.getElementById("commentor").post;
+    // copy the hidden form and post it, then edit it
+    var new_root = document.getElementById("commentor").cloneNode(true);
+//    new_root.style.display = "block";
+    document.getElementById("newrootcomment").append( new_root );
+    var root_reply = new_root.post;
     root_reply.addEventListener("click", function(){
 	submit_comment2(root_reply);
     });

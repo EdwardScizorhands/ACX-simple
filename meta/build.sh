@@ -11,7 +11,7 @@ fi
 date=$(date "+%Y-%m-%d")
 temp_dir=ACX-Simple-src-$date
 zip_file=ACX-Simple-src-$date.zip
-firefox_file=ACX-Simple-firefox-$date-b.xpi
+firefox_file=ACX-Simple-firefox-$date.xpi
 
 mkdir $temp_dir
 mkdir $temp_dir/src
@@ -30,8 +30,8 @@ mv $firefox_file dist
 
 
 # Chrome-based unpacked extension
-#zip -r $zip_file $temp_dir
-#mv $zip_file ./dist
+zip -r $zip_file $temp_dir
+mv $zip_file ./dist
 
 exit
 
