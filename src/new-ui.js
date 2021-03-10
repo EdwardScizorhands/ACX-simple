@@ -49,7 +49,7 @@ function new_comments2(data) {
 	console.log(data);
 	console.log(JSON.stringify(data));
     }
-    var zap =  make_comment(data);
+    var zap =  make_comment(data, "~new~");
     if (debug >= 0) {
 	console.log("zap is " + zap);
 	console.log(zap);
@@ -249,16 +249,12 @@ var global_latest = "";
 
 var comment_table = { }
 
-function make_comment(c) {
-    // TODO: Is it faster to prebuild a comment, and then copy it?
+function make_comment(c, flag=null) {
+    // TODO: Is it faster to prebuild one root comment, and then copy it?
+    //       Or build one dynamically from scratch each time?
     var id = c.id;
     var dd = new Date(c.date);
     // ugh, the instant reply I get back doesn't have a date.
-    // so how do I properly check without double-posting it?
-
-
-    //    console.log("id is " + id + " and c.date is " + c.date + " aand dd is " + dd);
-
 
     if (comment_table[id] == undefined) {
 	// firefox distribution uses "c.date undefined"? 
@@ -269,12 +265,6 @@ function make_comment(c) {
 	// already populated!
 	// console.log("existing comment 1");
 	return null; // this isn't right; we still need to iterate on the kids 
-    }
-    if (reload_comments & debug > 0) {
-	console.log("c.date is " + c.date);
-	console.log(c.date);
-	console.log("global_latest is " + global_latest);
-	console.log(global_latest);
     }
     
     if (c.date > global_latest) {
@@ -297,9 +287,19 @@ function make_comment(c) {
     var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
     var ctable = jQuery("<table/>", { class: "comment-content" })
     
-    // username, td1
+    // user pic, td1
+    var avatar = c.photo_url;
+    var img;
+    if (c.photo_url != null) {
+	img = jQuery('<img/>', { src: c.photo_url } );
+    } else {
+	letter = c.name ? c.name[0] : "";
+	img = jQuery('<span/>', { class: "fakeimg" } ).
+	    text( letter );
+    }
+//    console.log("c.photo_url is " + c.photo_url);
     var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
-	append( jQuery('<img/>', { src: c.photo_url } ) );
+	append( img );
     var td1 = jQuery('<td/>', { class: "comment-head" }).
 	append( jQuery('<div/>', { class: "user-head" }).
 		append ( jQuery('<a/>', { href: "" }).
@@ -615,10 +615,14 @@ white-space: pre-line;
       COMMENT-LIST-CONTAINER contains
       1: div comment-list
 
-      EACH COMMENT-LIST contains (horizontally)
+      EACH COMMENT-LIST contains (horizontally) 
+         ** EITHER ** 
       1: div comment-list-collapser          (line to click)
-      2: div comment-list-collapser hidden   (UNKNOWN)
+      2: div comment-list-collapser hidden   (UNKNOWN) <-- sometimes not there
+      ?: OPTIONAL: button collapsed-reply "X new replies"
       3. div comment-list-items              (all the comments)
+         ** OR ** 
+      1. button collapsed-reply, which expands to the others
 
       EACH COMMENT-LIST-ITEMS (vertically)
       *. div comment                         (1 or more -- right?)
