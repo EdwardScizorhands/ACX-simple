@@ -1,5 +1,5 @@
 var debug = 0;
-var reload_comments = false;
+var reload_comments = true;
 
 if (debug) {
     console.log("intercept normal UI here");
@@ -191,6 +191,7 @@ function deleet(xid) {
 	var nid = xid.target.name; // "comment-123"
 	var id = nid.split("-")[1];
 	var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id;
+	// TODO: replace "DELETE" button with "deleting"  
 	$.ajax({ type: "DELETE",
 		 url: url,
 		 async: true, 
@@ -265,10 +266,10 @@ function make_comment(c) {
 	// console.log("new comment");
     } else {
 	// already populated!
-	console.log("existing comment");
+	console.log("existing comment 1");
 	return null; // this isn't right; we still need to iterate on the kids 
     }
-    if (reload_comments) {
+    if (reload_comments & debug > 0) {
 	console.log("c.date is " + c.date);
 	console.log(c.date);
 	console.log("global_latest is " + global_latest);
@@ -497,16 +498,20 @@ function scan_c(c) {
     var id = c.id; // compare to start of make_comment()
     if (comment_table[id] == undefined) {
 	console.log("NEW DYNAMIC COMMENT");
-	var dd = new Date(c.date);
-	if (c.date > global_latest) {
-	    console.log("NEW LATEST POST2! " + id);
-	    console.log(dd);
-	    global_latest = c.date;
-	    console.log(global_latest);
-	}
+	console.log("I want to paste this comment: " + c);
+	console.log(c);
+//	var dd = new Date(c.date);
+//	comment_table[id] = dd;  <-- this happens in new_comments2();
+	new_comments2(c); // POPULATE THE NEW COMMENT!
     } else {
-	console.log("existing comment");
+	console.log("existing comment 2");
     }
+    if (c.date > global_latest) {
+	console.log("NEW LATEST POST2! " + id);
+//	console.log(dd);
+	global_latest = c.date;
+//	console.log(global_latest);
+    } 
     c.children.forEach (scan_c); // recurse
 }
 
@@ -514,29 +519,32 @@ function scan_c(c) {
 function scan_comments(data) {
     var comments = data["comments"];
     if (comments !== undefined) {
+	console.log("resetted global_latest");
+	global_latest = ""; // reset
 	comments.forEach ( scan_c );
     }
 }
 
 function dump_it(data, status, xh ) {
-    if (false) {
-	console.log("jqXHR is " + xh);
-	console.log(xh);
+    if (data.comments !== undefined) {
+	console.log("data length is " + data.length);
+	console.log(xh.getResponseHeader("date"));
 	console.log("==");
-	console.log(xh.getAllResponseHeaders());
-	console.log("==");
+	console.log(xh); 
+	console.log("DUMP IT " + JSON.stringify(data));
+	scan_comments(data);
+    } else {
+	console.log("nuthin'");
     }
-    console.log(xh.getResponseHeader("date"));
-    console.log("==");
-    console.log(xh); 
-    console.log("DUMP IT " + JSON.stringify(data));
-    scan_comments(data);
     setTimeout( spin_comments, 8000 );
 }
 
 function load_comments() {
-    
-    url = "https://astralcodexten.substack.com/api/v1/post/32218385/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=" + global_latest; // 2021-03-06T17%3A59%3A02.097Z"
+    post_id = document.post_id; 
+    url = "https://astralcodexten.substack.com/api/v1/post/" +
+	post_id +
+	"/comments?token=&all_comments=true&" +
+	"sort=most_recent_first&last_comment_at=" + global_latest;
     $.ajax({
 	url: url,
 	success: dump_it,
@@ -569,7 +577,7 @@ white-space: pre-line;
   <body>
 
 
-<div id=status>status goes here </div>
+<div style="background-color:red; width:100%"><span id=status style="text-align:left;">status goes here</span><span style="float:right;">New Comments:<button name="checknow">Check Now</button></span></div>
 <form id=commentor method="post" class="form comment-input" novalidate="">
 <input type=hidden value=123 name=parent_id />
 
