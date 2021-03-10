@@ -249,7 +249,7 @@ var global_latest = "";
 
 var comment_table = { }
 
-function make_comment(c, flag=null) {
+function make_comment(c, flag="") {
     // TODO: Is it faster to prebuild one root comment, and then copy it?
     //       Or build one dynamically from scratch each time?
     var id = c.id;
@@ -314,11 +314,16 @@ function make_comment(c, flag=null) {
 	td2 = jQuery ('<td/>').
 	    text("deleted");
     } else {
+	var date_s = dd.toDateString() + " " + dd.toLocaleTimeString() + " " + flag;
 	var meta = jQuery('<div/>', { class: "comment-meta"}).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
 		    text( c.name )).
 	    append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
-		    text( dd.toDateString() + " " + dd.toLocaleTimeString() ));
+		    text( date_s ));
+	if (flag && false) {
+	    meta.append( jQuery('<span/>').
+			 text (flag) );
+	}
 	var cbody = jQuery('<div/>', { class: "comment-body"} ).
 	    append( jQuery('<p/>').
 		    text(c.body) );
@@ -503,8 +508,6 @@ function scan_c(c) {
 //	var dd = new Date(c.date);
 //	comment_table[id] = dd;  <-- this happens in new_comments2();
 	new_comments2(c); // POPULATE THE NEW COMMENT!
-    } else {
-	console.log("existing comment 2");
     }
     if (c.date > global_latest) {
 	console.log("NEW LATEST POST2! " + id);
