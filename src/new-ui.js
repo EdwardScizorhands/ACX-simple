@@ -1,40 +1,50 @@
 var debug = 0;
 var reload_comments = true;
 
+var change_icon = false;
+// if we want to change the icon, we need to let a little bit of the
+// original page load in, which means letting some of its scripts run
+
+
 if (debug) {
     console.log("intercept normal UI here");
 }
 
-window.stop();
-// firefox still loads some of the original page in the background
+if (change_icon == false) {
+    window.stop();
+    // firefox still loads some of the original page in the background??
+}
 
 window.fred = 0;
 function eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.
     window.fred += 1;
-    //    console.log("eat page?  " + window.fred);
+//    console.log("eat page?  " + window.fred);
     if (window.fred > 20) {
-	setTimeout( phase_two, 0);
+	setTimeout( phase_two, 1);
 	return;
     }
+//    console.log("document.head is " + document.head);
+//    console.log("document body is " + document.body);
     if (document.body == null) {
-	//	console.log("not loaded yet");
-	setTimeout(eat_page, 1);
+	console.log("not loaded yet");
+	setTimeout(eat_page, change_icon ? 100: 0);
 	return;
     }
     console.log("prep");
     console.log("document body is " + document.body);
-    console.log("document body.innerHTML is " + document.body.innerHTML);
+    //console.log("document body.innerHTML is " + document.body.innerHTML);
     
     var s = document.body.innerHTML.substring(0,50);
     console.log("CHECKING " + s);
     if (s == "<h1>Loading ACX Simple</h1>") {
 	console.log("phase 1 done, go to phase 2");
-	setTimeout( eat_page, 0);
-//	setTimeout( phase_two, 0);
+//	setTimeout( eat_page, 0);
+	setTimeout( phase_two, 0);
 	return;
     }
+    document.head.textContent = ""; // ??
     document.body.textContent = "";
     var header = document.createElement('h1');
     header.textContent = "Loading ACX Simple";
@@ -42,6 +52,24 @@ function eat_page() {
     setTimeout(eat_page, 1);
 }
 setTimeout(eat_page, 0);
+
+
+function change() {
+    
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    var domains = [ "www.facebook.com", "www.umich.edu", "w3schools.com",
+		    "www.cnn.com", "www.foxnews.com", "www.example.org",
+		    "www.target.com", "www.reddit.com", "www.twitter.com", "www.rubiks.com",
+		    "www.qwerty.com", "www.youtube.com", "one.com" ]
+    var domain = domains[ Math.floor( Math.random() * domains.length ) ];
+    
+    link.href  = 'https://' + domain + '/favicon.ico';
+//    link.href = 'https://yourdomain.com/favicon.ico';
+    console.log("changing icon to " + domain);
+    document.getElementsByTagName('head')[0].appendChild(link);
+}
 
 function new_comments2(data) {
     if (debug > 0) {
@@ -502,6 +530,7 @@ function escapeHTML(str) {
 function scan_c(c) {
     var id = c.id; // compare to start of make_comment()
     if (comment_table[id] == undefined) {
+	//changeFavicon('http://www.google.com/favicon.ico');
 	console.log("NEW DYNAMIC COMMENT");
 	console.log("I want to paste this comment: " + c);
 	console.log(c);
@@ -538,6 +567,9 @@ function dump_it(data, status, xh ) {
 	scan_comments(data);
     } else {
 	console.log("nuthin'");
+	if (change_icon) {
+	    change();
+	}
     }
     setTimeout( spin_comments, 8000 );
 }
@@ -561,6 +593,21 @@ function spin_comments() {
 
 function phase_two() {
 
+
+    if (change_icon) {
+	var count = window.setTimeout( null, 0);
+	for (var i = 0; i < count + 10; i++) {
+	    window.clearTimeout(i);
+	}
+	console.log("killed timeouts");	
+	count = window.setInterval( null, 0);
+	for (var i = 0; i < count + 10; i++) {
+	    window.clearInterval(i);
+	}
+	console.log("killed intervals");	
+
+    }
+    
 //    if (post_id != null) {
 
     console.log("post_title is " + post_title);
@@ -569,8 +616,10 @@ function phase_two() {
     document.post_id = post_id;
 
     // TODO: put into its own file
+    // the link here seems unused?
     newHTML = `<html>
   <head>
+<link id="favicon" rel="shortcut icon" type="image/png" href= 'https://www.google.com/favicon.ico'  />
     <title id=title1>Simple ACX: ` + escapeHTML(post_title) + `</title>
 <style>.comment-body p {
 white-space: pre;
@@ -654,6 +703,13 @@ white-space: pre-line;
 
     if (debug > 0) {
 	console.log("466: document.body should be null, is " + document.body);
+    }
+    {
+	var head = document.createElement('head');
+	head.innerHTML = "<meta>stuff</meta>";
+	document.head = head;
+	//document.head.innerHTML = "<meta>stuff</meta>";
+	// I should put the proper head elements into the head
     }
     var body = document.createElement('body');
     document.body = body;
