@@ -34,11 +34,9 @@ Example: https://astralcodexten.substack.com/p/links-for-march/comments
 
 * You can also go to "/simple" instead of "/comments". I may migrate there at some point in the future so as to not override Substack's comments-only page.
 
-* It dynamically loads your own comments, but it doesn't dynamically load other comments. Just like the original SSC, which makes me think it's good enough to ask for feedback.
-
+* It dynamically loads new comments (which breaks if you lose internet connectivity). I still need to mark them as "new" in some way, or give you the option to expand them. Also should change the favicon!
+ 
 * (It looks like you have to grab *all* the comments each time you want new ones? No wonder they don't let you edit comments!)
-
-* You can't delete your own comments.
 
 * I *think* this works just fine if ACX-tweaks is also installed, and fine if it isn't.
 
