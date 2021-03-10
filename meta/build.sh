@@ -11,7 +11,7 @@ fi
 date=$(date "+%Y-%m-%d")
 temp_dir=ACX-Simple-src-$date
 zip_file=ACX-Simple-src-$date.zip
-firefox_file=ACX-Simple-firefox-$date.xpi
+firefox_file=ACX-Simple-firefox-$date-b.xpi
 
 mkdir $temp_dir
 mkdir $temp_dir/src
@@ -23,15 +23,17 @@ cp src/eater.js src/jquery-3.5.1.min.js src/main.css src/manifest.json src/new-u
 cp src/icons/acf-simple-128.png $temp_dir/src/icons
 
 # Firefox xpi DOES THIS STILL WORK?
-#(cd $temp_dir;
-# zip -r ../$firefox_file . ;
-# cd ..)
-#mv $firefox_file dist
-#$exit
-# Chrome-based unpacked extension
-zip -r $zip_file $temp_dir
-mv $zip_file ./dist
+(cd $temp_dir/src/;
+ zip -r ../../$firefox_file . ;
+ cd ../..)
+mv $firefox_file dist
 
+
+# Chrome-based unpacked extension
+#zip -r $zip_file $temp_dir
+#mv $zip_file ./dist
+
+exit
 
 # rm -rf is dangerous
 trash_dir=$(mktemp -d /tmp/trashXXXXXXXX)
