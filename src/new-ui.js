@@ -733,6 +733,8 @@ white-space: pre-line;
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
 	console.log("we have the reply");
+
+
 	console.timeEnd('requestComments');
 	console.time('parseJSON');
 	resdata = data;
@@ -800,56 +802,32 @@ white-space: pre-line;
     
     //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
 
-
-    function parsePartial(string) {
-	var l = string.length;
-	if (string.length < 40) {
-	    // console.log("string is [" + l + "] " + string);
-	    return;
-	}
-
-//	console.log("string is [" + l + "] " + string.substring(0,30) + "..." +
-//		    string.substring(l-30));
-	if (false) {
-	    try {
-		console.log("plain parse");
-		var broken = JSON.parse(string);
-		console.log("plain parse worked!");
-		console.log(broken);
-	    } catch (err) {
-		console.log("JSON parse failed " + err.message);
-		//console.log(err);
-	    }
-	}
-
+    function method_one(string) {
+	var output = true;
+	console.log("method one");
+	var limit = 30;
+	var suffix = "";
+	
 	var suffixes = [ '',
 			 '":0}]}',
 			 '":0}]}]}',
 			 '":0}]}]}]}',
-			 '":0}]}]}]}]}'
+			 '":0}]}]}]}]}',
 			 '":0}]}]}]}]}]}]}]}]}]}]}]}',
 			 '"}]}',
 			 '"}]}]}',
 			 '"}]}]}]}',
 			 '"}]}]}]}]}]}]}',
-			 '"}]}]}]}]}]}]}]}'
+			 '"}]}]}]}]}]}]}]}',
 			 '"}]}]}]}]}]}]}]}]}]}]}',
 			 '"}]}]}]}]}]}]}]}]}]}]}]}]}]}',
 		       ];
 	
-	var suffix = "";
-	var limit = 30;
-	console.time("JSONrecover");
-	var output = false;
-
-	var method = 1;
-	if (method == 1) {
-	    
-	    
-	    while (limit > 0) {
-		limit -= 1;
-		l = string.length;;
-		if (output) {
+	while (limit > 0) {
+	    limit -= 1;
+	    console.log("abc");
+	    l = string.length;;
+	    if (output) {
 		    console.log("limit is " + limit + 
 				" string is [" + l + "] " + string.substring(0,30) + "..." +
 				(string+suffix).substring(l-100));
@@ -866,10 +844,10 @@ white-space: pre-line;
 			console.log("suffix is >> " + suffix + " <<");
 		    }
 		    // we should assume the final comment is incomplete
-		    
+	    
 		    limit = 0;
 		} catch (err) {
-		    //		console.log("ERR: " + err.message);
+		    console.log("ERR: " + err.message);
 		    var err = err.message.substr(12);
 		    
 		    if (err.startsWith( "unterminated string" )) {
@@ -893,30 +871,140 @@ white-space: pre-line;
 		    //		console.timeEnd("bustJSON");
 		}
 	    } // limit
+    }
+    
+    function method_two(string) {
+	
+	var works = null;
+	var term = [
+	    '',       // 
+	    '":0}',   // in key
+	    ':0',     // after key
+	    ':0}',     // after colon, in object??
+	    '0}',     // before colon, in object
+	    '"}',     // in string value
+	    '}',      // in number value
+	    '"":0}', // after , in object
+	    '"]',     // in quote in array
+	    '"',      // in string as part of array?
+	    //	    '":0}',   // ????
+//	    '":0}}',   // in key of object of object? :( :(
+//	    '}}'       // double-object? I might need a } to toggle through
+	    ':0}}' // ugh, triple nested object??
+	]
+
+	
+
+	// is there possibly a partial "null" in the last 4 characters?
+	if (string.indexOf("n", string.length-4) > -1) {
+	    term.push("ull}");
+	    term.push("ll}");
+	    term.push("l}"); 
+	}
+	if (string.indexOf("t", string.length-4) > -1) {
+	    term.push("rue}");
+	    term.push("ue}");
+	    term.push("e}"); 
+	}
+	if (string.indexOf("f", string.length-5) > -1) {
+	    term.push("alse}");
+	    term.push("lse}");
+	    term.push("se}");
+	    term.push("e}");
+	}
+
+	// closing \ is too insane to contemplate. 
+	// get rid of it
+	while (string.endsWith('\\')) {
+	    string = string.slice(0, -1);
+	}
+	
+//	console.log("term is " + term);
+//	console.log(term);
+	var suffix = "";
+	outer: {
+	    for (var limit = 0; limit < 30; limit++) {
+		//console.log("limit is " + limit);
+		var suff = "]}".repeat(limit);
+		for (var t of term) {
+		    try {
+			works = JSON.parse(string + t + suff);
+			suffix = t + suff;
+			break outer;
+			console.log("it worked!");
+		    } catch (err) {
+			// nop
+		    }
+		    try {
+			works = JSON.parse(string + t + '}' + suff);
+			suffix = t + '}' + suff;
+			break outer;
+			console.log("it worked!");
+		    } catch (err) {
+			// nop
+		    }
+		} // term
+	    } // limit
+	} // outer
+	console.log("suffix is " + suffix);
+
+	if (! works) {
+	    console.log(string);
+	    console.log("METHOD ONE!!!");
+	    method_one(string);
+	}
+	return works;
+    }
+
+    function do_all(string) {
+	var l = string.length;
+	console.log(" *** DOING ALL *** ");
+	for (var i = 1400; i < l; i += 1000) {
+	    var blob = method_two( string.substr(0, i) );
+	    console.log("for " + i + ", comment count is " + blob.comments.length);
+	}
+	// nothing
+    }
+
+   
+
+    function parsePartial(string) {
+	var l = string.length;
+	if (string.length < 40) {
+	    // console.log("string is [" + l + "] " + string);
+	    return;
+	}
+
+	if (string.substring(l-3) == "}]}") {
+	    //do_all(string);
+	}
+	
+	console.log("string is [" + l + "] " + string.substring(0,30) + "..." +
+		    string.substring(l-30));
+	if (false) {
+	    try {
+		console.log("plain parse");
+		var broken = JSON.parse(string);
+		console.log("plain parse worked!");
+		console.log(broken);
+	    } catch (err) {
+		console.log("JSON parse failed " + err.message);
+		//console.log(err);
+	    }
+	}
+
+	
+	console.time("JSONrecover");
+	var output = false;
+
+	var method = 0; // 1 is dynamic, 2 is brute-force
+	if (method == 1) {
+	    
+	    var works = method_one(string);
 	} else if (method == 2) {
 
-	    var works = null;
-	    var term = [
-		'',     // 
-		'":0}', // in key
-		'"}',   // in string value
-		'}',    // in number value
-	    ]
-	    var suffix = "";
-	    outer: {
-		for (var limit = 0; limit < 30; limit++) {
-		    var suff = "]}".repeat(limit);
-		    for (var t of term) {
-			try {
-			    works = JSON.parse(string + term + suff);
-			    suffix = term + suff;
-			    break outer;
-			}
-		    } // term
-		} // limit
-	    } // outer
-	    console.log("suffix is " + suffix);
-	    
+	    var works = method_two(string);
+
 	}
 	console.log("method was " + method);
 	console.timeEnd("JSONrecover");
@@ -965,8 +1053,8 @@ white-space: pre-line;
     $.ajax({
 	url: url,
 	success: eatJson,
-	dataType: "json",
-	xhr: newXhr
+	dataType: "json"
+// 	xhr: newXhr
     })
     console.log("did request, waiting for reply");
     // is this inefficient by making a reply function that will get cloned
