@@ -1,4 +1,4 @@
-var debug = 0;
+var debug = 0; // 0, 1, 2
 var reload_comments = true;
 
 var change_icon = false;
@@ -44,7 +44,7 @@ function eat_page() {
 	setTimeout( phase_two, 0);
 	return;
     }
-    document.head.textContent = ""; // ??
+    document.head.textContent = ""; // This does nothing, I think.
     document.body.textContent = "";
     var header = document.createElement('h1');
     header.textContent = "Loading ACX Simple";
@@ -66,7 +66,6 @@ function change() {
     var domain = domains[ Math.floor( Math.random() * domains.length ) ];
     
     link.href  = 'https://' + domain + '/favicon.ico';
-//    link.href = 'https://yourdomain.com/favicon.ico';
     console.log("changing icon to " + domain);
     document.getElementsByTagName('head')[0].appendChild(link);
 }
@@ -302,7 +301,7 @@ function make_comment(c, flag="") {
 	global_latest = c.date;
 	console.log(global_latest);
     } 
-    if (debug > 0) {
+    if (debug > 1) {
 	console.log("in original make_comment " + id);
 	console.log("comment is " + c);
 	console.log(c);
@@ -318,7 +317,13 @@ function make_comment(c, flag="") {
     // user pic, td1
     var avatar = c.photo_url;
     var img;
-    if (c.photo_url != null) {
+    var never_load_avatars = false;
+    // on a fast reference machine, loading ~100 root comments with ~275 comments:
+    //      * takes 800ms to render without avatars
+    //      * takes 900ms to render with avatars
+    
+    // always do the dummy avatar, for faster loading
+    if (never_load_avatars || c.photo_url == null)) {
 	img = jQuery('<img/>', { src: c.photo_url } );
     } else {
 	letter = c.name ? c.name[0] : "";
@@ -723,6 +728,9 @@ white-space: pre-line;
     
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
+	console.log("we have the reply");
+	console.timeEnd('requestComments');
+	console.time('parseJSON');
 	resdata = data;
 	if (debug) {
 	    console.log("data is " + typeof data);
@@ -738,12 +746,14 @@ white-space: pre-line;
 	var comments = data["comments"];
 	
 	var string = "there are " + comments.length + " top comments";
+	console.timeEnd('parseJSON');	
 	console.log(string);
 	$( "#status" ).text(string);
 
 	var cs = data.comments;
+	// Um, why do I set both comments=data["comments"] and cs=data.comments ??
 
-
+	console.time('createElements');
 	// returns a function that appends to the comment
 	var append_comment_factory = function(parent_comment) {
 	    return function(c) {
@@ -754,14 +764,7 @@ white-space: pre-line;
 		if (debug) {
 		    console.log("length of children is " + c.children.length);
 		}
-		// if we have children: append them
-//		if (c.children.length > 0) {
-//		    var cl = make_comment_list_from_array(c.children);
-//		    ctable.append( cl );
-//		}
 		ctable.appendTo(parent_comment);
-
-//		c.children.forEach( append_comment_factory(ctable) );
 	    }
 	}
 
@@ -775,6 +778,7 @@ white-space: pre-line;
 	cs.forEach( append_comment_factory( $("#comment-list-items") ) );
 
 
+	console.timeEnd('createElements');
 	console.log("all comments populated");
 
 	if (reload_comments) {
@@ -799,12 +803,13 @@ white-space: pre-line;
     if (debug) {
 	console.log("making ajax");
     }
+    console.time('requestComments');
     $.ajax({
 	url: url,
 	success: eatJson,
 	dataType: "json"
     })
-    
+    console.log("did request, waiting for reply");
     // is this inefficient by making a reply function that will get cloned
     // and overwritten on each "reply" ?
     // TODO: have a base "commentor" that everything, including this, gets cloned from
