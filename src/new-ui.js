@@ -15,6 +15,9 @@ if (change_icon == false) {
     // firefox still loads some of the original page in the background??
 }
 
+
+
+
 window.fred = 0;
 function eat_page() {
     // This is more complex than it has to be. But it works.
@@ -323,12 +326,12 @@ function make_comment(c, flag="") {
     //      * takes 900ms to render with avatars
     
     // always do the dummy avatar, for faster loading
-    if (never_load_avatars || c.photo_url == null)) {
-	img = jQuery('<img/>', { src: c.photo_url } );
-    } else {
+    if (never_load_avatars || c.photo_url == null) {
 	letter = c.name ? c.name[0] : "";
 	img = jQuery('<span/>', { class: "fakeimg" } ).
 	    text( letter );
+    } else {
+	img = jQuery('<img/>', { src: c.photo_url } );
     }
 //    console.log("c.photo_url is " + c.photo_url);
     var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
@@ -795,6 +798,39 @@ white-space: pre-line;
     // TODO: make this call *first*, since we will end up waiting for it
     
     //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
+
+
+    function parsePartial(string) {
+	var l = string.length;
+	if (string.length < 10) {
+	    console.log("string is [" + l + "] " + string);
+	    return;
+	}
+	console.log("string is [" + l + "] " + string.substring(0,10) + "..." +
+		    string.substring(l-10));
+	if (false) {
+	    try {
+		console.log("plain parse");
+		var broken = JSON.parse(string);
+		console.log("plain parse worked!");
+		console.log(broken);
+	    } catch (err) {
+		console.log("JSON parse failed " + err.message);
+		//console.log(err);
+	    }
+	}
+	/*
+	var limit = 10;
+	while (limit > 0) {
+	    limit -= 1;
+	    try {
+		console.log(
+	    
+
+	}*/
+	
+
+    }
     
     var site = "astralcodexten.substack.com";
     var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
@@ -803,11 +839,41 @@ white-space: pre-line;
     if (debug) {
 	console.log("making ajax");
     }
+
+    var xhr = $.ajaxSettings.xhr();
+    console.log("ajax settings is " + $.ajaxSettings);
+    console.log( $.ajaxSettings);
+    console.log("xhr is " + xhr);
+    console.log(xhr);
+    // google chrome
+    xhr.onreadystatechange = function(abc) {
+	console.log("READY STATE CHANGE");
+	console.log("abc is " + abc);
+	console.log(abc);
+	
+	//console.log("srcElement (src) resp is " +      abc.srcElement.response.length);
+	//console.log("srcElement (src) resp text is " + abc.srcElement.responseText.length);
+	//console.log("srcElement (trg) resp is " +      abc.target.    response.length);
+	//console.log("srcElement (trg) resp text is " + abc.target.    responseText.length);
+
+	// TODO: only parse one partial response at a time
+	parsePartial(abc.srcElement.responseText);
+	
+    }
+    xhr.upload.addEventListener("onreadystatechange", function( event ) {
+	console.log("EVENT!!");
+    }, false);
+    function newXhr() { 
+	return xhr;
+    }
+    console.log(xhr);
+    
     console.time('requestComments');
     $.ajax({
 	url: url,
 	success: eatJson,
-	dataType: "json"
+	dataType: "json",
+	xhr: newXhr
     })
     console.log("did request, waiting for reply");
     // is this inefficient by making a reply function that will get cloned
