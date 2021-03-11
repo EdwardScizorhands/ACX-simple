@@ -625,6 +625,7 @@ function phase_two() {
 
     // TODO: put into its own file
     // the link here seems unused?
+    // the link here works on firefox, not on chrome! 
     newHTML = `<html>
   <head>
 <link id="favicon" rel="shortcut icon" type="image/png" href= 'https://www.google.com/favicon.ico'  />
@@ -735,7 +736,7 @@ white-space: pre-line;
 	console.timeEnd('requestComments');
 	console.time('parseJSON');
 	resdata = data;
-	if (debug) {
+	if (debug || true) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
 	    $("#hidden").hide().text(JSON.stringify(data));
@@ -802,12 +803,13 @@ white-space: pre-line;
 
     function parsePartial(string) {
 	var l = string.length;
-	if (string.length < 10) {
-	    console.log("string is [" + l + "] " + string);
+	if (string.length < 40) {
+	    // console.log("string is [" + l + "] " + string);
 	    return;
 	}
-	console.log("string is [" + l + "] " + string.substring(0,10) + "..." +
-		    string.substring(l-10));
+
+//	console.log("string is [" + l + "] " + string.substring(0,30) + "..." +
+//		    string.substring(l-30));
 	if (false) {
 	    try {
 		console.log("plain parse");
@@ -819,17 +821,106 @@ white-space: pre-line;
 		//console.log(err);
 	    }
 	}
-	/*
-	var limit = 10;
-	while (limit > 0) {
-	    limit -= 1;
-	    try {
-		console.log(
-	    
 
-	}*/
+	var suffixes = [ '',
+			 '":0}]}',
+			 '":0}]}]}',
+			 '":0}]}]}]}',
+			 '":0}]}]}]}]}'
+			 '":0}]}]}]}]}]}]}]}]}]}]}]}',
+			 '"}]}',
+			 '"}]}]}',
+			 '"}]}]}]}',
+			 '"}]}]}]}]}]}]}',
+			 '"}]}]}]}]}]}]}]}'
+			 '"}]}]}]}]}]}]}]}]}]}]}',
+			 '"}]}]}]}]}]}]}]}]}]}]}]}]}]}',
+		       ];
 	
+	var suffix = "";
+	var limit = 30;
+	console.time("JSONrecover");
+	var output = false;
 
+	var method = 1;
+	if (method == 1) {
+	    
+	    
+	    while (limit > 0) {
+		limit -= 1;
+		l = string.length;;
+		if (output) {
+		    console.log("limit is " + limit + 
+				" string is [" + l + "] " + string.substring(0,30) + "..." +
+				(string+suffix).substring(l-100));
+		}
+		try {
+		    // TODO: ]} will always be missing at the end
+		    //console.time("bustJSON");
+		    var broken = JSON.parse(string + suffix);
+		    //		console.log("it worked!");
+		    //		console.log(broken);
+		    console.log("it worked, comments.length is " + broken.comments.length);
+		    if (! suffixes.includes( suffix )) {
+			console.log("NEW SUFFIX!");
+			console.log("suffix is >> " + suffix + " <<");
+		    }
+		    // we should assume the final comment is incomplete
+		    
+		    limit = 0;
+		} catch (err) {
+		    //		console.log("ERR: " + err.message);
+		    var err = err.message.substr(12);
+		    
+		    if (err.startsWith( "unterminated string" )) {
+			suffix += '"';
+		    } else if (err.startsWith( "end of data after property value" )) {
+			suffix += "}";
+		    } else if (err.startsWith( "end of data when '," )) {
+			suffix += "]";
+		    } else if (err.startsWith( "expected ':' after ") ||
+			       err.startsWith( "end of data after property name when ':'")) {
+			suffix += ":0}";
+		    } else if (err.startsWith( "end of data when property name was expected")) {
+			suffix += '"X":0}';
+		    } else if (err.startsWith( "unexpected end of data at ")) {
+			suffix += "0}";
+		    } else {
+			console.log("UNCAUGHT: [" + err + "]");
+			output = true;
+		    }
+		} finally {
+		    //		console.timeEnd("bustJSON");
+		}
+	    } // limit
+	} else if (method == 2) {
+
+	    var works = null;
+	    var term = [
+		'',     // 
+		'":0}', // in key
+		'"}',   // in string value
+		'}',    // in number value
+	    ]
+	    var suffix = "";
+	    outer: {
+		for (var limit = 0; limit < 30; limit++) {
+		    var suff = "]}".repeat(limit);
+		    for (var t of term) {
+			try {
+			    works = JSON.parse(string + term + suff);
+			    suffix = term + suff;
+			    break outer;
+			}
+		    } // term
+		} // limit
+	    } // outer
+	    console.log("suffix is " + suffix);
+	    
+	}
+	console.log("method was " + method);
+	console.timeEnd("JSONrecover");
+	
     }
     
     var site = "astralcodexten.substack.com";
@@ -841,15 +932,17 @@ white-space: pre-line;
     }
 
     var xhr = $.ajaxSettings.xhr();
-    console.log("ajax settings is " + $.ajaxSettings);
-    console.log( $.ajaxSettings);
-    console.log("xhr is " + xhr);
-    console.log(xhr);
-    // google chrome
+    // google chrome? 
     xhr.onreadystatechange = function(abc) {
-	console.log("READY STATE CHANGE");
-	console.log("abc is " + abc);
-	console.log(abc);
+	if (debug > 0) {
+	    console.log("READY STATE CHANGE");
+	}
+	// TODO: recognize what states aren't going to give us useful information
+	//       and short-circuit if our response is complete
+
+
+	//	console.log("abc is " + abc);
+//	console.log(abc);
 	
 	//console.log("srcElement (src) resp is " +      abc.srcElement.response.length);
 	//console.log("srcElement (src) resp text is " + abc.srcElement.responseText.length);
