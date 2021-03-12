@@ -11332,7 +11332,7 @@ a.small {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  cursor: pointer;
+/*  cursor: pointer; */
 }
 .user-head > a > .profile-img-wrap > img:hover:active {
   opacity: 0.6;
@@ -11347,7 +11347,7 @@ a.small {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  cursor: pointer;
+/*  cursor: pointer; */
 }
 .profile-img-wrap img:hover:active {
   opacity: 0.6;

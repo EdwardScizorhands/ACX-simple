@@ -364,7 +364,7 @@ function make_comment(c, flag="") {
 	append( img );
     var td1 = jQuery('<td/>', { class: "comment-head" }).
 	append( jQuery('<div/>', { class: "user-head" }).
-		append ( jQuery('<a/>', { href: "" }).
+		append ( jQuery('<a/>' ).
 			 append( imgwrap )));
     // comment, td2
 
