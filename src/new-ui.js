@@ -1,6 +1,10 @@
 var debug = 0; // 0, 1, 2
 var reload_comments = true;
 
+var new_first = false;
+var have_scores = true;
+var top_first = true;
+
 var change_icon = false;
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
@@ -15,7 +19,25 @@ if (change_icon == false) {
     // firefox still loads some of the original page in the background??
 }
 
+function sort_new(a, b) {
+    return a.date.localeCompare(b.date);
+}
+function sort_old(a, b) {
+    return b.date.localeCompare(a.date);
+}
+function sort_top(a, b) {
 
+    return b.score - a.score;
+}
+			 
+function comment_order(cs) {
+    if (new_first) 
+	return cs.sort( sort_new );
+    if (top_first)
+	return cs.sort( sort_top );
+    return cs.sort(sort_old);
+//    return new_first ? cs : cs.reverse();
+}
 
 
 window.fred = 0;
@@ -64,8 +86,8 @@ function change() {
     link.rel = 'shortcut icon';
     var domains = [ "www.facebook.com", "www.umich.edu", "w3schools.com",
 		    "www.cnn.com", "www.foxnews.com", "www.example.org",
-		    "www.target.com", "www.reddit.com", "www.twitter.com", "www.rubiks.com",
-		    "www.qwerty.com", "www.youtube.com", "one.com" ]
+		    "www.target.com", "www.reddit.com", "www.twitter.com",
+		    "www.rubiks.com",  "www.youtube.com", "one.com" ]
     var domain = domains[ Math.floor( Math.random() * domains.length ) ];
     
     link.href  = 'https://' + domain + '/favicon.ico';
@@ -79,7 +101,7 @@ function new_comments2(data) {
 	console.log(data);
 	console.log(JSON.stringify(data));
     }
-    var zap =  make_comment(data, "~new~");
+    var zap = make_comment(data, "~new~");
     if (debug >= 0) {
 	console.log("zap is " + zap);
 	console.log(zap);
@@ -214,7 +236,20 @@ function do_delete(id) {
     
 }
 
-
+function like(xid) {
+    console.log("like " + xid);
+    xid.disabled = true; 
+    var nid = xid.target.name; // "comment-123"
+    var id = nid.split("-")[1];
+    var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id + '/reaction';
+    $.ajax({ type: "POST",
+	     url: url,
+	     async: true
+	     //success: function() { do_delete(id) }
+	     // TODO: warn user on failure
+	   });
+}
+	
 function deleet(xid) {
     console.log("delete " + xid);
     if ( confirm("Do you wish to delete this comment?") ) {
@@ -376,10 +411,12 @@ function make_comment(c, flag="") {
 	td2 = jQuery ('<td/>').
 	    text("deleted");
     } else {
+	var score = Math.floor( c.score * 10000 ) / 100.0;
+	var display_name = have_scores ? `${c.name} : ${score}` : c.name;
 	var date_s = dd.toDateString() + " " + dd.toLocaleTimeString() + " " + flag;
 	var meta = jQuery('<div/>', { class: "comment-meta"}).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
-		    text( c.name )).
+		    text( display_name )).
 	    append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
 		    text( date_s ));
 	if (flag && false) {
@@ -390,14 +427,30 @@ function make_comment(c, flag="") {
 	    append( jQuery('<p/>').
 		    text(c.body) );
 	var actions = jQuery('<div/>', { class: "comment-actions"} );
+
+	if (have_scores) {
+	    var anchor_like = jQuery( '<a/>', { name: "like-" + id }).
+		text(c.reactions["❤"] + "❤").
+		appendTo( actions );
+	    if (c.reaction != "❤") {
+		anchor_like.click( like );
+	    }
+
+	}
+	
+	jQuery( "<b>&nbsp;</b>" ).
+	    appendTo( actions );
+
 	var anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
 	    text( "REPLY" ).
 	    click( reply ).
 	    appendTo( actions );
-
+	
 	jQuery( "<b>&nbsp;</b>" ).
 	    appendTo( actions );
 
+	
+	
 	// Only show DELETE on your own comments ;)
 	if (c.user_id == my_user_id) {
 	    var anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
@@ -435,7 +488,8 @@ function make_comment_list_from_array(cs) {
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } ))
     
     var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
-    cs.forEach( function(c) {
+
+    comment_order(cs).forEach( function(c) {
 	comment_list_items.append( make_comment(c) );
     } )
     
@@ -561,6 +615,7 @@ function escapeHTML(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// I don't think hte order matters here. This just finds unused comments.
 function scan_c(c) {
     var id = c.id; // compare to start of make_comment()
     if (comment_table[id] == undefined) {
@@ -651,10 +706,10 @@ function phase_two() {
 
     // TODO: put into its own file
     // the link here seems unused?
-    // the link here works on firefox, not on chrome! 
+    // the link here works on firefox, not on chrome!
+    // link renoved
     newHTML = `<html>
   <head>
-<link id="favicon" rel="shortcut icon" type="image/png" href= 'https://www.google.com/favicon.ico'  />
     <title id=title1>Simple ACX: ` + escapeHTML(post_title) + `</title>
 <style>.comment-body p {
 white-space: pre;
@@ -806,8 +861,8 @@ white-space: pre-line;
 	// 2. append that comment-list into (a) parent COMMENT
 	//     or (b) COMMENT-LIST-CONTAINER (for first array)
 	
-
-	cs.forEach( append_comment_factory( $("#comment-list-items") ) );
+	
+	comment_order(cs).forEach( append_comment_factory( $("#comment-list-items") ) );
 
 
 	console.timeEnd('createElements');
