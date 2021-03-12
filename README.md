@@ -34,12 +34,19 @@ Example: https://astralcodexten.substack.com/p/links-for-march/comments
 
 * You can also go to "/simple" instead of "/comments". I may migrate there at some point in the future so as to not override Substack's comments-only page.
 
-* It dynamically loads new comments (which breaks if you lose internet connectivity). I still need to mark them as "new" in some way, or give you the option to expand them. Also should change the favicon!
- 
-* (It looks like you have to grab *all* the comments each time you want new ones? No wonder they don't let you edit comments!)
+* It dynamically loads new comments (which breaks if you lose internet connectivity). They are marked as "~new~" if loaded in the background.
 
+* You can change the sort order, hearts, and dynamic loading of checkboxes in the settings box (click on the icon).
+
+* **You need to reload the page after changing settings.** It doesn't have to be that way, but for now it's the way it is.
+
+* Making hearts and scores show up for yourself still doesn't make them show up for others.
+
+* The "score" is the internal Substack score, multipled by a factor to not be useless. Substack calculates it as some kind of function of the number of likes and age. You'll have to ask them how it works.
+ 
 * I *think* this works just fine if ACX-tweaks is also installed, and fine if it isn't.
 
 * I clumsily reload the page in the background to get a URL -> postID mapping. Is there a better way to do this? At least I only have to do it once.
 
 * There is an ugly background border just offset from photo images. I suck at CSS; can you figure out how to remedy this? I copied in both the main.css (from Substack) and the styles.css (from ACX-Tweaks) and edited both and something broke.
+
