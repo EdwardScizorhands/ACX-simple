@@ -16,10 +16,11 @@ firefox_file=ACX-Simple-firefox-$date.xpi
 mkdir $temp_dir
 mkdir $temp_dir/src
 mkdir $temp_dir/src/icons
+
 # Need to keep this up-to-date. Can I compare with manifest.json?
 # Also, should make this an array stored at the top.
 
-cp src/eater.js src/jquery-3.5.1.min.js src/main.css src/manifest.json src/new-ui.js src/page-eater.js src/style.css $temp_dir/src
+cp src/eater.js src/jquery-3.5.1.min.js src/main.css src/manifest.json src/new-ui.js src/page-eater.js src/style.css src/popup.html src/popup.js $temp_dir/src
 cp src/icons/acf-simple-128.png $temp_dir/src/icons
 
 # Firefox xpi DOES THIS STILL WORK?

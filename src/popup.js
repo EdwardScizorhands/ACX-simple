@@ -9,24 +9,15 @@ console.log(chrome.storage.local);
 console.log("chrome.storage.local.get is " + chrome.storage.local.get);
 console.log(chrome.storage.local.get);
 
-chrome.storage.local.set({
-  kitten:  {name:"Mog", eats:"mice"},
-  monster: {name:"Kraken", eats:"people"}
-});
-
 chrome.storage.local.get("kitten", function(items){
   console.log(items.kitten);  // -> {name:"Mog", eats:"mice"}
 });
 
-//console.log("chrome.storage.local.get('a') is " + chrome.storage.local.get('a'));
-//console.log(chrome.storage.local.get('a'));
-
-//console.log(chrome.storage.local.set('a', 'bob'));
-
 var debug = 8;
 console.log("debug is " + debug);
 
-var xxx = chrome.storage.local.get("debug", function(x) {
+
+var xxx = chrome.storage.local.get([ "debug", "likes"], function(x) {
     console.log("sync get: x is " + x);
     console.log(x);
     console.log(x["debug"]);
@@ -34,13 +25,16 @@ var xxx = chrome.storage.local.get("debug", function(x) {
     debug = x.debug;
     console.log("debug is now " + debug);
 
-
-    var checkbox =  document.getElementById("settingDebug");
-    checkbox.checked = (debug == 1);
+    var cbDebug =  document.getElementById("settingDebug");
+    cbDebug.checked = (debug == 1);
+    var cbLikes =  document.getElementById("settingLikes");
+    cbLikes.checked = (x.likes == 1);
     
 });
 
 // which of these two async functions is called first?
+
+
 
 window.onload  = function() {
     console.log("finding it");
@@ -59,4 +53,12 @@ window.onload  = function() {
 	    debug: checkbox.checked ? 1 : 0
 	});
     });
+    //
+    var cbLikes =  document.getElementById("settingLikes");
+    cbLikes.addEventListener("change", function() {
+	console.log("like changed to " + cbLikes.checked);
+	chrome.storage.local.set({
+	    likes: cbLikes.checked ? 1 : 0
+	});
+	});
 }

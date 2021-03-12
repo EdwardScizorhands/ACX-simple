@@ -5,6 +5,12 @@
 
        <script src="popup.js">
        </script>
+       <style>
+	 body {
+	     min-width:300px;
+	 }
+	 </style>
+
 </head>
 <body>
   <h2>Settings</h2>
@@ -13,8 +19,11 @@
   <label for="settingDebug">Debug (you don't need this)</label>
   <hr>
   <input type="checkbox" id="settingLikes">
-  <label for="settingDebug">Show Likes + Scores</label>
-
+  <label for="settingLikes">Show Likes + Scores</label>
+  <hr>
+  <input type="checkbox" id="settingTest">
+  <label for="settingTest">Unused Test Checkbox</label>
+  <!-- the last checkbox is not toggling right on Brave. Why not? -->
 
   
   <hr>

@@ -24,13 +24,16 @@ console.log("laa");
 
 var debug = 0; // 0, 1, 2
 
-var xxx = chrome.storage.local.get("debug", function(x) {
+var xxx = chrome.storage.local.get([ "debug", "likes" ], function(x) {
     console.log("sync get: x is " + x);
     console.log(x);
     console.log(x["debug"]);
     console.log(x.debug);
     debug = x.debug;
     console.log("debug is now " + debug);
+    have_scores = (x.likes == 1);
+    console.loog("have_scores is now " + have_scores);
+    
 });
 
 console.log("xxx is " + xxx);
