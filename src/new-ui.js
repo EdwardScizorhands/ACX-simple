@@ -353,7 +353,6 @@ function make_comment(c, flag="") {
 	     (color / 256 % 256) * .71 + // green
 	     (color % 256) * .07 // blue
 	    ) < 45 ? "" : "color: white;"; // f0f5c6 is pretty bright and gets white
-	console.log(letter + ": for " + c.name + " make_white is " + make_white);
 	img = jQuery('<span/>', { class: fakeimgclass,
 				  style: make_white + "background-color: #" + color.toString(16) }).
 	    text( letter );
