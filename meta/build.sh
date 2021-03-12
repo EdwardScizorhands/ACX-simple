@@ -34,7 +34,6 @@ mv $firefox_file dist
 zip -r $zip_file $temp_dir
 mv $zip_file ./dist
 
-exit
 
 # rm -rf is dangerous
 trash_dir=$(mktemp -d /tmp/trashXXXXXXXX)

@@ -1,4 +1,13 @@
 
+version 0.4.12.0 // hearts and sorts
+ OSX:
+    Firefox 86, 87
+    Brave 1.20.108 on Chromium 88 // UI popup issues, workaround installed
+    Chrome
+ Windows:
+    Firefox 86?
+    Chrome?
+    
 version 0.4.10.5
   OSX:
     Firefox 86, 87
