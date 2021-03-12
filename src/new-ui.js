@@ -1,41 +1,36 @@
 var reload_comments = true;
 
-var have_scores = true;
+var have_scores = false;
 
-var new_first = false;
-var top_first = true;
+var sort = "new";
 
 var change_icon = false;
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
 
 
-chrome.storage.local.get("kitten", function(items){
-    console.log(" *** MAIN *** ");
-    console.log(items.kitten);  // -> {name:"Mog", eats:"mice"}
-});
-
-
-chrome.storage.local.get("debug", function(items){
-    console.log(" *** MAIN TWO *** ");
-    console.log(items);  // -> {name:"Mog", eats:"mice"}
-});
-
-console.log("laa");
-
 var debug = 0; // 0, 1, 2
 
-var xxx = chrome.storage.local.get([ "debug", "likes" ], function(x) {
-    console.log("sync get: x is " + x);
-    console.log(x);
-    console.log(x["debug"]);
-    console.log(x.debug);
-    debug = x.debug;
-    console.log("debug is now " + debug);
-    have_scores = (x.likes == 1);
-    console.loog("have_scores is now " + have_scores);
-    
-});
+var xxx = chrome.storage.local.get(
+    [ "debug", "likes", "reload", "sort"], function(x) {
+	console.log("sync get: x is " + x);
+	console.log(x);
+	console.log(x["debug"]);
+	console.log(x.debug);
+
+	debug = x.debug;
+	console.log("debug is now " + debug);
+
+	have_scores = (x.likes == 1);
+	console.log("have_scores is now " + have_scores);
+	
+	reload_comments = !(x.reload == 0); // default true
+	console.log("reload_comments is now " + reload_comments);
+
+	sort = (x.sort ? x.sort : "new");
+	console.log("sort is now " + sort);
+	
+    });
 
 console.log("xxx is " + xxx);
 console.log(xxx);
@@ -56,10 +51,10 @@ if (change_icon == false) {
 }
 
 function sort_new(a, b) {
-    return a.date.localeCompare(b.date);
+    return b.date.localeCompare(a.date);
 }
 function sort_old(a, b) {
-    return b.date.localeCompare(a.date);
+    return a.date.localeCompare(b.date);
 }
 function sort_top(a, b) {
 
@@ -67,12 +62,11 @@ function sort_top(a, b) {
 }
 			 
 function comment_order(cs) {
-    if (new_first) 
+    if (sort == "new")
 	return cs.sort( sort_new );
-    if (top_first)
-	return cs.sort( sort_top );
-    return cs.sort(sort_old);
-//    return new_first ? cs : cs.reverse();
+    if (sort == "old")
+	return cs.sort( sort_old );
+    return cs.sort( sort_top );
 }
 
 
@@ -89,8 +83,8 @@ function eat_page() {
 //    console.log("document.head is " + document.head);
 //    console.log("document body is " + document.body);
     if (document.body == null) {
-	console.log("debug is " + debug);
-	console.log("not loaded yet");
+//	console.log("debug is " + debug);
+//	console.log("not loaded yet");
 	setTimeout(eat_page, change_icon ? 100: 0);
 	return;
     }

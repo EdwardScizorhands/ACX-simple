@@ -21,13 +21,32 @@
   <input type="checkbox" id="settingLikes">
   <label for="settingLikes">Show Likes + Scores</label>
   <hr>
-  <input type="checkbox" id="settingTest">
-  <label for="settingTest">Unused Test Checkbox</label>
+  <input type="checkbox" id="settingReload">
+  <label for="settingReload">Load New Comments Automatically</label>
   <!-- the last checkbox is not toggling right on Brave. Why not? -->
+  <hr>
+  Comment Order:
+  <select name="sort" id="settingSort">
+    <option value="new">Newest First</option>
+    <option value="old" checked>Oldest First</option>
+    <option value="top">Top First</option>
+  </select>
+  <hr>
+  <input type="checkbox" id="settingTest">
+  <label for="settingTest">Unused Checkbox</label>
+  <hr>
+  Unused:
+  <select name="ub" id="settingUb">
+    <option value="111">222</option>
+    <option value="222">333</option>
+    <option value="333">111 First</option>
+  </select>
 
+  <!-- the last checkbox is not toggling right on Brave. Why not? -->
   
   <hr>
-  After changing values, you will need to refresh. Sorry.
+  <h3>After changing values, you will need to refresh.</h3>
+  Sorry.
   
 </body>
 </html>

@@ -17,20 +17,25 @@ var debug = 8;
 console.log("debug is " + debug);
 
 
-var xxx = chrome.storage.local.get([ "debug", "likes"], function(x) {
-    console.log("sync get: x is " + x);
-    console.log(x);
-    console.log(x["debug"]);
-    console.log(x.debug);
-    debug = x.debug;
-    console.log("debug is now " + debug);
-
-    var cbDebug =  document.getElementById("settingDebug");
-    cbDebug.checked = (debug == 1);
-    var cbLikes =  document.getElementById("settingLikes");
-    cbLikes.checked = (x.likes == 1);
-    
-});
+var xxx = chrome.storage.local.get(
+    [ "debug", "likes", "reload", "sort"], function(x) {
+	console.log("sync get: x is " + x);
+	console.log(x);
+	console.log(x["debug"]);
+	console.log(x.debug);
+	debug = x.debug;
+	console.log("debug is now " + debug);
+	
+	var cbDebug =  document.getElementById("settingDebug");
+	cbDebug.checked = (debug == 1);
+	var cbLikes =  document.getElementById("settingLikes");
+	cbLikes.checked = (x.likes == 1);
+	var cbReload = document.getElementById("settingReload");
+	cbReload.checked = !(x.reload == 0); // default true
+	var ddSort = document.getElementById("settingSort");
+	ddSort.value = (x.sort ? x.sort : "new"); // default new
+	
+    });
 
 // which of these two async functions is called first?
 
@@ -60,5 +65,20 @@ window.onload  = function() {
 	chrome.storage.local.set({
 	    likes: cbLikes.checked ? 1 : 0
 	});
+    });
+
+    var cbReload =  document.getElementById("settingReload");
+    cbReload.addEventListener("change", function() {
+	chrome.storage.local.set({
+	    reload: cbReload.checked ? 1 : 0
 	});
+    });
+
+    var ddSort =  document.getElementById("settingSort");
+    ddSort.addEventListener("change", function() {
+	console.log("ddSort changed to " + ddSort.value);
+	chrome.storage.local.set({
+	    sort: ddSort.value
+	});
+    });
 }
