@@ -279,6 +279,19 @@ var global_latest = "";
 
 var comment_table = { }
 
+function hash_color(str) {
+    if (!str) return 0xa0a0a0; // bland gray
+    var hash = 0;
+    var l = str.length;
+    for (var i = 0; i < l; i++) {
+        var char = str.charCodeAt(i);
+        hash = ((hash<<5)-hash) + str.charCodeAt(i);
+    }
+    return hash % (256 * 256 * 256);
+}
+
+var null_name = [" "]
+
 function make_comment(c, flag="") {
     // TODO: Is it faster to prebuild one root comment, and then copy it?
     //       Or build one dynamically from scratch each time?
@@ -324,11 +337,25 @@ function make_comment(c, flag="") {
     // on a fast reference machine, loading ~100 root comments with ~275 comments:
     //      * takes 800ms to render without avatars
     //      * takes 900ms to render with avatars
-    
     // always do the dummy avatar, for faster loading
     if (never_load_avatars || c.photo_url == null) {
-	letter = c.name ? c.name[0] : "";
-	img = jQuery('<span/>', { class: "fakeimg" } ).
+	try {
+	    var names = c.name ? c.name.split(" ") : null_name;
+	    letter = names.length > 1 ? names[0][0] + names[1][0] : names[0][0]
+	} catch (err) {
+	    console.log(err.message);
+	    letter = "?";
+	}
+	var fakeimgclass = `fakeimg${letter.length}`
+	var color = hash_color(c.name);
+	var make_white =
+	    ((color / 256 / 256) * .21 + // red
+	     (color / 256 % 256) * .71 + // green
+	     (color % 256) * .07 // blue
+	    ) < 45 ? "" : "color: white;"; // f0f5c6 is pretty bright and gets white
+	console.log(letter + ": for " + c.name + " make_white is " + make_white);
+	img = jQuery('<span/>', { class: fakeimgclass,
+				  style: make_white + "background-color: #" + color.toString(16) }).
 	    text( letter );
     } else {
 	img = jQuery('<img/>', { src: c.photo_url } );
