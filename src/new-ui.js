@@ -1,4 +1,3 @@
-var debug = 0; // 0, 1, 2
 var reload_comments = true;
 
 var new_first = false;
@@ -8,6 +7,39 @@ var top_first = true;
 var change_icon = false;
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
+
+
+chrome.storage.local.get("kitten", function(items){
+    console.log(" *** MAIN *** ");
+    console.log(items.kitten);  // -> {name:"Mog", eats:"mice"}
+});
+
+
+chrome.storage.local.get("debug", function(items){
+    console.log(" *** MAIN TWO *** ");
+    console.log(items);  // -> {name:"Mog", eats:"mice"}
+});
+
+console.log("laa");
+
+var debug = 0; // 0, 1, 2
+
+var xxx = chrome.storage.local.get("debug", function(x) {
+    console.log("sync get: x is " + x);
+    console.log(x);
+    console.log(x["debug"]);
+    console.log(x.debug);
+    debug = x.debug;
+    console.log("debug is now " + debug);
+});
+
+console.log("xxx is " + xxx);
+console.log(xxx);
+
+console.log("after getting settings");
+
+
+
 
 
 if (debug) {
@@ -53,6 +85,7 @@ function eat_page() {
 //    console.log("document.head is " + document.head);
 //    console.log("document body is " + document.body);
     if (document.body == null) {
+	console.log("debug is " + debug);
 	console.log("not loaded yet");
 	setTimeout(eat_page, change_icon ? 100: 0);
 	return;

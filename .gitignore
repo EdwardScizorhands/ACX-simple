@@ -5,3 +5,4 @@ src.pem
 #*
 *# 
 *.out
+*.json
