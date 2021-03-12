@@ -5,8 +5,8 @@ version 0.4.12.0 // hearts and sorts
     Brave 1.20.108 on Chromium 88 // UI popup issues, workaround installed
     Chrome
  Windows:
-    Firefox 86?
-    Chrome?
+    Firefox 86
+    Chrome 89
     
 version 0.4.10.5
   OSX:
