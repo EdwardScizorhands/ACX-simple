@@ -1,7 +1,8 @@
 var reload_comments = true;
 
-var new_first = false;
 var have_scores = true;
+
+var new_first = false;
 var top_first = true;
 
 var change_icon = false;
@@ -274,13 +275,19 @@ function do_delete(id) {
 
 function like(xid) {
     console.log("like " + xid);
-    xid.disabled = true; 
+    console.log(xid);
+    xid.disabled = true;
+    
     var nid = xid.target.name; // "comment-123"
+    console.log("nid is " + nid);
+    $("#" + nid).off( "click" );
     var id = nid.split("-")[1];
     var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id + '/reaction';
+    data = { reaction: "❤"};
     $.ajax({ type: "POST",
 	     url: url,
-	     async: true
+	     async: true,
+	     data: data
 	     //success: function() { do_delete(id) }
 	     // TODO: warn user on failure
 	   });
@@ -465,10 +472,13 @@ function make_comment(c, flag="") {
 	var actions = jQuery('<div/>', { class: "comment-actions"} );
 
 	if (have_scores) {
-	    var anchor_like = jQuery( '<a/>', { name: "like-" + id }).
-		text(c.reactions["❤"] + "❤").
+	    var count = c.reactions["❤"];
+	    var count_text = count > 0 ? `${count} ♥` : "♥";
+	    var anchor_like = jQuery( '<a/>', { name: "like-" + id,
+						id: "like-" + id }).
+		text( count_text ).
 		appendTo( actions );
-	    if (c.reaction != "❤") {
+	    if (c.reaction != "❤") { // can't like a second time
 		anchor_like.click( like );
 	    }
 
