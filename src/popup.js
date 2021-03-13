@@ -18,7 +18,7 @@ console.log("debug is " + debug);
 
 
 var xxx = chrome.storage.local.get(
-    [ "debug", "likes", "reload", "sort"], function(x) {
+    [ "debug", "likes", "reload", "sort", "lastread"], function(x) {
 	console.log("sync get: x is " + x);
 	console.log(x);
 	console.log(x["debug"]);
@@ -34,12 +34,22 @@ var xxx = chrome.storage.local.get(
 	cbReload.checked = !(x.reload == 0); // default true
 	var ddSort = document.getElementById("settingSort");
 	ddSort.value = (x.sort ? x.sort : "new"); // default new
-	
+	document.getElementById("newTime").value = x.lastread;
     });
 
 // which of these two async functions is called first?
 
+function setOption(blob) { // key, value) {
+//    console.log(`setting ${key} to ${value}`);
+    chrome.storage.local.set( blob ); // { key: value });
+}
 
+function setOption(key, value) {
+    var blob = new Object;
+    blob[key] = value;
+    console.log(`setting ${key} to ${value}`);
+    chrome.storage.local.set( blob ) ;
+}
 
 window.onload  = function() {
     console.log("finding it");
@@ -54,31 +64,43 @@ window.onload  = function() {
 //    document.getElementbyId
     checkbox.addEventListener("change",  function() {
 	console.log("value changed!");
-	chrome.storage.local.set({
-	    debug: checkbox.checked ? 1 : 0
-	});
+	//	setOption({ debug : checkbox.checked ? 1 : 0});
+	var blob = { debug: checkbox.checked ? 1 : 0  }
+	//chrome.storage.local.set( blob );
+//	setOption( blob );
+	setOptionKV ( "debug", checkbox.checked ? 1 : 0  );
     });
     //
     var cbLikes =  document.getElementById("settingLikes");
     cbLikes.addEventListener("change", function() {
 	console.log("like changed to " + cbLikes.checked);
-	chrome.storage.local.set({
-	    likes: cbLikes.checked ? 1 : 0
-	});
+	setOption("likes", cbLikes ? 1 : 0);
     });
+    
 
     var cbReload =  document.getElementById("settingReload");
     cbReload.addEventListener("change", function() {
-	chrome.storage.local.set({
-	    reload: cbReload.checked ? 1 : 0
-	});
+	setOption("reload", cbReload.checked ? 1 : 0);
     });
 
     var ddSort =  document.getElementById("settingSort");
     ddSort.addEventListener("change", function() {
 	console.log("ddSort changed to " + ddSort.value);
-	chrome.storage.local.set({
-	    sort: ddSort.value
-	});
+	setOption("sort", ddSort.value);
     });
+
+    var newTime = document.getElementById("newTime");
+    var button = document.getElementById("now");
+    button.addEventListener("click", function() {
+	console.log("pressed now");
+	var d = new Date();
+	newTime.value = d.toISOString();
+    });
+
+    newTime.addEventListener("change", function() {
+	console.log("date is changed, now " + newTime.value);
+	setOption("lastread", newTime.value);
+	
+    });
+	// TODO: send signal
 }
