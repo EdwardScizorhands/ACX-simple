@@ -1,12 +1,16 @@
 
-1. Local DB of posts
-   * how cross-platform is this?
-2. "new" post marker <-- priority
-   * set timer
-3. start parsing JSON before it's complete
-4. prebuild comments?
-5. make UI settings take place immediately
-6. pop-up icon dot
-7. Why is brave broken? <-- not any more?
-8. firefox for android
-
+  1. Local DB of posts
+     * how cross-platform is this?
+x 2. "new" post marker <-- priority
+x    * set timer
+       * set friendly timer
+  3. start parsing JSON before it's complete
+  4. prebuild comments?
+x 5. make UI settings take place immediately
+     * for ordering
+     * for likes + scores
+  6. pop-up icon dot
+x 7. Why is brave broken? <-- not any more?
+  8. firefox for android
+x 9. "reload now"
+  10. status window

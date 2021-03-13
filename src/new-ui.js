@@ -8,7 +8,7 @@ var lastread = "2021-01-02T00:00:00.000Z";
 
 // internal only
 var change_icon = false;
-var reload_speed = 2000; // 8000;
+var reload_speed = 15 * 1000;
 const domain = 'astralcodexten';
 
 // if we want to change the icon, we need to let a little bit of the
@@ -87,6 +87,18 @@ function settingsChanged(things) {
 	// this also makes us wait the timer instead of checking immediately.
 	spin_comments(); 
 
+    } //     // 850 so far
+    if (c = things.sort) {
+	if (c.oldValue != c.newValue) {
+	    console.log("UPDATE NEW!~");
+	    mark_as_new(c.newValue);
+	}
+    }
+    if (c = things.checknow) {
+	// TODOL don't let the user harass the server
+	if (c.newValue > c.oldValue + 1) {
+	    load_comments(true);
+	};
     }
 }
 chrome.storage.onChanged.addListener(settingsChanged);
@@ -740,8 +752,12 @@ function scan_comments(data) {
 	comments.forEach ( scan_c );
     }
 }
-
-function dump_it(data, status, xh ) {
+	
+// can I use a closure to avoid this thunk?
+function dump_it_now(data, status, xh) {
+    dump_it(data, status, xh, true);
+}
+function dump_it(data, status, xh, now = false) {
     if (data.comments !== undefined) {
 	console.log("data length is " + data.length);
 	console.log(xh.getResponseHeader("date"));
@@ -755,11 +771,13 @@ function dump_it(data, status, xh ) {
 	    change();
 	}
     }
-    setTimeout( spin_comments, 1 );
+    if (!now) {
+	setTimeout( spin_comments, 1 );
+    }
 }
 
-function load_comments() {
-    if (!reload_comments) {
+function load_comments(now = false) {
+    if (!reload_comments && !now) {
 	return;
     }
     post_id = document.post_id; 
@@ -769,10 +787,14 @@ function load_comments() {
 	"sort=most_recent_first&last_comment_at=" + global_latest;
     $.ajax({
 	url: url,
-	success: dump_it,
+	success: now ? dump_it_now : dump_it,
 	failure: function() {
-	    console.log("We failed to load comments. Trying again in a minute,");
-	    setTimeout( spin_comments, 60 * 1000);
+	    if (!now) {
+		console.log("We failed to load comments. Trying again in a minute,");
+		setTimeout( spin_comments, 60 * 1000);
+	    } else {
+		console.log("We failed to load comments now.");
+	    }
 	},
 	dataType: "json"
     })

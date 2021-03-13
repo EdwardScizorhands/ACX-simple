@@ -104,5 +104,10 @@ window.onload  = function() {
 
     newTime.addEventListener("change", setTime);
     document.getElementById("gotime").addEventListener("click", setTime);
-	// TODO: send signal
+
+    document.getElementById( "checknow" ).addEventListener("click", function() {
+	setOption("checknow", Date.now());
+	// TODO: disable in UI for X seconds
+    });
+
 }

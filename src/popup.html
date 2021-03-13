@@ -19,13 +19,16 @@
   <label for="settingDebug">Debug (you don't need this)</label>
   <hr/>
   <input type="checkbox" id="settingLikes">
-  <label for="settingLikes">Show Likes + Scores</label>
+  <label for="settingLikes">Show Likes + Scores <strong>(*)</strong></label>
   <hr/>
   <input type="checkbox" id="settingReload">
   <label for="settingReload">Load New Comments Automatically</label>
+  <br>
+  <button id="checknow">Check Now</button>
+
   <!-- the last checkbox is not toggling right on Brave. Why not? -->
   <hr/>
-  Comment Order:
+  Comment Order <strong>(*)</strong>
   <select name="sort" id="settingSort">
     <option value="new">Newest First</option>
     <option value="old" checked>Oldest First</option>
@@ -39,9 +42,13 @@
   <div>
     <input type=text id="newTime" width=100% /><button id=gotime>go</button>
   </div>
-  <hr/>
-  <h3>After changing values, you will need to refresh.</h3>
-  Sorry.
-  
+  <hr>
+  <p />
+  <p />
+  <p>
+    <strong>(*)</strong>
+    <span style="font-size: smaller;">
+      These settings take effect after reload.
+    </span>
 </body>
 </html>
