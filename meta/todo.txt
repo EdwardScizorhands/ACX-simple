@@ -6,5 +6,7 @@
 3. start parsing JSON before it's complete
 4. prebuild comments?
 5. make UI settings take place immediately
-6. pop-up icon 
+6. pop-up icon dot
 7. Why is brave broken? <-- not any more?
+8. firefox for android
+

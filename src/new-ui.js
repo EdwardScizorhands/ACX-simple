@@ -404,7 +404,7 @@ function make_comment(c, flag="") {
     // user pic, td1
     var avatar = c.photo_url;
     var img;
-    var never_load_avatars = true;
+    var never_load_avatars = false;
     // on a fast reference machine, loading ~100 root comments with ~275 comments:
     //      * takes 800ms to render without avatars
     //      * takes 900ms to render with avatars
