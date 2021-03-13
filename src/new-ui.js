@@ -8,6 +8,9 @@ var lastread = "2021-01-02T00:00:00.000Z";
 
 // internal only
 var change_icon = false;
+var reload_speed = 2000; // 8000;
+const domain = 'astralcodexten';
+
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
 
@@ -56,7 +59,7 @@ function mark_as_new(time) {
 	var date_node = e.childNodes[1];
 	var dd = new Date(zdate); // TODO: see if this is a useless string object
 	// TODO: my old-v-new logic is duped, need to consolidate
-	var new_date_s = flagged_date_string(dd, old ? "" : "~new2~");
+	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
 	if (new_date_s != date_node.innerText) {
 	    date_node.innerText = new_date_s;
 	}
@@ -76,6 +79,14 @@ function settingsChanged(things) {
 	    console.log("UPDATE NEW!~");
 	    mark_as_new(c.newValue);
 	}
+    }
+    if (c = things.reload) {
+	reload_comments = things.reload.newValue;
+	console.log("read now set to " + reload_comments);
+	// TODO: make sure we don't accidentally set up multiple timers.
+	// this also makes us wait the timer instead of checking immediately.
+	spin_comments(); 
+
     }
 }
 chrome.storage.onChanged.addListener(settingsChanged);
@@ -167,7 +178,7 @@ function new_comments2(data) {
 	console.log(data);
 	console.log(JSON.stringify(data));
     }
-    var zap = make_comment(data, "~new1~");
+    var zap = make_comment(data, "~new~");
     if (debug >= 0) {
 	console.log("zap is " + zap);
 	console.log(zap);
@@ -253,7 +264,7 @@ function submit_comment2(x) {
     var id = x.form.parent_id.value;
     var post_id = document.post_id;  // does this work?
 
-    var url = 'https://astralcodexten.substack.com/api/v1/post/' + post_id + '/comment'
+    var url = 'https://' + domain + '.substack.com/api/v1/post/' + post_id + '/comment'
 
     // TODO: make sure jQuery has loaded 
     
@@ -311,7 +322,7 @@ function like(xid) {
     console.log("nid is " + nid);
     $("#" + nid).off( "click" );
     var id = nid.split("-")[1];
-    var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id + '/reaction';
+    var url = 'https://' + domain + '.substack.com/api/v1/comment/' + id + '/reaction';
     data = { reaction: "❤"};
     $.ajax({ type: "POST",
 	     url: url,
@@ -327,7 +338,7 @@ function deleet(xid) {
     if ( confirm("Do you wish to delete this comment?") ) {
 	var nid = xid.target.name; // "comment-123"
 	var id = nid.split("-")[1];
-	var url = 'https://astralcodexten.substack.com/api/v1/comment/' + id;
+	var url = 'https://' + domain + '.substack.com/api/v1/comment/' + id;
 	// TODO: replace "DELETE" button with "deleting"  
 	$.ajax({ type: "DELETE",
 		 url: url,
@@ -491,9 +502,10 @@ function make_comment(c, flag="") {
 	var score = Math.floor( c.score * 10000 ) / 100.0;
 	var display_name = have_scores ? `${c.name} : ${score}` : c.name;
 	var tag = (flag == "dynamic") ?
-	    ( c.date < lastread ? "" : "~new3~" ) :
+	    ( c.date < lastread ? "" : "~new~" ) :
 	    flag;
 	var date_s = flagged_date_string(dd, tag);
+	// TODO: any difference between making this an attribute vs a JS-element property?
 	var meta = jQuery('<div/>', { class: "comment-meta", zdate: c.date }).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
 		    text( display_name )).
@@ -743,23 +755,32 @@ function dump_it(data, status, xh ) {
 	    change();
 	}
     }
-    setTimeout( spin_comments, 8000 );
+    setTimeout( spin_comments, 1 );
 }
 
 function load_comments() {
+    if (!reload_comments) {
+	return;
+    }
     post_id = document.post_id; 
-    url = "https://astralcodexten.substack.com/api/v1/post/" +
+    url = "https://" + domain + ".substack.com/api/v1/post/" +
 	post_id +
 	"/comments?token=&all_comments=true&" +
 	"sort=most_recent_first&last_comment_at=" + global_latest;
     $.ajax({
 	url: url,
 	success: dump_it,
+	failure: function() {
+	    console.log("We failed to load comments. Trying again in a minute,");
+	    setTimeout( spin_comments, 60 * 1000);
+	},
 	dataType: "json"
     })
 }
 function spin_comments() {
-    setTimeout( load_comments, 3000 );
+    if (reload_comments) {
+	setTimeout( load_comments, reload_speed );
+    }
 }
 
 
@@ -1180,7 +1201,7 @@ white-space: pre-line;
 	
     }
     
-    var site = "astralcodexten.substack.com";
+    var site = domain + ".substack.com";
     var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
     var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
 
