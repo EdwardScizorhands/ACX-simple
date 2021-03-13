@@ -4,7 +4,7 @@
 x 2. "new" post marker <-- priority
 x    * set timer
        * per tab
-       * set friendly timer
+x      * set friendly timer
   3. start parsing JSON before it's complete
   4. prebuild comments?
 x 5. make UI settings take place immediately
