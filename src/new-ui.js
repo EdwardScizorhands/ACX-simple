@@ -10,8 +10,9 @@ var change_icon = false;
 
 
 var debug = 0; // 0, 1, 2
+var settings_loaded = false;
 
-var xxx = chrome.storage.local.get(
+chrome.storage.local.get(
     [ "debug", "likes", "reload", "sort"], function(x) {
 	console.log("sync get: x is " + x);
 	console.log(x);
@@ -29,11 +30,10 @@ var xxx = chrome.storage.local.get(
 
 	sort = (x.sort ? x.sort : "new");
 	console.log("sort is now " + sort);
-	
+	settings_loaded = true;
+	console.log("setting are loaded!");
     });
 
-console.log("xxx is " + xxx);
-console.log(xxx);
 
 console.log("after getting settings");
 
@@ -50,18 +50,12 @@ if (change_icon == false) {
     // firefox still loads some of the original page in the background??
 }
 
-function sort_new(a, b) {
-    return b.date.localeCompare(a.date);
-}
-function sort_old(a, b) {
-    return a.date.localeCompare(b.date);
-}
-function sort_top(a, b) {
-
-    return b.score - a.score;
-}
-			 
 function comment_order(cs) {
+
+    function sort_new(a, b) { return b.date.localeCompare(a.date); }
+    function sort_old(a, b) { return a.date.localeCompare(b.date); }
+    function sort_top(a, b) { return b.score - a.score; }
+    
     if (sort == "new")
 	return cs.sort( sort_new );
     if (sort == "old")
@@ -75,13 +69,13 @@ function eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.
     window.fred += 1;
-//    console.log("eat page?  " + window.fred);
+    console.log("eat page?  " + window.fred);
     if (window.fred > 20) {
 	setTimeout( phase_two, 1);
 	return;
     }
 //    console.log("document.head is " + document.head);
-//    console.log("document body is " + document.body);
+    console.log("document body is " + document.body);
     if (document.body == null) {
 //	console.log("debug is " + debug);
 //	console.log("not loaded yet");
@@ -351,15 +345,20 @@ var global_latest = "";
 
 var comment_table = { }
 
+// hash takes <1ms
 function hash_color(str) {
     if (!str) return 0xa0a0a0; // bland gray
-    var hash = 0;
+
+    var hash = new Number(0);
     var l = str.length;
     for (var i = 0; i < l; i++) {
         var char = str.charCodeAt(i);
-        hash = ((hash<<5)-hash) + str.charCodeAt(i);
+	hash = ((hash*32)-hash) + str.charCodeAt(i);
+	hash = hash & 0x7FFFFFFF;
+	
     }
     return hash % (256 * 256 * 256);
+    
 }
 
 var null_name = [" "]
@@ -405,7 +404,7 @@ function make_comment(c, flag="") {
     // user pic, td1
     var avatar = c.photo_url;
     var img;
-    var never_load_avatars = false;
+    var never_load_avatars = true;
     // on a fast reference machine, loading ~100 root comments with ~275 comments:
     //      * takes 800ms to render without avatars
     //      * takes 900ms to render with avatars
@@ -721,6 +720,11 @@ function spin_comments() {
 
 
 function phase_two() {
+
+    console.log("setting_loaded is " + settings_loaded);
+    if (!settings_loaded) {
+	setInterval( phase_two, 2);
+    }
 
 
     if (change_icon) {
