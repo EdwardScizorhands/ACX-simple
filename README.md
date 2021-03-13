@@ -15,6 +15,9 @@ For Chrome:
 
 For Firefox:
 
+(Test instructions: go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) and install the signed acx_simple-0.4.12.0-an+fx.xpi file)
+
+
 1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and download the ACX-Simple-firefox-(date).xpi to some folder.
 2. Browse to about:debugging, click "This Firefox" on the left.
 3. Click "Load Temporary Add-on", and select the XPI file. 
@@ -34,7 +37,7 @@ Example: https://astralcodexten.substack.com/p/links-for-march/comments
 
 * You can also go to "/simple" instead of "/comments". I may migrate there at some point in the future so as to not override Substack's comments-only page.
 
-* It dynamically loads new comments (which breaks if you lose internet connectivity). They are marked as "~new~" if loaded in the background.
+* It dynamically loads new comments (which breaks if you lose internet connectivity). They are marked as “∼new∼" if loaded in the background. I know that still needs a better workflow.
 
 * You can change the sort order, hearts, and dynamic loading of checkboxes in the settings box (click on the icon).
 
