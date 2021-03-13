@@ -1,19 +1,21 @@
+
+// changeable in popup
 var reload_comments = true;
-
 var have_scores = false;
-
 var sort = "new";
+var debug = 0; // 0, 1, 2
+var lastread = "2021-01-02T00:00:00.000Z"; 
 
+// internal only
 var change_icon = false;
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
 
 
-var debug = 0; // 0, 1, 2
 var settings_loaded = false;
 
 chrome.storage.local.get(
-    [ "debug", "likes", "reload", "sort"], function(x) {
+    [ "debug", "likes", "reload", "sort", "lastread" ], function(x) {
 	console.log("sync get: x is " + x);
 	console.log(x);
 	console.log(x["debug"]);
@@ -30,8 +32,12 @@ chrome.storage.local.get(
 
 	sort = (x.sort ? x.sort : "new");
 	console.log("sort is now " + sort);
+
+	lastread = x.lastread ? x.lastread : "2021-01-01T00:00:00.000Z"; // global, should be per-page. :<
+
+	console.log("lastread is " + lastread);
 	settings_loaded = true;
-	console.log("setting are loaded!");
+	console.log("settings are loaded!");
     });
 
 
@@ -49,7 +55,8 @@ function mark_as_new(time) {
 	// adding/removing classes using jQuery tricks like Pycea does.
 	var date_node = e.childNodes[1];
 	var dd = new Date(zdate); // TODO: see if this is a useless string object
-	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
+	// TODO: my old-v-new logic is duped, need to consolidate
+	var new_date_s = flagged_date_string(dd, old ? "" : "~new2~");
 	if (new_date_s != date_node.innerText) {
 	    date_node.innerText = new_date_s;
 	}
@@ -160,7 +167,7 @@ function new_comments2(data) {
 	console.log(data);
 	console.log(JSON.stringify(data));
     }
-    var zap = make_comment(data, "~new~");
+    var zap = make_comment(data, "~new1~");
     if (debug >= 0) {
 	console.log("zap is " + zap);
 	console.log(zap);
@@ -483,7 +490,10 @@ function make_comment(c, flag="") {
     } else {
 	var score = Math.floor( c.score * 10000 ) / 100.0;
 	var display_name = have_scores ? `${c.name} : ${score}` : c.name;
-	var date_s = flagged_date_string(dd, flag);
+	var tag = (flag == "dynamic") ?
+	    ( c.date < lastread ? "" : "~new3~" ) :
+	    flag;
+	var date_s = flagged_date_string(dd, tag);
 	var meta = jQuery('<div/>', { class: "comment-meta", zdate: c.date }).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
 		    text( display_name )).
@@ -563,7 +573,7 @@ function make_comment_list_from_array(cs) {
     var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
 
     comment_order(cs).forEach( function(c) {
-	comment_list_items.append( make_comment(c) );
+	comment_list_items.append( make_comment(c, "dynamic") );
     } )
     
     comment_list.append( comment_list_items );
@@ -924,7 +934,7 @@ white-space: pre-line;
 	    return function(c) {
 
 
-		var ctable = make_comment(c);
+		var ctable = make_comment(c, "dynamic");
 
 		if (debug) {
 		    console.log("length of children is " + c.children.length);
@@ -1173,6 +1183,8 @@ white-space: pre-line;
     var site = "astralcodexten.substack.com";
     var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
     var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
+
+    console.log("why do I have that wrong hard-coded string in there?");
     
     if (debug) {
 	console.log("making ajax");
