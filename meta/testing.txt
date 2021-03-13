@@ -6,7 +6,7 @@ version 0.4.12.0 // hearts and sorts
     Chrome
  Windows:
     Firefox 86
-    Chrome 89
+    Chrome 89  // settings window sluggish on loading, don't know why
     
 version 0.4.10.5
   OSX:
