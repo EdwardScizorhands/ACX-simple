@@ -97,10 +97,12 @@ window.onload  = function() {
 	newTime.value = d.toISOString();
     });
 
-    newTime.addEventListener("change", function() {
+    function setTime() {
 	console.log("date is changed, now " + newTime.value);
 	setOption("lastread", newTime.value);
-	
-    });
+    }
+
+    newTime.addEventListener("change", setTime);
+    document.getElementById("gotime").addEventListener("click", setTime);
 	// TODO: send signal
 }

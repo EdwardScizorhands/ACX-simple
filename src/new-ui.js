@@ -38,6 +38,17 @@ chrome.storage.local.get(
 console.log("after getting settings");
 
 
+function settingsChanged(things) {
+    console.log("things is " + things);
+    console.log(things);
+    let c;
+    if (c = things.lastread) {
+	if (c.oldValue != c.newValue) {
+	    console.log("UPDATE NEW!~");
+	}
+    }
+}
+chrome.storage.onChanged.addListener(settingsChanged);
 
 
 
