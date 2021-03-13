@@ -37,6 +37,28 @@ chrome.storage.local.get(
 
 console.log("after getting settings");
 
+function flagged_date_string(dd, flag) {
+    return dd.toDateString() + " " + dd.toLocaleTimeString() + " " + flag;
+}
+
+function mark_as_new(time) {
+    $(".comment-meta").each ( function(i,e) {
+	zdate = e.getAttribute("zdate");
+	old = zdate < time;
+	// I am doing string manip instead of what's probaby the better way of
+	// adding/removing classes using jQuery tricks like Pycea does.
+	var date_node = e.childNodes[1];
+	var dd = new Date(zdate); // TODO: see if this is a useless string object
+	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
+	if (new_date_s != date_node.innerText) {
+	    date_node.innerText = new_date_s;
+	}
+    });
+
+    // this seems to help chrome refresh its UI faster
+    setTimeout( function() { console.log("refresh?") }, 1 );
+    
+}
 
 function settingsChanged(things) {
     console.log("things is " + things);
@@ -45,6 +67,7 @@ function settingsChanged(things) {
     if (c = things.lastread) {
 	if (c.oldValue != c.newValue) {
 	    console.log("UPDATE NEW!~");
+	    mark_as_new(c.newValue);
 	}
     }
 }
@@ -460,8 +483,8 @@ function make_comment(c, flag="") {
     } else {
 	var score = Math.floor( c.score * 10000 ) / 100.0;
 	var display_name = have_scores ? `${c.name} : ${score}` : c.name;
-	var date_s = dd.toDateString() + " " + dd.toLocaleTimeString() + " " + flag;
-	var meta = jQuery('<div/>', { class: "comment-meta"}).
+	var date_s = flagged_date_string(dd, flag);
+	var meta = jQuery('<div/>', { class: "comment-meta", zdate: c.date }).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
 		    text( display_name )).
 	    append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
