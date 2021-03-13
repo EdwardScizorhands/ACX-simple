@@ -1,22 +1,19 @@
 console.log("XXX hi");
 
-console.log("chrome.storage is " + chrome.storage);
-console.log(chrome.storage);
-
-console.log("chrome.storage.local is " + chrome.storage.local);
-console.log(chrome.storage.local);
-
-console.log("chrome.storage.local.get is " + chrome.storage.local.get);
-console.log(chrome.storage.local.get);
-
-chrome.storage.local.get("kitten", function(items){
-  console.log(items.kitten);  // -> {name:"Mog", eats:"mice"}
-});
-
 var debug = 8;
 console.log("debug is " + debug);
 
+// is the post id available to us?
 
+
+// internal to friendly date
+function i2f(str) {
+    return str.replace('T', ' ');
+}
+
+function f2i(str) {
+    return str.replace(' ', 'T');
+}
 var xxx = chrome.storage.local.get(
     [ "debug", "likes", "reload", "sort", "lastread"], function(x) {
 	console.log("sync get: x is " + x);
@@ -34,7 +31,7 @@ var xxx = chrome.storage.local.get(
 	cbReload.checked = !(x.reload == 0); // default true
 	var ddSort = document.getElementById("settingSort");
 	ddSort.value = (x.sort ? x.sort : "new"); // default new
-	document.getElementById("newTime").value = x.lastread;
+	document.getElementById("newTime").value = i2f(x.lastread);
     });
 
 // which of these two async functions is called first?
@@ -94,12 +91,13 @@ window.onload  = function() {
     button.addEventListener("click", function() {
 	console.log("pressed now");
 	var d = new Date();
-	newTime.value = d.toISOString();
+	newTime.value = i2f(d.toISOString());
     });
 
     function setTime() {
 	console.log("date is changed, now " + newTime.value);
-	setOption("lastread", newTime.value);
+	// TODO: verify valid here
+	setOption("lastread", f2i(newTime.value));
     }
 
     newTime.addEventListener("change", setTime);

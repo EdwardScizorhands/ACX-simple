@@ -95,10 +95,12 @@ function settingsChanged(things) {
 	}
     }
     if (c = things.checknow) {
-	// TODOL don't let the user harass the server
-	if (c.newValue > c.oldValue + 1) {
+	// TODO: make this timeout bigger but per-tab
+	if (c.newValue > c.oldValue + 3000) {
 	    load_comments(true);
-	};
+	} else {
+	    console.log("slow down, man");
+	}
     }
 }
 chrome.storage.onChanged.addListener(settingsChanged);
