@@ -1,7 +1,4 @@
 
-//const now = new Date();
-const offset = new Date().getTimezoneOffset()
-
 
 function get_24hour_local_datetime(n = null) {
     if (!n)
@@ -45,10 +42,16 @@ function i2f(str) {
     //return str.replace('T', ' ');
 }
 
+// aha, offset should not be based on *now*, it should be based on the supplied time!
+// NOTE: might be broken in the ~N hours around time change, when you are N hours away from GMT
 function f2i(str) {
-    var d = new Date();
-    var now_tz = str.replace(' ', 'T') + tz_offset_to_str( d.getTimezoneOffset() );
+
+    var t_string = str.replace(' ', 'T');
+    var temp_Date = new Date(t_string);
+    var now_tz = t_string + tz_offset_to_str( temp_Date.getTimezoneOffset() );
+//    console.log("now_tz is " + now_tz);
     var e = new Date(now_tz);     // TODO: make sure this parses!
+//    console.log("e is " + e);   console.log(e);
     return e.toISOString();
 
 }

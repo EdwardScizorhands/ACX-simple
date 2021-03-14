@@ -1358,11 +1358,10 @@ white-space: pre-line;
 	try {
 	    var official_time = f2i( $("#newTime").val() );
 
-	    // it turns out that being in Daylight Savings Time and giving
-	    // a time before DST will cause this to be an hour backwards,
-	    // which will repeat if you keep on hitting "Apply".
-	    // 
-	    // So be careful in the spring time!
+	    if (debug) {
+		console.log("official time is " + official_time);
+		console.log("i2f of that is " + i2f(official_time));
+	    }
 	    $( "#newTime" ).prop("disabled", true).val( i2f(official_time) );
 	    localStorage.setItem("lastread-" + post_id, official_time);
 
