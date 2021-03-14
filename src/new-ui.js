@@ -492,13 +492,26 @@ function make_comment(c, flag="") {
 	}
 	var fakeimgclass = `fakeimg${letter.length}`
 	var color = hash_color(c.name);
-	var make_white =
+	var r = (color / 256 / 256);
+	var g = (color / 256) % 256;
+	var b = color % 256;
+	var hsp = Math.sqrt(.3 * r * r + .59 * g * g + .114 * b * b);
+/*	var make_white =
 	    ((color / 256 / 256) * .21 + // red
 	     (color / 256 % 256) * .71 + // green
 	     (color % 256) * .07 // blue
-	    ) < 45 ? "" : "color: white;"; // f0f5c6 is pretty bright and gets white
+	    ) < 42 ? "" : "color: white;";
+	console.log("hsp is " + hsp + " and brightness is " +
+		    (	    ((color / 256 / 256) * .21 + // red
+			     (color / 256 % 256) * .71 + // green
+			     (color % 256) * .07 // blue
+			    ))); */
+	make_white = (hsp > 126) ? "" : "color: white;";
+	if (debug) {
+	    console.log(letter + ": " + c.name + " is " + color + " and " + make_white);
+	}
 	img = jQuery('<span/>', { class: fakeimgclass,
-				  style: make_white + "background-color: #" + color.toString(16) }).
+				  style: make_white + "background-color: #" + color.toString(16).padStart(6,0)}).
 	    text( letter );
     } else {
 	img = jQuery('<img/>', { src: c.photo_url } );
