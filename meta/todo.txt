@@ -3,7 +3,7 @@
      * how cross-platform is this?
 x 2. "new" post marker <-- priority
 x    * set timer
-       * per tab
+x      * per tab
 x      * set friendly timer
   3. start parsing JSON before it's complete
   4. prebuild comments?
@@ -14,6 +14,10 @@ x 5. make UI settings take place immediately
 x 7. Why is brave broken? <-- not any more?
   8. firefox for android
 x 9. "reload now"
-  10. status window
+x 10. status window
      * status on last load
-     
+     * status on count of new comments
+     * status on count of loaded-but-not-shown comments
+  11. "show likes + score" setting not applying (on firefox?)
+
+

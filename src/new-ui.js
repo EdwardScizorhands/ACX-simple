@@ -19,10 +19,6 @@ var settings_loaded = false;
 
 chrome.storage.local.get(
     [ "debug", "likes", "reload", "sort", "lastread" ], function(x) {
-	console.log("sync get: x is " + x);
-	console.log(x);
-	console.log(x["debug"]);
-	console.log(x.debug);
 
 	debug = x.debug;
 	console.log("debug is now " + debug);
@@ -143,13 +139,13 @@ function eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.
     window.fred += 1;
-    console.log("eat page?  " + window.fred);
+    //console.log("eat page?  " + window.fred);
     if (window.fred > 20) {
 	setTimeout( phase_two, 1);
 	return;
     }
-//    console.log("document.head is " + document.head);
-    console.log("document body is " + document.body);
+    //    console.log("document.head is " + document.head);
+    // console.log("document body is " + document.body);
     if (document.body == null) {
 //	console.log("debug is " + debug);
 //	console.log("not loaded yet");
@@ -461,7 +457,9 @@ function make_comment(c, flag="") {
 	    console.log("NEW LATEST POST! " + id);
 	}
 	global_latest = c.date;
-	console.log(global_latest);
+	if (debug > 0) {
+	    console.log(global_latest);
+	}
     } 
     if (debug > 1) {
 	console.log("in original make_comment " + id);
@@ -1285,7 +1283,6 @@ white-space: pre-line;
     function newXhr() { 
 	return xhr;
     }
-    console.log(xhr);
     
     console.time('requestComments');
     $.ajax({
@@ -1316,35 +1313,32 @@ white-space: pre-line;
     // dupe code
     var newTime = document.getElementById("newTime");
     var button = document.getElementById("now");
-//    var applytime = document.getElementById("applytime");
     
     button.addEventListener("click", function() {
 	console.log("pressed now");
-	newTime.style.backgroundColor = "white";
 	var d = new Date();
-	newTime.value = get_24hour_local_datetime();
-	//newTime.value = i2f(d.toISOString());
-	// trigger setting?
+	$( "#newTime" ).val( get_24hour_local_datetime() ).
+	    removeClass( "badtime" );
+
     });
     console.log("added click");
     
     function setTime() {
-	console.log("date is changed, now " + newTime.value);
+//	console.log("date is changed, now " + newTime.value);
 	$( "#applyTime" ).prop("disabled", true).text( "busy…" );
-	$( "#newTime" ).prop("disabled", true);
 	// TODO: verify valid here
-	var interval_version;
 	try {
-	    interval_version = f2i(newTime.value);
-	    localStorage.setItem("lastread-" + post_id, interval_version);
-	    // small gap to let Chrome/Brave catch up
-	    setTimeout ( function() { mark_as_new(interval_version) }, 1 );
+	    var official_time = f2i( $("#newTime").val() );
+
+	    $( "#newTime" ).prop("disabled", true).val( i2f(official_time) );
+	    localStorage.setItem("lastread-" + post_id, official_time);
+
+	    // small gap to let Chrome/Brave UI thread catch up
+	    setTimeout ( function() { mark_as_new(official_time) }, 1 );
 	} catch (err) {
-	    // should never catch here, delete this
-	    console.log("error");
-	    newTime.style.backgroundColor = "#f22";
-	} 
-//	setOption("lastread", f2i(newTime.value));
+	    alert("oops");
+	}
+
     }
 
     function verifyTime() {
@@ -1352,11 +1346,14 @@ white-space: pre-line;
 	try {
 	    // This is actually cleaner with plain JavaScript than jQuery??
 	    f2i(newTime.value);
-	    newTime.style.backgroundColor = "white";
+	    $( "#newTime" ).removeClass( "badtime" );
+//	    newTime.style.backgroundColor = "white";
 	    applytime.disabled = false;
 	} catch (err) {
-	    console.log("err is " + err.message);
-	    newTime.style.backgroundColor = "#f22";
+	    if (err.message != "Invalid time value" && err.message != "invalid date") {
+		console.log(err.message);
+	    }
+	    $( "#newTime" ).addClass( "badtime" );
 	    applytime.disabled = true;
 	} 
     }
