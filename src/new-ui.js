@@ -66,13 +66,9 @@ function mark_as_new(time) {
 	var dd = new Date(zdate); // TODO: see if this is a useless string object
 	// TODO: my old-v-new logic is duped, need to consolidate
 	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
-	if (new_date_s != date_node.innerText) {
+	if (new_date_s != date_node.textContent) {
 	    c += 1;
-	    if (c < 10) {
-		console.log("new_date_s is <" + new_date_s + ">");
-		console.log("old value was <" + date_node.innerText + ">");
-	    }
-	    date_node.innerText = new_date_s;
+	    date_node.textContent = new_date_s;
 	}
     });
     console.log("done, changed text on " + c);
