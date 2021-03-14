@@ -20,7 +20,10 @@ mkdir $temp_dir/src/icons
 # Need to keep this up-to-date. Can I compare with manifest.json?
 # Also, should make this an array stored at the top.
 
-cp src/eater.js src/jquery-3.5.1.min.js src/main.css src/manifest.json src/new-ui.js src/style.css src/popup.html src/popup.js $temp_dir/src
+cp src/manifest.json \
+   src/jquery-3.5.1.min.js \
+   src/main.css  src/style.css src/clean.css \
+   src/new-ui.js src/popup.html src/popup.js src/common.js   $temp_dir/src
 cp src/icons/acf-simple-128.png $temp_dir/src/icons
 
 # Firefox xpi DOES THIS STILL WORK?
