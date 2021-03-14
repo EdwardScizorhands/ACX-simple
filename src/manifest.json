@@ -1,12 +1,12 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.12.13",
+    "version" : "0.4.12.17",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
-    "permissions": ["storage",
-		    "activeTab"
-		   ], // maybe not needed
+    "permissions": ["storage"
+//		    "activeTab"
+		   ], // i think i actually need these now!
     "icons": {
 	"128" : "icons/acf-simple-128.png"
     },
@@ -23,6 +23,7 @@
 		"https://astralcodexten.substack.com/p/*/simple"
 	    ],
 	    "js": [
+		"common.js",
 		"new-ui.js",
 		"jquery-3.5.1.min.js"
 		  ],

@@ -4,7 +4,7 @@ var reload_comments = true;
 var have_scores = false;
 var sort = "new";
 var debug = 0; // 0, 1, 2
-var lastread = "2021-01-02T00:00:00.000Z"; 
+//var lastread = "2021-01-02T00:00:00.000Z"; 
 
 // internal only
 var change_icon = false;
@@ -36,9 +36,11 @@ chrome.storage.local.get(
 	sort = (x.sort ? x.sort : "new");
 	console.log("sort is now " + sort);
 
+	/*
 	lastread = x.lastread ? x.lastread : "2021-01-01T00:00:00.000Z"; // global, should be per-page. :<
 
 	console.log("lastread is " + lastread);
+	*/
 	settings_loaded = true;
 	console.log("settings are loaded!");
     });
@@ -74,12 +76,14 @@ function settingsChanged(things) {
     console.log("things is " + things);
     console.log(things);
     let c;
+/*
     if (c = things.lastread) {
 	if (c.oldValue != c.newValue) {
 	    console.log("UPDATE NEW!~");
 	    mark_as_new(c.newValue);
 	}
-    }
+	}*/
+    
     if (c = things.reload) {
 	reload_comments = things.reload.newValue;
 	console.log("read now set to " + reload_comments);
@@ -90,8 +94,8 @@ function settingsChanged(things) {
     } //     // 850 so far
     if (c = things.sort) {
 	if (c.oldValue != c.newValue) {
-	    console.log("UPDATE NEW!~");
-	    mark_as_new(c.newValue);
+	    console.log("sorted???");
+//	    mark_as_new(c.newValue);
 	}
     }
     if (c = things.checknow) {
@@ -377,6 +381,7 @@ function reply(xid) {
     var nid = xid.target.name; // "comment-123"
     var id = nid.split("-")[1];
     var newform = document.getElementById("commentor").cloneNode(true);
+
     //newform.style.display = "block";
     newform.parent_id.value = id;
     var target = document.getElementById(nid);
@@ -613,6 +618,7 @@ var hpt = btoa(post_slug);
 var post_id = localStorage.getItem(hpt+"-id");
 var post_title = localStorage.getItem(hpt+"-title");
 var my_user_id = localStorage.getItem("my_user_id");
+var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
 
 if (post_id == null || post_title == null || my_user_id == null) {
     setTimeout( check_jQuery, 0 );
@@ -808,6 +814,7 @@ function spin_comments() {
 }
 
 
+
 function phase_two() {
 
     console.log("setting_loaded is " + settings_loaded);
@@ -815,8 +822,9 @@ function phase_two() {
 	setInterval( phase_two, 2);
     }
 
-
     if (change_icon) {
+	window.stop(); // do it now, since we didn't before
+	
 	var count = window.setTimeout( null, 0);
 	for (var i = 0; i < count + 10; i++) {
 	    window.clearTimeout(i);
@@ -852,7 +860,17 @@ white-space: pre-line;
   <body>
 
 
-<div style="background-color:white; width:100%"><span id=status style="text-align:left;">status goes here</span><span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
+<div style="background-color:white; width:100%"><span id=status style="text-align:left;">status goes here</span>
+<div style="z-index:10; background-color: #f0f0f0; position: fixed;top: 1em;right: 1em;">
+  <div>
+    Highlight as 'new' posts made after:
+    <button style="font-size: smaller;" id=now>(now)</button>
+  </div>
+  <div>
+    <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=100% /><button id=gotime>APPLY</button>
+  </div>
+</div>
+<span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
 <div style="display:none;">
 <form id=commentor method="post" class="form comment-input" novalidate="">
 <input type=hidden value=123 name=parent_id />
@@ -1278,14 +1296,59 @@ white-space: pre-line;
     // TODO: have a base "commentor" that everything, including this, gets cloned from
     // copy the hidden form and post it, then edit it
     var new_root = document.getElementById("commentor").cloneNode(true);
-//    new_root.style.display = "block";
+    //    new_root.style.display = "block";
+    new_root.id="root_comment";
     document.getElementById("newrootcomment").append( new_root );
     var root_reply = new_root.post;
     root_reply.addEventListener("click", function(){
 	submit_comment2(root_reply);
     });
+
+
+    
+//    last_read = "MOAR MAGIC";
+    document.getElementById("newTime").value = i2f(lastread);
+
+    // dupe code
+    var newTime = document.getElementById("newTime");
+    var button = document.getElementById("now");
+    button.addEventListener("click", function() {
+	console.log("pressed now");
+	newTime.style.backgroundColor = "white";
+	var d = new Date();
+	newTime.value = get_24hour_local_datetime();
+	//newTime.value = i2f(d.toISOString());
+	// trigger setting?
+    });
+    console.log("added click");
+    
+    function setTime() {
+	console.log("date is changed, now " + newTime.value);
+	// TODO: verify valid here
+	var interval_version;
+	try {
+	    console.log(1);
+	    interval_version = f2i(newTime.value);
+	    console.log(2);
+	    console.log("tehnical version is " + interval_version);
+	    console.log(3);
+	    localStorage.setItem("lastread-" + post_id, interval_version);
+	    console.log(4);
+	    mark_as_new(interval_version);
+	} catch (err) {
+	    console.log("error");
+	    console.log(err);
+	    newTime.style.backgroundColor = "#f22";
+	}
+//	setOption("lastread", f2i(newTime.value));
+    }
+    
+    newTime.addEventListener("change", setTime);
+    newTime.addEventListener("keydown", function() { newTime.style.backgroundColor = "white" });
+    document.getElementById("gotime").addEventListener("click", setTime);
+    
+
     
 }
-
 
 
