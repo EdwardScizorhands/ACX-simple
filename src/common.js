@@ -41,19 +41,14 @@ function tz_offset_to_str(minutes) {
 function i2f(str) {
     console.log("internal is " + str);
     var d = new Date(str);
-    console.log("d is " + d);
-    console.log(d);
     return get_24hour_local_datetime( new Date(str) );
     //return str.replace('T', ' ');
 }
 
 function f2i(str) {
     var d = new Date();
-    console.log(d);
     var now_tz = str.replace(' ', 'T') + tz_offset_to_str( d.getTimezoneOffset() );
-    console.log(now_tz);
     var e = new Date(now_tz);     // TODO: make sure this parses!
-    console.log(e);
     return e.toISOString();
 
 }

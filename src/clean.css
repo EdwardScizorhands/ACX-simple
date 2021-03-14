@@ -1,0 +1,21 @@
+.fakeimg1 {
+    text-align:center;
+    display:inline-block;
+    width: 40px;
+    max-width: 40px;
+    font-size: 40px;
+}
+
+.fakeimg2 {
+    text-align:center;
+    display:inline-block;
+    height: 40px;
+    max-height: 40px;
+    line-height: 40px;
+    width: 40px;
+    max-width: 40px;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+

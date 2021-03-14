@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.12.17",
+    "version" : "0.4.12.21",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
     "permissions": ["storage"
@@ -27,7 +27,7 @@
 		"new-ui.js",
 		"jquery-3.5.1.min.js"
 		  ],
-	    "css": ["style.css", "main.css"],
+	    "css": ["style.css", "main.css", "clean.css" ],
 	    "run_at": "document_start" // spin at start to stop crap
 	} ]
 }

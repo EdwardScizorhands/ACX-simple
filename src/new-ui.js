@@ -67,6 +67,10 @@ function mark_as_new(time) {
 	}
     });
 
+    // should these be in the refresh thing, or here?
+    $( "#applyTime ").prop( "disabled", false).text("APPLY");
+    $( "#newTime ").prop( "disabled", false);
+
     // this seems to help chrome refresh its UI faster
     setTimeout( function() { console.log("refresh?") }, 1 );
     
@@ -867,7 +871,7 @@ white-space: pre-line;
     <button style="font-size: smaller;" id=now>(now)</button>
   </div>
   <div>
-    <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=100% /><button id=gotime>APPLY</button>
+    <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=100% /><button style="width:60px;" id=applyTime>APPLY</button>
   </div>
 </div>
 <span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
@@ -1312,6 +1316,8 @@ white-space: pre-line;
     // dupe code
     var newTime = document.getElementById("newTime");
     var button = document.getElementById("now");
+//    var applytime = document.getElementById("applytime");
+    
     button.addEventListener("click", function() {
 	console.log("pressed now");
 	newTime.style.backgroundColor = "white";
@@ -1324,28 +1330,45 @@ white-space: pre-line;
     
     function setTime() {
 	console.log("date is changed, now " + newTime.value);
+	$( "#applyTime" ).prop("disabled", true).text( "busy…" );
+	$( "#newTime" ).prop("disabled", true);
 	// TODO: verify valid here
 	var interval_version;
 	try {
-	    console.log(1);
 	    interval_version = f2i(newTime.value);
-	    console.log(2);
-	    console.log("tehnical version is " + interval_version);
-	    console.log(3);
 	    localStorage.setItem("lastread-" + post_id, interval_version);
-	    console.log(4);
-	    mark_as_new(interval_version);
+	    // small gap to let Chrome/Brave catch up
+	    setTimeout ( function() { mark_as_new(interval_version) }, 1 );
 	} catch (err) {
+	    // should never catch here, delete this
 	    console.log("error");
-	    console.log(err);
 	    newTime.style.backgroundColor = "#f22";
-	}
+	} 
 //	setOption("lastread", f2i(newTime.value));
     }
+
+    function verifyTime() {
+	applytime = document.getElementById("applyTime");
+	try {
+	    // This is actually cleaner with plain JavaScript than jQuery??
+	    f2i(newTime.value);
+	    newTime.style.backgroundColor = "white";
+	    applytime.disabled = false;
+	} catch (err) {
+	    console.log("err is " + err.message);
+	    newTime.style.backgroundColor = "#f22";
+	    applytime.disabled = true;
+	} 
+    }
     
-    newTime.addEventListener("change", setTime);
-    newTime.addEventListener("keydown", function() { newTime.style.backgroundColor = "white" });
-    document.getElementById("gotime").addEventListener("click", setTime);
+    // I can use jQuery here, again
+    $( "#newTime" ).keydown( verifyTime).
+	keyup( verifyTime).
+	change( verifyTime).
+	bind( "paste",  verifyTime);
+    $( "#applyTime " ).click( setTime );
+    
+//    document.getElementById("gotime").addEventListener("click", setTime);
     
 
     
