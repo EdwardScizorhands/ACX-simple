@@ -45,10 +45,18 @@ chrome.storage.local.get(
 console.log("after getting settings");
 
 function flagged_date_string(dd, flag) {
-    return dd.toDateString() + " " + dd.toLocaleTimeString() + " " + flag;
+    return dd.toDateString() + " " + dd.toLocaleTimeString() + (flag ? (" " + flag) : "");
 }
 
 function mark_as_new(time) {
+    console.time("marknew");
+    // this is painfully slow on Chrome, and worse on Brave.
+    // But very fast on Firefox.
+
+    // Fast on Chrome if I go from "new" -> "new"
+    // Slow going from "new -> old" or "old -> old" or "old -> new"
+    // it is 3x the time to just _create_ the whole UI system. :/
+    var c = 0;
     $(".comment-meta").each ( function(i,e) {
 	zdate = e.getAttribute("zdate");
 	old = zdate < time;
@@ -59,16 +67,27 @@ function mark_as_new(time) {
 	// TODO: my old-v-new logic is duped, need to consolidate
 	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
 	if (new_date_s != date_node.innerText) {
+	    c += 1;
+	    if (c < 10) {
+		console.log("new_date_s is <" + new_date_s + ">");
+		console.log("old value was <" + date_node.innerText + ">");
+	    }
 	    date_node.innerText = new_date_s;
 	}
     });
+    console.log("done, changed text on " + c);
+    console.timeEnd("marknew");
 
+    console.time("refresh");
     // should these be in the refresh thing, or here?
     $( "#applyTime ").prop( "disabled", false).text("APPLY");
     $( "#newTime ").prop( "disabled", false);
 
     // this seems to help chrome refresh its UI faster
-    setTimeout( function() { console.log("refresh?") }, 1 );
+    setTimeout( function() {
+	console.log("refresh?");
+	console.timeEnd("refresh");
+    }, 1 );
     
 }
 
