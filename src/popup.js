@@ -53,7 +53,7 @@ window.onload  = function() {
     var cbLikes =  document.getElementById("settingLikes");
     cbLikes.addEventListener("change", function() {
 	console.log("like changed to " + cbLikes.checked);
-	setOption("likes", cbLikes ? 1 : 0);
+	setOption("likes", cbLikes.checked ? 1 : 0);
     });
     
 

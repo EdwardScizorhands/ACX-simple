@@ -50,16 +50,15 @@ function flagged_date_string(dd, flag) {
 
 function mark_as_new(time) {
     console.time("marknew");
-    // this is painfully slow on Chrome, and worse on Brave.
-    // But very fast on Firefox.
 
-    // Fast on Chrome if I go from "new" -> "new"
-    // Slow going from "new -> old" or "old -> old" or "old -> new"
-    // it is 3x the time to just _create_ the whole UI system. :/
     var c = 0;
+    var n_new = 0;
     $(".comment-meta").each ( function(i,e) {
 	zdate = e.getAttribute("zdate");
 	old = zdate < time;
+	if (!old) {
+	    n_new += 1;
+	}
 	// I am doing string manip instead of what's probaby the better way of
 	// adding/removing classes using jQuery tricks like Pycea does.
 	var date_node = e.childNodes[1];
@@ -79,7 +78,7 @@ function mark_as_new(time) {
     $( "#applyTime ").prop( "disabled", false).text("APPLY");
     $( "#newTime ").prop( "disabled", false);
 
-    // this seems to help chrome refresh its UI faster
+    // this seems to help chrome refresh its UI faster. Maybe?
     setTimeout( function() {
 	console.log("refresh?");
 	console.timeEnd("refresh");
