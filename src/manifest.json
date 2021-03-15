@@ -1,15 +1,18 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.12.29",
+    "version" : "0.4.12.30",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
     "permissions": ["storage"
 //		    "activeTab"
 		   ], // i think i actually need these now!
     "icons": {
-	"128" : "icons/acf-simple-128.png"
+	"128" : "icons/acf-simple-128.png" 
     },
+    "web_accessible_resources": [
+	"icons/acf-simple-mod-128.png"
+    ],
     "browser_action": {
 	"default_icon": "icons/acf-simple-128.png",
 	"default_title": "Simple ACX",
