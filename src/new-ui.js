@@ -6,6 +6,8 @@ var sort = "new";
 var debug = 0; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
+var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
+var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
 
 
 // internal only
@@ -65,6 +67,8 @@ function mark_as_new(time) {
 	// I am doing string manip instead of what's probaby the better way of
 	// adding/removing classes using jQuery tricks like Pycea does.
 	var date_node = e.childNodes[1];
+	if (!date_node) return;
+	
 	var dd = new Date(zdate); // TODO: see if this is a useless string object
 	// TODO: my old-v-new logic is duped, need to consolidate
 	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
@@ -199,11 +203,10 @@ function change(dot = false) {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
     link.rel = 'shortcut icon';
-    
-    link.href = dot ?
-	chrome.runtime.getURL("icons/acx-standard-mod-96.png") :
-	chrome.runtime.getURL("icons/acx-standard-96.png");    
+
+    link.href = dot ? modded_icon : normal_icon;
     console.log("setting to dot = " + dot);
+    console.log("href is " + link.href);
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -1358,20 +1361,18 @@ white-space: pre-line;
     $( "#newTime" ).val( i2f(lastread) ).
 	prop( "goodvalue", i2f(lastread) );
     
-//    var newTime = document.getElementById("newTime");
-//    newTime.value = i2f(lastread);
-//    newTime.realvalue = i2f(lastread);
-//    document.getElementById("newTime").realvalue = i2f(lastread);
-    // that's not jQuery-friendly
-    
+    // TODO: remove common code below
     $( "#now" ).click ( function() {
-	console.log("pressed now");
-	var d = new Date();
 	$( "#newTime" ).val( get_24hour_local_datetime() ).
 	    removeClass( "badtime" ).
 	    addClass( "modtime" );
     });
-    $( "#latest" ).click( function
+    $( "#latest" ).click( function() {
+	$( "#newTime" ).val( i2f(global_latest) ).
+	    removeClass( "badtime" ).
+	    addClass( "modtime" );
+    });
+	
     console.log("added click");
     
     function setTime() {
