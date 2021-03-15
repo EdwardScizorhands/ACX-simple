@@ -199,6 +199,7 @@ setTimeout(eat_page, 0);
 
 
 function change(dot = false) {
+    if (change_icon == false) return;
     // check e575618bed9c68139cb92a2b6e69f0db3f0ac7b3 for old debug code
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -884,6 +885,8 @@ function phase_two() {
     // TODO: put into its own file
     // the link here seems unused?
     // the link here works on firefox, not on chrome!
+// <link rel="shortcut icon" type="image/jpg" href="https://stackoverflow.com/favicon.ico" />
+    // wait, nothing works in chrome!
     // link renoved
     newHTML = `<html>
   <head>
@@ -1441,7 +1444,6 @@ white-space: pre-line;
     $( "#applyTime" ).click( setTime );
     $( "#cancelTime" ).click( revertTime ); 
     
-    window.addEventListener('blur', function() { console.log(" haha, window go blurrrrr"); } );
     window.addEventListener('focus', function() { change() } );    
     
 }
