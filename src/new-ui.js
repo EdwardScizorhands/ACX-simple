@@ -203,7 +203,7 @@ function change(dot = false) {
     link.href = dot ?
 	chrome.runtime.getURL("icons/acx-standard-mod-96.png") :
 	chrome.runtime.getURL("icons/acx-standard-96.png");    
-    console.log("setting to dot");
+    console.log("setting to dot = " + dot);
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -897,10 +897,24 @@ white-space: pre-line;
 <div style="z-index:10; background-color: #f0f0f0; position: fixed;top: 1em;right: 1em;">
   <div>
     Highlight as 'new' posts made after:
-    <button style="font-size: smaller;" id=now>(now)</button>
   </div>
+    <table>
+     <tr>
+      <td>
+       <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=80% />
+      </td>
+     <td>
+      <span width=20% >
+       <button style="width:60px;" id=applyTime>APPLY</button>
+       <br>
+       <button style="width:60px;" id=cancelTime>CANCEL</button>
+     </span>
+    </td>
+   </tr>
+  </table>
   <div>
-    <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=100% /><button style="width:60px;" id=applyTime>APPLY</button>
+    <button style="font-size: smaller; width=50%" id=now>Set to now</button>
+    <button style="font-size: smaller; width=50%" id=latest>Set to latest comment on page</button>
   </div>
 </div>
 <span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
@@ -1341,21 +1355,23 @@ white-space: pre-line;
     });
 
 
+    $( "#newTime" ).val( i2f(lastread) ).
+	prop( "goodvalue", i2f(lastread) );
     
-//    last_read = "MOAR MAGIC";
-    document.getElementById("newTime").value = i2f(lastread);
-
-    // dupe code
-    var newTime = document.getElementById("newTime");
-    var button = document.getElementById("now");
+//    var newTime = document.getElementById("newTime");
+//    newTime.value = i2f(lastread);
+//    newTime.realvalue = i2f(lastread);
+//    document.getElementById("newTime").realvalue = i2f(lastread);
+    // that's not jQuery-friendly
     
-    button.addEventListener("click", function() {
+    $( "#now" ).click ( function() {
 	console.log("pressed now");
 	var d = new Date();
 	$( "#newTime" ).val( get_24hour_local_datetime() ).
-	    removeClass( "badtime" );
-
+	    removeClass( "badtime" ).
+	    addClass( "modtime" );
     });
+    $( "#latest" ).click( function
     console.log("added click");
     
     function setTime() {
@@ -1369,22 +1385,33 @@ white-space: pre-line;
 		console.log("official time is " + official_time);
 		console.log("i2f of that is " + i2f(official_time));
 	    }
-	    $( "#newTime" ).prop("disabled", true).val( i2f(official_time) );
 	    localStorage.setItem("lastread-" + post_id, official_time);
-
-	    // small gap to let Chrome/Brave UI thread catch up
+	    $( "#newTime" ).prop("disabled", true).
+		removeClass( "modtime" ).
+		val( i2f(official_time) ).
+		prop( "goodvalue", i2f(official_time) );
+	    
+	    // small gap to let Chrome/Brave UI thread catch up.
+	    // TODO: still needed?
 	    setTimeout ( function() { mark_as_new(official_time) }, 1 );
 	} catch (err) {
+	    // this should really never happen
 	    alert("oops");
 	}
 
     }
 
+    function revertTime() {
+	$( "#newTime" ).val ( $( "#newTime" ).prop( "goodvalue" ));
+	$( "#newTime" ).removeClass ( "badtime modtime ");
+    }
+    
     function verifyTime() {
+	newTime = document.getElementById("newTime");
 	applytime = document.getElementById("applyTime");
 	try {
 	    // This is actually cleaner with plain JavaScript than jQuery??
-	    f2i(newTime.value);
+	    f2i( newTime.value);
 	    $( "#newTime" ).removeClass( "badtime" );
 //	    newTime.style.backgroundColor = "white";
 	    applytime.disabled = false;
@@ -1394,7 +1421,15 @@ white-space: pre-line;
 	    }
 	    $( "#newTime" ).addClass( "badtime" );
 	    applytime.disabled = true;
-	} 
+	} finally {
+	    console.log("adding modtime?");
+	    // this may be too broad
+	    if (newTime.value != newTime.goodvalue) {
+		$( "#newTime" ).addClass( "modtime" );
+	    } else {
+		$( "#newTime" ).removeClass( "modtime" );
+	    }
+	}
     }
     
     // I can use jQuery here, again
@@ -1402,11 +1437,11 @@ white-space: pre-line;
 	keyup( verifyTime).
 	change( verifyTime).
 	bind( "paste",  verifyTime);
-    $( "#applyTime " ).click( setTime );
+    $( "#applyTime" ).click( setTime );
+    $( "#cancelTime" ).click( revertTime ); 
     
-//    document.getElementById("gotime").addEventListener("click", setTime);
-    
-
+    window.addEventListener('blur', function() { console.log(" haha, window go blurrrrr"); } );
+    window.addEventListener('focus', function() { change() } );    
     
 }
 

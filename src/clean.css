@@ -18,6 +18,10 @@
     white-space: nowrap;
 }
 
+.modtime {
+    background-color: #ffc;
+}
+	
 .badtime {
     background-color: #f22;
 }
