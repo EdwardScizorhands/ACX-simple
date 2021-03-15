@@ -24,7 +24,10 @@ cp src/manifest.json \
    src/jquery-3.5.1.min.js \
    src/main.css  src/style.css src/clean.css \
    src/new-ui.js src/popup.html src/popup.js src/common.js   $temp_dir/src
-cp src/icons/acf-simple-128.png $temp_dir/src/icons
+cp src/icons/acf-simple-128.png \
+   src/icons/acf-simple-mod-128.png \
+   src/icons/acx-standard-96.png \
+   src/icons/acx-standard-mod-96.png    $temp_dir/src/icons
 
 # Firefox xpi DOES THIS STILL WORK?
 (cd $temp_dir/src/;

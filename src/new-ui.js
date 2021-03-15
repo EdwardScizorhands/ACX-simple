@@ -6,8 +6,11 @@ var sort = "new";
 var debug = 0; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
+
+
 // internal only
-var change_icon = false;
+var change_icon = true;
+
 var reload_speed = 15 * 1000;
 const domain = 'astralcodexten';
 
@@ -153,17 +156,20 @@ function eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.
     window.fred += 1;
-    //console.log("eat page?  " + window.fred);
+    console.log("eat page?  " + window.fred);
     if (window.fred > 20) {
 	setTimeout( phase_two, 1);
 	return;
     }
-    //    console.log("document.head is " + document.head);
-    // console.log("document body is " + document.body);
+    console.log("document.head is " + document.head);
+    if (document.head != null) {
+	window.stop(); // we have what we need
+    }
+    console.log("document body is " + document.body);
     if (document.body == null) {
 //	console.log("debug is " + debug);
-//	console.log("not loaded yet");
-	setTimeout(eat_page, change_icon ? 100: 0);
+	console.log("not loaded yet");
+	setTimeout(eat_page, change_icon ? 0: 0);
 	return;
     }
     console.log("prep");
@@ -188,19 +194,16 @@ function eat_page() {
 setTimeout(eat_page, 0);
 
 
-function change() {
-    
+function change(dot = false) {
+    // check e575618bed9c68139cb92a2b6e69f0db3f0ac7b3 for old debug code
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
     link.rel = 'shortcut icon';
-    var domains = [ "www.facebook.com", "www.umich.edu", "w3schools.com",
-		    "www.cnn.com", "www.foxnews.com", "www.example.org",
-		    "www.target.com", "www.reddit.com", "www.twitter.com",
-		    "www.rubiks.com",  "www.youtube.com", "one.com" ]
-    var domain = domains[ Math.floor( Math.random() * domains.length ) ];
     
-    link.href  = 'https://' + domain + '/favicon.ico';
-    console.log("changing icon to " + domain);
+    link.href = dot ?
+	chrome.runtime.getURL("icons/acx-standard-mod-96.png") :
+	chrome.runtime.getURL("icons/acx-standard-96.png");    
+    console.log("setting to dot");
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -802,11 +805,12 @@ function dump_it(data, status, xh, now = false) {
 	console.log(xh); 
 	console.log("DUMP IT " + JSON.stringify(data));
 	scan_comments(data);
+	if (change_icon) {
+	    change(true);
+	    // we never change it back :/
+	}
     } else {
 	console.log("nuthin'");
-	if (change_icon) {
-	    change();
-	}
     }
     if (!now) {
 	setTimeout( spin_comments, 1 );
@@ -975,12 +979,16 @@ white-space: pre-line;
 	console.log("466: document.body should be null, is " + document.body);
     }
     {
+
+	// this is old crap that isn't needed, right??
+	
 	var head = document.createElement('head');
 	head.innerHTML = "<meta>stuff</meta>";
 	document.head = head;
 	//document.head.innerHTML = "<meta>stuff</meta>";
 	// I should put the proper head elements into the head
     }
+    change();
     var body = document.createElement('body');
     document.body = body;
     
