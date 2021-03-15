@@ -15,12 +15,7 @@ For Chrome:
 
 For Firefox:
 
-(Test instructions: go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) and install the signed acx_simple-0.4.12.0-an+fx.xpi file)
-
-
-1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and download the ACX-Simple-firefox-(date).xpi to some folder.
-2. Browse to about:debugging, click "This Firefox" on the left.
-3. Click "Load Temporary Add-on", and select the XPI file. 
+Test instructions: go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) and install the signed acx_simple-0.4.13.1-an+fx.xpi right in Firefox.
 
 Then, whenever you want to use it, add "/comments" to the end of a URL:
 
