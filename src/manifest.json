@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.12.31",
+    "version" : "0.4.12.32",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
     "permissions": ["storage"
@@ -11,7 +11,11 @@
 	"128" : "icons/acf-simple-128.png" 
     },
     "web_accessible_resources": [
-	"icons/acf-simple-mod-128.png"
+	"icons/acf-simple-128.png",
+	"icons/acf-simple-mod-128.png",
+
+	"icons/acx-standard-96.png",
+	"icons/acx-standard-mod-96.png"
     ],
     "browser_action": {
 	"default_icon": "icons/acf-simple-128.png",
