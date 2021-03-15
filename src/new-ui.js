@@ -22,6 +22,23 @@ const domain = 'astralcodexten';
 
 var settings_loaded = false;
 
+
+console.log("*** before debug");
+var post_slug = document.URL.split("/")[4];
+var hpt = btoa(post_slug);
+var post_id = localStorage.getItem(hpt+"-id");
+var post_title = localStorage.getItem(hpt+"-title");
+var my_user_id = localStorage.getItem("my_user_id");
+var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
+
+if (post_id == null || post_title == null || my_user_id == null) {
+    setTimeout( check_jQuery, 0 );
+} else {
+    setTimeout(eat_page, 0);
+}
+
+
+
 chrome.storage.local.get(
     [ "debug", "likes", "reload", "sort", "lastread" ], function(x) {
 
@@ -195,7 +212,6 @@ function eat_page() {
     document.body.appendChild(header);
     setTimeout(eat_page, 1);
 }
-setTimeout(eat_page, 0);
 
 
 function change(dot = false) {
@@ -206,8 +222,10 @@ function change(dot = false) {
     link.rel = 'shortcut icon';
 
     link.href = dot ? modded_icon : normal_icon;
-    console.log("setting to dot = " + dot);
-    console.log("href is " + link.href);
+    if (debug) {
+	console.log("setting to dot = " + dot);
+	console.log("href is " + link.href);
+    }
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -649,17 +667,6 @@ function make_comment_list_from_array(cs) {
 }
 
 
-var post_slug = document.URL.split("/")[4];
-var hpt = btoa(post_slug);
-var post_id = localStorage.getItem(hpt+"-id");
-var post_title = localStorage.getItem(hpt+"-title");
-var my_user_id = localStorage.getItem("my_user_id");
-var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
-
-if (post_id == null || post_title == null || my_user_id == null) {
-    setTimeout( check_jQuery, 0 );
-}
-
 function check_jQuery() {
     var a = typeof jQuery;
     console.log("a is " + a);
@@ -849,6 +856,8 @@ function spin_comments() {
 	setTimeout( load_comments, reload_speed );
     }
 }
+
+
 
 
 
