@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.13.1",
+    "version" : "0.4.13.2",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
     "permissions": ["storage"
@@ -26,13 +26,15 @@
     "content_scripts": [
 	{
             "matches": [
-		"https://astralcodexten.substack.com/p/*/comments",
-		"https://astralcodexten.substack.com/p/*/simple"
+		"https://*.substack.com/p/*/comments",
+		"https://*.substack.com/p/*/simple"
 	    ],
 	    "js": [
-		"common.js",
 		"new-ui.js",
-		"jquery-3.5.1.min.js"
+		"common.js",
+
+				"jquery-3.5.1.min.js"
+		//"eater.js"
 		  ],
 	    "css": ["style.css", "main.css", "clean.css" ],
 	    "run_at": "document_start" // spin at start to stop crap

@@ -1,4 +1,20 @@
 
+
+document.listener = []
+
+var f = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function(type, fn, capture) {
+    document.listener.push(fn);
+    this.f = f;
+    
+    this.f(type, fn, capture);
+    console.log('Added Event Listener: on' + type);
+    console.log(fn);
+    console.log(this);
+    // um, adding this seems to have gotten rid of the listeners I hated???
+}
+
+
 // changeable in popup
 var reload_comments = true;
 var have_scores = false;
@@ -14,7 +30,8 @@ var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
 var change_icon = true;
 
 var reload_speed = 15 * 1000;
-const domain = 'astralcodexten';
+// const domain = 'astralcodexten';
+const domain = document.domain.split(".")[0]
 
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
@@ -34,7 +51,7 @@ var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:
 if (post_id == null || post_title == null || my_user_id == null) {
     setTimeout( check_jQuery, 0 );
 } else {
-    setTimeout(eat_page, 0);
+    setTimeout(eat_page, 1000);
 }
 
 
@@ -184,8 +201,19 @@ function eat_page() {
     }
     console.log("document.head is " + document.head);
     if (document.head != null) {
+	console.log("stopping all further loading");
 	window.stop(); // we have what we need
     }
+    
+    // can I inject code into the head to catch any stray functions?
+    console.log("jQuery is " + jQuery);
+    if (jQuery) {
+	console.log("html is " + $("#html") );
+	console.log( $("#html") );
+
+    	console.log("document is" + $("document") );
+   	console.log( $("document") );
+}
     console.log("document body is " + document.body);
     if (document.body == null) {
 //	console.log("debug is " + debug);
@@ -210,7 +238,8 @@ function eat_page() {
     var header = document.createElement('h1');
     header.textContent = "Loading ACX Simple";
     document.body.appendChild(header);
-    setTimeout(eat_page, 1);
+
+    setTimeout(eat_page, 1 * 1000);
 }
 
 
@@ -309,12 +338,14 @@ function new_comments2(data) {
 }
 
 function submit_comment2(x) {
+    console.log("SUBMIT COMMENT");
     if (debug > 0) {
 	console.log("trying to submit: " + x);
 	console.log(x);
 	document.abc = x; // so the console can play with it. (Does this work?)
 	   
     }
+    console.log("ha hah");
     x.disabled = true; // no double posts.
     var body = x.form.body.value;
     var token = null;
@@ -324,7 +355,7 @@ function submit_comment2(x) {
     var url = 'https://' + domain + '.substack.com/api/v1/post/' + post_id + '/comment'
 
     // TODO: make sure jQuery has loaded 
-    
+    console.log("jquery is " + jQuery);
     var  data = { body: body,
                   token: token,
                   parent_id: id };
@@ -685,6 +716,7 @@ function retrieve_meta_data() {
     
         
     var url = document.URL;
+    url = url.replace(/simple$/, '');
     url = url.replace(/simple$/, 'comments');
     
     if (debug) {
@@ -1364,6 +1396,7 @@ white-space: pre-line;
     //    new_root.style.display = "block";
     new_root.id="root_comment";
     document.getElementById("newrootcomment").append( new_root );
+    console.log("************* NEW ROOT");
     var root_reply = new_root.post;
     root_reply.addEventListener("click", function(){
 	submit_comment2(root_reply);

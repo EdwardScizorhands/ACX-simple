@@ -18,6 +18,68 @@ x 10. status window
      * status on last load
      * status on count of new comments
      * status on count of loaded-but-not-shown comments
-  11. "show likes + score" setting not applying (on firefox?)
+? 11. "show likes + score" setting not applying (on firefox?)
+  12. if I have "reload_icon" set, enough of the base page loads to
+      load stuff in the background. I can kill this crudely, but it
+      reactives when the window comes back into focus.
+      -> Um, trying to disable all the Substack stuff is EXACTLY
+      	 WHY I DID NOT WANT TO DO THIS!
+        -> On Chrome, there is no way to thread this needle: if enough of
+	   the <head> loads to activate the icon, the body loads, too.,
+           * window.stop() after document.body exists is too soon
+ 	   * window.stop() at body.onload is too late.
+	-> I can't even set body to "" or remove it.
+      -> I can always redirect the user to /simple
+      -> Oh, I can do what ad-blockers do and block loading all the scripts! :D 
+  13. Only show top comments (heck, this was the old default functionality I had!)
+
+
+  Things that make me able to change the icon
+
+  1, I think I need to load the icon naturally. I can window.stop() 
+
+# on chrome, to get rid of root visibility change event listener
+
+var ff = getEventListeners(window.document)["visibilitychange"][0].listener
+getEventListeners(window.document)
+window.document.removeEventListener("visibilitychange",   ff ) ;
+
+# wipe all intervals and timeouts
+
+    for (var i = 0; i < 300000; i++) {
+        window.clearTimeout(i);
+        window.clearInterval(i);
+    }
+
+# load jQuery
+
+ar jq = document.createElement('script');
+jq.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js";
+document.getElementsByTagName('head')[0].appendChild(jq);
+// ... give time for script to load, then type (or see below for non wait option)
+jQuery.noConflict();
+
+#
+
+var clone = document.clone;
+
+
+var f = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function(type, fn, capture) {
+	   document.listener.push(f);
+    this.f = f;
+    this.f(type, fn, capture);
+    alert('Added Event Listener: on' + type);
+}
+
+
+
+var ss = document.styleSheets; ss[ss.length-1].insertRule(".profile-img-badge { display: none; }")
+
+Tue Mar 23 2021 8:01:03 AM ~new~
+
+Something frustrating about posting comments here is, yes, you can in fact hide long threads by clicking on the vertical lines descending from the root, but when you post a comment, the thread expands again, and the page refreshes to the place you were in proportion to total length of the page instead of refreshing back to where you actually were, so you get jumped up instead of landing back where you actually made the comment, and need to search to resume where you were reading.
+
+It's weird to get commenting so wrong when real-time in-browser interactivity was a solved problem in the phpBB days over 20 years ago.
 
 
