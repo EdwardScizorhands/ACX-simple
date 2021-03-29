@@ -1,17 +1,32 @@
 
 
-document.listener = []
+var is_firefox = 2;
+console.log( typeof(browser) );
+if (typeof(browser) == "undefined") {
+    is_firefox = true;
+} else {
+    is_firefox = false;
+}
+// TODO: use is_firefox because we don't need to kill so many things below
 
-var f = EventTarget.prototype.addEventListener;
-EventTarget.prototype.addEventListener = function(type, fn, capture) {
-    document.listener.push(fn);
-    this.f = f;
+
+
+var try_listener = false;
+if (try_listener) {
+    // I think this was all a stupid thing to try.
     
-    this.f(type, fn, capture);
-    console.log('Added Event Listener: on' + type);
-    console.log(fn);
-    console.log(this);
-    // um, adding this seems to have gotten rid of the listeners I hated???
+    document.listener = []
+    
+    var f = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, fn, capture) {
+	document.listener.push(fn);
+	this.f = f;
+	
+	this.f(type, fn, capture);
+	console.log('Added Event Listener: on' + type);
+	console.log(fn);
+	console.log(this);
+    }
 }
 
 
@@ -40,7 +55,6 @@ const domain = document.domain.split(".")[0]
 var settings_loaded = false;
 
 
-console.log("*** before debug");
 var post_slug = document.URL.split("/")[4];
 var hpt = btoa(post_slug);
 var post_id = localStorage.getItem(hpt+"-id");
@@ -48,10 +62,18 @@ var post_title = localStorage.getItem(hpt+"-title");
 var my_user_id = localStorage.getItem("my_user_id");
 var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
 
-if (post_id == null || post_title == null || my_user_id == null) {
+if (debug) {
+    console.log("*** DEBUG 1");
+    console.log(post_id);
+    console.log(post_title);
+    console.log(my_user_id);
+    console.log("*** DEBUG 2");
+}
+if (post_id == null || post_title == null || my_user_id == null || my_user_id == "NaN") {
+    console.log("NEED TO RELOAD");
     setTimeout( check_jQuery, 0 );
 } else {
-    setTimeout(eat_page, 1000);
+    setTimeout(eat_page, 1);
 }
 
 
@@ -71,17 +93,11 @@ chrome.storage.local.get(
 	sort = (x.sort ? x.sort : "new");
 	console.log("sort is now " + sort);
 
-	/*
-	lastread = x.lastread ? x.lastread : "2021-01-01T00:00:00.000Z"; // global, should be per-page. :<
-
-	console.log("lastread is " + lastread);
-	*/
 	settings_loaded = true;
 	console.log("settings are loaded!");
     });
 
 
-console.log("after getting settings");
 
 function flagged_date_string(dd, flag) {
     return dd.toDateString() + " " + dd.toLocaleTimeString() + (flag ? (" " + flag) : "");
@@ -700,7 +716,7 @@ function make_comment_list_from_array(cs) {
 
 function check_jQuery() {
     var a = typeof jQuery;
-    console.log("a is " + a);
+    //    console.log("a is " + a);
     if (a == "undefined") {
 	setTimeout( check_jQuery, 1);
     } else {
@@ -726,9 +742,6 @@ function retrieve_meta_data() {
     
     var body = document.createElement('body');
     document.body = body;
-    console.log("burp");
-
-    console.log("wiped?");
     
     var eatHtml = function(data, status, xh) {
 	console.log("got html response");
@@ -747,17 +760,18 @@ function retrieve_meta_data() {
 
 	localStorage.setItem(hpt + "-id", post_id);
 	localStorage.setItem(hpt + "-title", post_title);
-
+	
 	if (my_user_id == null) {
 	    var user_s = '<input type="hidden" name="user_id" value="'
 	    var u = data.indexOf(user_s) + user_s.length;
 	    var my_user_id = parseInt(data.substr(u, 20));
 	    localStorage.setItem("my_user_id", my_user_id);
 	}
+
 	
-	
-	// TODO: temporarily disable this, and debug extra crap that happens
 	location.reload();
+	// TODO: try just going to eat_page instead.
+	//setTimeout( eat_page, 1 );
     }
 
     console.log("launching AJAX!!!22");
@@ -1342,8 +1356,8 @@ white-space: pre-line;
     }
     
     var site = domain + ".substack.com";
-    var args = "?token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
-    var url = "https://" + site + "/api/v1/post/" + post_id + "/comments? " + args;
+    var args = "token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
+    var url = "https://" + site + "/api/v1/post/" + post_id + "/comments?" + args;
 
     console.log("why do I have that wrong hard-coded string in there?");
     

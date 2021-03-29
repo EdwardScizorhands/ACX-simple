@@ -1,12 +1,25 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.13.2",
+    "version" : "0.4.13.13",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
-    "permissions": ["storage"
-//		    "activeTab"
-		   ], // i think i actually need these now!
+
+    "permissions": [
+	"https://*.substack.com/p/*/comments",  
+	"https://*.substack.com/p/*/simple",
+	"https://unpkg.com/*", // not needed on firefox
+	"https://cdn.optimizely.com/*", // not needed on firefox
+	"webRequest","webRequestBlocking",
+	"storage"
+	//	"debugger" // only for chrome
+	//		    "activeTab"
+    ],
+    "background": {
+	// to stop UI crap
+	"scripts": ["background.js"],
+	"persistent": true // maybe not needed?
+    },
     "icons": {
 	"128" : "icons/acf-simple-128.png" 
     },
@@ -15,7 +28,8 @@
 	"icons/acf-simple-mod-128.png",
 
 	"icons/acx-standard-96.png",
-	"icons/acx-standard-mod-96.png"
+	"icons/acx-standard-mod-96.png",
+	"simple.html"
     ],
     "browser_action": {
 	"default_icon": "icons/acf-simple-128.png",
@@ -32,12 +46,9 @@
 	    "js": [
 		"new-ui.js",
 		"common.js",
-
-				"jquery-3.5.1.min.js"
-		//"eater.js"
-		  ],
+		"jquery-3.5.1.min.js"
+	    ],
 	    "css": ["style.css", "main.css", "clean.css" ],
 	    "run_at": "document_start" // spin at start to stop crap
 	} ]
 }
-
