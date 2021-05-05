@@ -1,15 +1,17 @@
 
 // chrome (and firefox) could redirect to this built-in page.
-var page = chrome.runtime.getURL("simple.html");
+var page = chrome.runtime.getURL("simple2.html");
 console.log(page);
 var background_debug = 1;
-var try_debugger = false;
+var try_debugger = false; // this is quite difficult to use right, if
+			  // possible at all
+var total_replace = false;
 
 ext = chrome ? chrome : browser;
 
 var a = 0;
 var b = 0;
-    
+
 if (try_debugger && chrome.debugger) {
     console.log("we have the chrome debugger!");
     
@@ -20,21 +22,29 @@ if (try_debugger && chrome.debugger) {
 		var target = targets[t];
 		
 		var url = target.url;
-		if (target.attached && url.indexOf("astral") > -1) {
-		    
+		if (url.indexOf("astral") > -1) {
 		    console.log(target);
+		}
+		if (//<target.attached &&
+		    url.indexOf("astral") > -1) {
+//		    console.log("UUUUUU");
+//		    console.log(target);
+		    //alert(target);
 		    var id = target.id;
 		    var debuggee = { targetId: id };
 		    // fails because we aren't attached?
-		    //chrome.debugger.sendCommand(debuggee, "Network.setRequestInterceptionEnabled", { enabled: true });
-		    if (false) {
+		    //var ttt = chrome.debugger.sendCommand(debuggee, "Network.setRequestInterceptionEnabled", { enabled: true });
+		    ///console.log("ttt is " + ttt);
+		    ///console.log(ttt);
+		    if (true) {
 			chrome.debugger.attach(debuggee, "1.2", () => {
 			    //chrome.debugger.sendCommand(debuggee, "Network.setRequestInterceptionEnabled", { enabled: true });
 			});
+			chrome.debugger.detach(debuggee, function() {
+			    console.log("DETACH");
+			})
+			
 		    }
-		    chrome.debugger.detach(debuggee, function() {
-			console.log("DETACH");
-		    })
 		}
 	    }
 	}
@@ -44,6 +54,21 @@ if (try_debugger && chrome.debugger) {
 
 ext.webRequest.onBeforeRequest.addListener(
     function(x) {
+
+	if (total_replace) {
+	    console.log("redirect on " + x + " ?");
+	    if (! ext.webRequest.filterResponseData) {
+		// not on firefox, so try to redirect
+		if (x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
+		    x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)) {
+		    alert("redirect");
+		    return { redirectUrl: page + "?page=" + x.url };
+		};
+		
+	    }
+	}
+	
+	
 	if (background_debug) {
 	    console.log("BEFORE REQUEST");
 	    console.log(x);
@@ -92,6 +117,7 @@ ext.webRequest.onBeforeRequest.addListener(
 	    // x.url.startsWith("https://unpkg.com/") ||
 	    // x.url.startsWith("https://cdn.optimizely.com/")
 	   ) {
+	    alert("blocking");
 	    console.log("CDN is " + x.url.substring(0,15) + ", kill it");
 	    return {cancel: true};
 	} else if (x.url.startsWith("chrome-extension://")) {
@@ -112,7 +138,8 @@ ext.webRequest.onBeforeRequest.addListener(
 );
 
 if (false)  {
-    // I think this sucks.
+    // I think this sucks. I'm trying to stop other stuff from loading.
+    // Probably should throw it all in the trash.
 chrome.webRequest.onBeforeSendHeaders.addListener(
     function(x) {
 	console.log("BEFORE SEND HEADERS");

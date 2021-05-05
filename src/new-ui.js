@@ -1,4 +1,5 @@
 
+var complete_replace = document.URL.startsWith("chrome-extension://");
 
 var is_firefox = 2;
 console.log( typeof(browser) );
@@ -34,7 +35,7 @@ if (try_listener) {
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 0; // 0, 1, 2
+var debug = 1; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
 var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
@@ -42,11 +43,9 @@ var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
 
 
 // internal only
-var change_icon = true;
+var change_icon = false;
 
 var reload_speed = 15 * 1000;
-// const domain = 'astralcodexten';
-const domain = document.domain.split(".")[0]
 
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
@@ -54,13 +53,28 @@ const domain = document.domain.split(".")[0]
 
 var settings_loaded = false;
 
+console.log(localStorage);
 
-var post_slug = document.URL.split("/")[4];
+console.log(document.URL);
+var this_url = document.URL;
+if (this_url.startsWith("chrome-extension://")) {
+    this_url = window.location.search.split("=")[1];
+}
+
+if (debug > 0) {
+    console.log("this_url is now " + this_url);
+    console.log(this_url.split("/"));
+}
+var my_domain = this_url.split("/")[2];
+const domain = my_domain.split(".")[0]
+
+var post_slug = this_url.split("/")[4];
 var hpt = btoa(post_slug);
 var post_id = localStorage.getItem(hpt+"-id");
 var post_title = localStorage.getItem(hpt+"-title");
 var my_user_id = localStorage.getItem("my_user_id");
 var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
+
 
 if (debug) {
     console.log("*** DEBUG 1");
@@ -716,7 +730,9 @@ function make_comment_list_from_array(cs) {
 
 function check_jQuery() {
     var a = typeof jQuery;
-    //    console.log("a is " + a);
+    if (debug > 0) {
+	console.log("a is " + a);
+    }
     if (a == "undefined") {
 	setTimeout( check_jQuery, 1);
     } else {
@@ -730,16 +746,17 @@ function retrieve_meta_data() {
     // Yo dawg, load the same page we are on
     // (Is there a better way to do this? Can I read the HTML somehow?)
     
-        
-    var url = document.URL;
+    
+    var url = this_url;
     url = url.replace(/simple$/, '');
-    url = url.replace(/simple$/, 'comments');
+//    url = url.replace(/simple$/, 'comments'); // this line does nothing?
+    
     
     if (debug) {
 	console.log(url);
 	console.log("wiping out document...?");
     }
-    
+
     var body = document.createElement('body');
     document.body = body;
     
@@ -943,9 +960,18 @@ function phase_two() {
 // <link rel="shortcut icon" type="image/jpg" href="https://stackoverflow.com/favicon.ico" />
     // wait, nothing works in chrome!
     // link renoved
+
+
+    // this is duped in simple2.html
+    
     newHTML = `<html>
   <head>
     <title id=title1>Simple ACX: ` + escapeHTML(post_title) + `</title>
+<!--  access these if they are neither part of manifest.json nor part of the web-accessible-resources? -->
+   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="clean.css"> 
+
 <style>.comment-body p {
 white-space: pre;
 white-space: pre-line;
@@ -1066,6 +1092,8 @@ white-space: pre-line;
     change();
     var body = document.createElement('body');
     document.body = body;
+
+    
     
     document.body.innerHTML = newHTML;
 

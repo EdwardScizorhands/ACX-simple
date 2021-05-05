@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+  <!-- this is duped from new-ui.js. Verify they are still the same
+       and then de-duplicat -->
+     
+<head>
+  <title id=title1>Simple ACX: XXX</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="clean.css">
+  <script src="common.js"></script>
+  <script src="jquery-3.5.1.min.js"></script>
+  <script src="new-ui.js"></script>
+  <!-- put this in another file -->
+  <style>.comment-body p {
+    white-space: pre;
+    white-space: pre-line;
+}
+    </style>
+  </head>
+  <body>
+
+
+<div style="background-color:white; width:100%"><span id=status style="text-align:left;">status goes here</span>
+<div style="z-index:10; background-color: #f0f0f0; position: fixed;top: 1em;right: 1em;">
+  <div>
+    Highlight as 'new' posts made after:
+  </div>
+    <table>
+     <tr>
+      <td>
+       <input style="font-family: Courier New; font-size: x-large;" type=text id="newTime" width=80% />
+      </td>
+     <td>
+      <span width=20% >
+       <button style="width:60px;" id=applyTime>APPLY</button>
+       <br>
+       <button style="width:60px;" id=cancelTime>CANCEL</button>
+     </span>
+    </td>
+   </tr>
+  </table>
+  <div>
+    <button style="font-size: smaller; width=50%" id=now>Set to now</button>
+    <button style="font-size: smaller; width=50%" id=latest>Set to latest comment on page</button>
+  </div>
+</div>
+<span style="float:right; display:none;">New Comments:<button style="display:none;" name="checknow">Check Now</button></span></div>
+<div style="display:none;">
+<form id=commentor method="post" class="form comment-input" novalidate="">
+<input type=hidden value=123 name=parent_id />
+
+<div class="comment-input-head"><div class="user-head "><a href=""><div class="profile-img-wrap">
+<div>→</div>
+</div></a></div></div><textarea style="resize:both; height:100px; width:50%;" name="body" placeholder="Write a comment…" value="" style="height: 37px;"></textarea><div id="error-container"></div>
+<button tabindex="0" class="button primary " type="button" name="post"">Post</button>
+<button tabindex="0" class="button " style="display:none;" type="button" name="cancel"">Cancel</button>
+</form>
+</div>
+<p id=newrootcomment />
+
+
+
+   <div class="comments-page" id=comments><b>comments:</b>
+    <div class="container">
+      <div class="comment-list-container">
+       <div class="comment-list">
+        <div class="comment-list-items" id="comment-list-items">
+     
+        </div> <!-- .comment-list-items -->
+       </div> <!-- .comment-list -->
+      </div> <!-- .comment-list-container -->
+    </div> <!-- .container --> 
+   </div> <!-- .comments-page -->
+   <div id=hidden>Loading comments, this will go faster in the future, I promise...</div>
+
+  <div id=test_new_comment />
+  <div id=last style="display:none;" />
+  </body>
+</html>
