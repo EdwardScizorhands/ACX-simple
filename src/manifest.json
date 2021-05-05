@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.13.17",
+    "version" : "0.4.13.18",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
@@ -29,7 +29,7 @@
 
 	"icons/acx-standard-96.png",
 	"icons/acx-standard-mod-96.png",
-	"simple.html"
+	"simple2.html"
     ],
     "browser_action": {
 	"default_icon": "icons/acf-simple-128.png",

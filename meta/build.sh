@@ -22,6 +22,7 @@ mkdir $temp_dir/src/icons
 
 cp src/manifest.json \
    src/jquery-3.5.1.min.js \
+   src/simple2.html \
    src/main.css  src/style.css src/clean.css \
    src/new-ui.js src/popup.html src/popup.js src/common.js   $temp_dir/src
 cp src/icons/acf-simple-128.png \
