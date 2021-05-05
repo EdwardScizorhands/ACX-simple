@@ -6,3 +6,4 @@ src.pem
 *# 
 *.out
 *.json
+stuff/**
