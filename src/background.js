@@ -5,7 +5,7 @@ console.log(page);
 var background_debug = 1;
 var try_debugger = false; // this is quite difficult to use right, if
 			  // possible at all
-var total_replace = false;
+var total_replace = true;
 
 ext = chrome ? chrome : browser;
 
@@ -57,15 +57,10 @@ ext.webRequest.onBeforeRequest.addListener(
 
 	if (total_replace) {
 	    console.log("redirect on " + x + " ?");
-	    if (! ext.webRequest.filterResponseData) {
-		// not on firefox, so try to redirect
-		if (x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
-		    x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)) {
-		    alert("redirect");
-		    return { redirectUrl: page + "?page=" + x.url };
-		};
-		
-	    }
+	    if (x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
+		x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)) {
+		return { redirectUrl: page + "?page=" + x.url };
+	    };
 	}
 	
 	

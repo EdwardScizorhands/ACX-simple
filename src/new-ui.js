@@ -1,6 +1,7 @@
 
-var complete_replace = document.URL.startsWith("chrome-extension://");
-
+var total_replace = document.URL.startsWith("chrome-extension://") ||
+    document.URL.startsWith("moz-extension://");
+    
 var is_firefox = 2;
 console.log( typeof(browser) );
 if (typeof(browser) == "undefined") {
@@ -57,7 +58,7 @@ console.log(localStorage);
 
 console.log(document.URL);
 var this_url = document.URL;
-if (this_url.startsWith("chrome-extension://")) {
+if (total_replace) {
     this_url = window.location.search.split("=")[1];
 }
 
