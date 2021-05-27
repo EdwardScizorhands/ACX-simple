@@ -1125,6 +1125,7 @@ white-space: pre-line;
 	var comments = data["comments"];
 	
 	var string = "there are " + comments.length + " top comments";
+	string = this_url;
 	console.timeEnd('parseJSON');	
 	console.log(string);
 	$( "#status" ).text(string);
