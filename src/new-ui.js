@@ -585,7 +585,7 @@ function make_comment(c, flag="") {
     // always do the dummy avatar, for faster loading
     if (never_load_avatars || c.photo_url == null) {
 	try {
-	    var names = c.name ? c.name.split(" ") : null_name;
+	    var names = c.name ? c.name.split(/\s+/) : null_name;
 	    letter = names.length > 1 ? names[0][0] + names[1][0] : names[0][0]
 	} catch (err) {
 	    console.log(err.message);

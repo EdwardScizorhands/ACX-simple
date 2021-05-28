@@ -1,4 +1,6 @@
 
+  0. Handle 529 rejections gracefully
+     * if my browser restarts, I'll hit from multiple tabs at once and Substack will slow me down and my script will speed up
   1. Local DB of posts
      * how cross-platform is this?
 x 2. "new" post marker <-- priority
