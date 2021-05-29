@@ -1,3 +1,5 @@
+// 
+
 
 var total_replace = document.URL.startsWith("chrome-extension://") ||
     document.URL.startsWith("moz-extension://");
@@ -12,24 +14,6 @@ if (typeof(browser) == "undefined") {
 // TODO: use is_firefox because we don't need to kill so many things below
 
 
-
-var try_listener = false;
-if (try_listener) {
-    // I think this was all a stupid thing to try.
-    
-    document.listener = []
-    
-    var f = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type, fn, capture) {
-	document.listener.push(fn);
-	this.f = f;
-	
-	this.f(type, fn, capture);
-	console.log('Added Event Listener: on' + type);
-	console.log(fn);
-	console.log(this);
-    }
-}
 
 
 // changeable in popup
@@ -914,7 +898,7 @@ function spin_comments() {
 
 
 
-
+// before we get here 
 function phase_two() {
 
     console.log("setting_loaded is " + settings_loaded);
@@ -962,11 +946,9 @@ function phase_two() {
    <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="clean.css"> 
-
-<style>.comment-body p {
-white-space: pre;
-white-space: pre-line;
-} </style>
+<!-- getting rid of this empty style breaks something; I think I 
+     foolishly relied on its existence in some other hack -->
+<style></style>
   </head>
   <body>
 

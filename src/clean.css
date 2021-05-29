@@ -18,6 +18,11 @@
     white-space: nowrap;
 }
 
+.comment-body p {
+    white-space: pre;
+    white-space: pre-line;
+}
+
 .modtime {
     background-color: #ffc;
 }
