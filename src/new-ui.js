@@ -597,16 +597,6 @@ function make_comment(c, flag="") {
 	var g = (color / 256) % 256;
 	var b = color % 256;
 	var hsp = Math.sqrt(.3 * r * r + .59 * g * g + .114 * b * b);
-/*	var make_white =
-	    ((color / 256 / 256) * .21 + // red
-	     (color / 256 % 256) * .71 + // green
-	     (color % 256) * .07 // blue
-	    ) < 42 ? "" : "color: white;";
-	console.log("hsp is " + hsp + " and brightness is " +
-		    (	    ((color / 256 / 256) * .21 + // red
-			     (color / 256 % 256) * .71 + // green
-			     (color % 256) * .07 // blue
-			    ))); */
 	make_white = (hsp > 126) ? "" : "color: white;";
 	if (debug) {
 	    console.log(letter + ": " + c.name + " is " + color + " and " + make_white);
