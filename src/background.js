@@ -5,7 +5,7 @@ console.log(page);
 var background_debug = 1;
 var try_debugger = false; // this is quite difficult to use right, if
 			  // possible at all
-var total_replace = true;
+var total_replace = false;
 
 ext = chrome ? chrome : browser;
 

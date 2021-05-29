@@ -1,54 +1,37 @@
 // 
 
 
-var total_replace = document.URL.startsWith("chrome-extension://") ||
+var total_replaced = document.URL.startsWith("chrome-extension://") ||
     document.URL.startsWith("moz-extension://");
     
-var is_firefox = 2;
-console.log( typeof(browser) );
-if (typeof(browser) == "undefined") {
-    is_firefox = true;
-} else {
-    is_firefox = false;
-}
+var is_firefox = 2; // I think this variable is unused
+//console.log( typeof(browser) );
+if (typeof(browser) == "undefined") {is_firefox = true;} else {is_firefox = false;}
 // TODO: use is_firefox because we don't need to kill so many things below
-
-
 
 
 // changeable in popup
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 1; // 0, 1, 2
+var debug = 0; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
 var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
 var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
 
-
 // internal only
 var change_icon = false;
-
 var reload_speed = 15 * 1000;
 
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run
 
-
 var settings_loaded = false;
 
-console.log(localStorage);
-
-console.log(document.URL);
 var this_url = document.URL;
-if (total_replace) {
+if (total_replaced) {
     this_url = window.location.search.split("=")[1];
-}
-
-if (debug > 0) {
-    console.log("this_url is now " + this_url);
-    console.log(this_url.split("/"));
 }
 var my_domain = this_url.split("/")[2];
 const domain = my_domain.split(".")[0]
