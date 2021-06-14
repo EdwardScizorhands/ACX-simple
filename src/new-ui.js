@@ -25,7 +25,8 @@ var change_icon = false;
 var reload_speed = 15 * 1000;
 
 // if we want to change the icon, we need to let a little bit of the
-// original page load in, which means letting some of its scripts run
+// original page load in, which means letting some of its scripts run.
+// (Or else do a total-replace).
 
 var settings_loaded = false;
 
@@ -51,6 +52,21 @@ if (debug) {
     console.log(my_user_id);
     console.log("*** DEBUG 2");
 }
+
+
+// If we have the informnation we need,
+// then
+//   go to eat_page, which
+//   waits for "enough" of the page to load (with a time-out for failure)
+//      ugh, it looks like we ALWAYS use the timeout, on chrome
+//   then calls window.stop
+//   then goes to phase_two
+// else
+//   call check_jQuery, which waits for jquery, and then
+//   call retrieve_meta_data, which loads the same page and waits, and then
+//   call eatHtml, which parses the page.
+//   then start all over.
+
 if (post_id == null || post_title == null || my_user_id == null || my_user_id == "NaN") {
     console.log("NEED TO RELOAD");
     setTimeout( check_jQuery, 0 );
@@ -191,13 +207,17 @@ window.fred = 0;
 function eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.
-    window.fred += 1;
+
     console.log("eat page?  " + window.fred);
-    if (window.fred > 20) {
+
+    window.fred += 1;
+    if (debug) {
+	console.log("document.head is " + document.head);
+    }
+    if (window.fred > 200) {
 	setTimeout( phase_two, 1);
 	return;
     }
-    console.log("document.head is " + document.head);
     if (document.head != null) {
 	console.log("stopping all further loading");
 	window.stop(); // we have what we need
@@ -205,13 +225,13 @@ function eat_page() {
     
     // can I inject code into the head to catch any stray functions?
     console.log("jQuery is " + jQuery);
-    if (jQuery) {
+    if (debug && jQuery) {
 	console.log("html is " + $("#html") );
 	console.log( $("#html") );
 
     	console.log("document is" + $("document") );
    	console.log( $("document") );
-}
+    }
     console.log("document body is " + document.body);
     if (document.body == null) {
 //	console.log("debug is " + debug);
@@ -697,6 +717,7 @@ function check_jQuery() {
 	setTimeout( retrieve_meta_data, 1);
     }
 }
+
 
 function retrieve_meta_data() {
     

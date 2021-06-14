@@ -7,6 +7,9 @@ var try_debugger = false; // this is quite difficult to use right, if
 			  // possible at all
 var total_replace = false;
 
+
+
+
 ext = chrome ? chrome : browser;
 
 var a = 0;
