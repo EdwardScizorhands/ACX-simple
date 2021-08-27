@@ -7,3 +7,4 @@ src.pem
 *.out
 *.json
 stuff/**
+src/TAGS
