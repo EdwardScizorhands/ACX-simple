@@ -1,11 +1,17 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.13.23",
+    "version" : "0.4.14.8",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
     "permissions": [
+	"https://*.blockedandreported.org/p/*/comments",
+	"https://*.blockedandreported.org/p/*/simple",
+	"https://*.slowboring.com/p/*/comments",
+	"https://*.slowboring.com/p/*/simple",
+	"https://*.thedispatch.com/p/*/comments",
+	"https://*.thedispatch.com/p/*/simple",  
 	"https://*.substack.com/p/*/comments",  
 	"https://*.substack.com/p/*/simple",
 	"https://unpkg.com/*", // not needed on firefox
@@ -40,6 +46,12 @@
     "content_scripts": [
 	{
             "matches": [
+		"https://*.blockedandreported.org/p/*/comments",
+		"https://*.blockedandreported.org/p/*/simple",
+		"https://*.slowboring.com/p/*/comments",
+		"https://*.slowboring.com/p/*/simple",
+		"https://*.thedispatch.com/p/*/comments",
+		"https://*.thedispatch.com/p/*/simple",
 		"https://*.substack.com/p/*/comments",
 		"https://*.substack.com/p/*/simple"
 	    ],

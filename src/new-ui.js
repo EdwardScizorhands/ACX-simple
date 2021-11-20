@@ -14,7 +14,7 @@ if (typeof(browser) == "undefined") {is_firefox = true;} else {is_firefox = fals
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 0; // 0, 1, 2
+var debug = 1; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
 var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
@@ -31,11 +31,12 @@ var reload_speed = 15 * 1000;
 var settings_loaded = false;
 
 var this_url = document.URL;
+console.log("this_url is " + this_url);
 if (total_replaced) {
     this_url = window.location.search.split("=")[1];
 }
-var my_domain = this_url.split("/")[2];
-const domain = my_domain.split(".")[0]
+const my_domain = this_url.split("/")[2];
+const xx_domain = my_domain.split(".")[0]; // unused?
 
 var post_slug = this_url.split("/")[4];
 var hpt = btoa(post_slug);
@@ -68,7 +69,8 @@ if (debug) {
 //   then start all over.
 
 if (post_id == null || post_title == null || my_user_id == null || my_user_id == "NaN") {
-    console.log("NEED TO RELOAD");
+    console.log("NEED TO RELOAD [ " + post_id + " / " + post_title + " / " +
+		my_user_id);
     setTimeout( check_jQuery, 0 );
 } else {
     setTimeout(eat_page, 1);
@@ -370,7 +372,7 @@ function submit_comment2(x) {
     var id = x.form.parent_id.value;
     var post_id = document.post_id;  // does this work?
 
-    var url = 'https://' + domain + '.substack.com/api/v1/post/' + post_id + '/comment'
+    var url = 'https://' + my_domain + '/api/v1/post/' + post_id + '/comment'
 
     // TODO: make sure jQuery has loaded 
     console.log("jquery is " + jQuery);
@@ -428,7 +430,7 @@ function like(xid) {
     console.log("nid is " + nid);
     $("#" + nid).off( "click" );
     var id = nid.split("-")[1];
-    var url = 'https://' + domain + '.substack.com/api/v1/comment/' + id + '/reaction';
+    var url = 'https://' + my_domain + '/api/v1/comment/' + id + '/reaction';
     data = { reaction: "❤"};
     $.ajax({ type: "POST",
 	     url: url,
@@ -444,7 +446,7 @@ function deleet(xid) {
     if ( confirm("Do you wish to delete this comment?") ) {
 	var nid = xid.target.name; // "comment-123"
 	var id = nid.split("-")[1];
-	var url = 'https://' + domain + '.substack.com/api/v1/comment/' + id;
+	var url =  'https://' + my_domain + '/api/v1/comment/' + id;
 	// TODO: replace "DELETE" button with "deleting"  
 	$.ajax({ type: "DELETE",
 		 url: url,
@@ -874,11 +876,13 @@ function load_comments(now = false) {
     if (!reload_comments && !now) {
 	return;
     }
-    post_id = document.post_id; 
-    url = "https://" + domain + ".substack.com/api/v1/post/" +
+    post_id = document.post_id;
+    console.log("this_url is " + this_url);
+    url = this_url + "/api/v1/post/" +
 	post_id +
-	"/comments?token=&all_comments=true&" +
+	"/comments?token=&all_comments=true&test=4&" +
 	"sort=most_recent_first&last_comment_at=" + global_latest;
+    console.log("url is " + url);
     $.ajax({
 	url: url,
 	success: now ? dump_it_now : dump_it,
@@ -1150,7 +1154,7 @@ function phase_two() {
     
     // TODO: make this call *first*, since we will end up waiting for it
     
-    //	https://astralcodexten.substack.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
+    //	https://astralcodexten.thedispatch.com/api/v1/post/32922208/comments?token=&all_comments=true&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z
 
     function method_one(string) {
 	var output = true;
@@ -1361,7 +1365,7 @@ function phase_two() {
 	
     }
     
-    var site = domain + ".substack.com";
+    var site  = my_domain;
     var args = "token=&all_comments=dummy&sort=most_recent_first&last_comment_at=2021-02-27T02:53:17.654Z";
     var url = "https://" + site + "/api/v1/post/" + post_id + "/comments?" + args;
 

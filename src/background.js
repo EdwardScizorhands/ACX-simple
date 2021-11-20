@@ -7,8 +7,23 @@ var try_debugger = false; // this is quite difficult to use right, if
 			  // possible at all
 var total_replace = false;
 
+function matches(url) {
+    return (
+	    url.match(/^https:\/\/.*\.blockedandreported.org.p\/.*\/simple/) ||
+	    url.match(/^https:\/\/.*\.blockedandreported.org.p\/.*\/comments/) ||
+	    url.match(/^https:\/\/.*.\slowboring.com.p\/.*\/simple/) ||
+	    url.match(/^https:\/\/.*.\slowboring.com.p\/.*\/comments/) ||
+	    url.match(/^https:\/\/.*\.thedispatch.com.p\/.*\/simple/) ||
+	    url.match(/^https:\/\/.*\.thedispatch.com.p\/.*\/comments/) ||
+	    url.match(/^https:\/\/.*\.thedispatch.com.p\/.*\/simple/) ||
+	    url.match(/^https:\/\/.*\.thedispatch.com.p\/.*\/comments/) ||
+	    url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
+	    url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)
+    )
+}
 
-
+    console.log("killing itt");
+    
 
 ext = chrome ? chrome : browser;
 
@@ -60,8 +75,7 @@ ext.webRequest.onBeforeRequest.addListener(
 
 	if (total_replace) {
 	    console.log("redirect on " + x + " ?");
-	    if (x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
-		x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)) {
+	    if (matches(x.url)) {
 		return { redirectUrl: page + "?page=" + x.url };
 	    };
 	}
@@ -72,8 +86,7 @@ ext.webRequest.onBeforeRequest.addListener(
 	    console.log(x);
 	}
 	console.log(x.url);
-	if (x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/simple/) ||
-	    x.url.match(/^https:\/\/.*\.substack.com.p\/.*\/comments/)) {
+	if (matches(x.url)) {
 	    console.log("killing itt");
 	} else {
 	    return {};
