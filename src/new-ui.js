@@ -31,12 +31,10 @@ var reload_speed = 15 * 1000;
 var settings_loaded = false;
 
 var this_url = document.URL;
-console.log("this_url is " + this_url);
 if (total_replaced) {
     this_url = window.location.search.split("=")[1];
 }
 const my_domain = this_url.split("/")[2];
-const xx_domain = my_domain.split(".")[0]; // unused?
 
 var post_slug = this_url.split("/")[4];
 var hpt = btoa(post_slug);
@@ -877,12 +875,10 @@ function load_comments(now = false) {
 	return;
     }
     post_id = document.post_id;
-    console.log("this_url is " + this_url);
-    url = this_url + "/api/v1/post/" +
+    url = "https://" + my_domain + "/api/v1/post/" +
 	post_id +
 	"/comments?token=&all_comments=true&test=4&" +
 	"sort=most_recent_first&last_comment_at=" + global_latest;
-    console.log("url is " + url);
     $.ajax({
 	url: url,
 	success: now ? dump_it_now : dump_it,
