@@ -8,14 +8,14 @@ Installing this won't run anything unless you go to the comments-only page you p
 
 *Install on Chrome:*
 
-1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) Then scroll down to the assets and grab the latest ACX-Simple-src-(date).zip file.
+1. Go to the [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/test1) Then scroll down to the assets and grab the latest ACX-Simple-src-(date).zip file.
 2. Unzip it.
 3. Browse to chrome://extensions/ and click the slider in the upper-right to "Developer Mode."
 4. Select "Load Unpacked", and select the **src** directory you unzipped in step 2.
 
 *Install on Firefox:*
 
-Go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/unpacked1) and install the signed acx_simple-0.4.15.0-an+fx.xpi right in Firefox.
+Go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/test1) and install the signed acx_simple-0.4.15.0-an+fx.xpi right in Firefox.
 
 *To use:*
 
