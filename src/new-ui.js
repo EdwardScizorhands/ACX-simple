@@ -66,6 +66,9 @@ if (debug) {
 //   call eatHtml, which parses the page.
 //   then start all over.
 
+
+// TODO: let anonymous browsing by not requiring user_id!
+// otherwise this loops endlessly
 if (post_id == null || post_title == null || my_user_id == null || my_user_id == "NaN") {
     console.log("NEED TO RELOAD [ " + post_id + " / " + post_title + " / " +
 		my_user_id);

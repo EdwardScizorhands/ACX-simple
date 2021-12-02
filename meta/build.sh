@@ -22,6 +22,7 @@ mkdir $temp_dir/src/icons
 
 cp src/manifest.json \
    src/jquery-3.5.1.min.js \
+   src/background.js \
    src/simple2.html \
    src/main.css  src/style.css src/clean.css \
    src/new-ui.js src/popup.html src/popup.js src/common.js   $temp_dir/src
@@ -35,7 +36,7 @@ cp src/icons/acf-simple-128.png \
  zip -r ../../$firefox_file . ;
  cd ../..)
 mv $firefox_file dist
-
+# need to manually upload to addons.mozilla.org for signing
 
 # Chrome-based unpacked extension
 zip -r $zip_file $temp_dir
