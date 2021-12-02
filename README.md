@@ -4,7 +4,7 @@ Simple interface for ACX comments
 
 Installing this won't run anything unless you go to the comments-only page you probably weren't using.
 
-## How to install and use
+## How to install
 
 *Install on Chrome:*
 
@@ -17,7 +17,7 @@ Installing this won't run anything unless you go to the comments-only page you p
 
 Go to [releases page](https://github.com/EdwardScizorhands/ACX-simple/releases/tag/test1) and install the signed acx_simple-0.4.15.0-an+fx.xpi right in Firefox.
 
-*To use:*
+## How to use
 
 Whenever you want to use it, add "/comments" to the end of a URL.
 
@@ -26,11 +26,9 @@ Whenever you want to use it, add "/comments" to the end of a URL.
 
 Example: https://astralcodexten.substack.com/p/links-for-march/comments
 
+You can also click on the 💬 speech bubble on the substack page, which automatically takes you to comments.
 
 ## Notes
-
-* For a given ACX post, add "/comments" to the end to load the simple UI.
-  * Did you know there was already a page there? That's the one I overwrite. I didn't even know about it when I started.
 
 * You can also go to "/simple" instead of "/comments". I may migrate there at some point in the future so as to not override Substack's comments-only page.
 
