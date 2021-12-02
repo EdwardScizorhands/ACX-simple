@@ -1,4 +1,9 @@
 
+version 0.4.15.0 // lots of other substacks now useable
+ OSX:
+    Brave: 1.31.88 on Chromium 95
+    Firefox 94
+
 version 0.4.12.0 // hearts and sorts
  OSX:
     Firefox 86, 87
