@@ -1,14 +1,22 @@
 
-// removed comments from manifest.json:
+///// removed comments from manifest.json:
 
 	"https://unpkg.com/*", // not needed on firefox
 	"https://cdn.optimizely.com/*", // not needed on firefox
-
+//
     "background": {
 	// to stop UI crap
 	"scripts": ["background.js"],
 	"persistent": true // maybe not needed?
     },
+//
+	    // the "css" section isn't needed if doing total_replace
+	    "css": ["style.css", "main.css", "clean.css" ],
+	    "run_at": "document_start" // spin at start to stop crap
+
+
+/////
+
 
 
 
@@ -47,8 +55,8 @@ x 10. status window
       -> I can always redirect the user to /simple
       -> Oh, I can do what ad-blockers do and block loading all the scripts! :D 
   13. Only show top comments (heck, this was the old default functionality I had!)
-  14. figure out how to work on slowboring.com
-  15. stop the infinite loop if I pull up https://freddiedeboer.substack.com/p/planet-of-cops/comments/
+x 14. figure out how to work on slowboring.com
+x 15. stop the infinite loop if I pull up https://freddiedeboer.substack.com/p/planet-of-cops/comments/
   
 
   Things that make me able to change the icon

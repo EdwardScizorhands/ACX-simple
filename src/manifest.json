@@ -1,12 +1,14 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.15.1",
+    "version" : "0.4.15.4",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
     
     "permissions": [
+	"https://*.theinsight.org/p/*/comments",
+	"https://*.theinsight.org/p/*/simple",
 	"https://*.blockedandreported.org/p/*/comments",
 	"https://*.blockedandreported.org/p/*/simple",
 	"https://*.slowboring.com/p/*/comments",
@@ -44,6 +46,8 @@
     "content_scripts": [
 	{
             "matches": [
+		"https://*.theinsight.org/p/*/comments",
+		"https://*.theinsight.org/p/*/simple",
 		"https://*.blockedandreported.org/p/*/comments",
 		"https://*.blockedandreported.org/p/*/simple",
 		"https://*.slowboring.com/p/*/comments",

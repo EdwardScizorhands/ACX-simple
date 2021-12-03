@@ -14,7 +14,7 @@ if (typeof(browser) == "undefined") {is_firefox = true;} else {is_firefox = fals
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 1; // 0, 1, 2
+var debug = 0; // 0, 1, 2
 //var lastread = "2021-01-02T00:00:00.000Z"; 
 
 var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
@@ -69,7 +69,7 @@ if (debug) {
 
 // TODO: let anonymous browsing by not requiring user_id!
 // otherwise this loops endlessly
-if (post_id == null || post_title == null || my_user_id == null || my_user_id == "NaN") {
+if (post_id == null || post_title == null || my_user_id == null) {
     console.log("NEED TO RELOAD [ " + post_id + " / " + post_title + " / " +
 		my_user_id);
     setTimeout( check_jQuery, 0 );
@@ -472,7 +472,6 @@ function reply(xid) {
     var nid = xid.target.name; // "comment-123"
     var id = nid.split("-")[1];
     var newform = document.getElementById("commentor").cloneNode(true);
-
     //newform.style.display = "block";
     newform.parent_id.value = id;
     var target = document.getElementById(nid);
@@ -760,9 +759,9 @@ function retrieve_meta_data() {
 	localStorage.setItem(hpt + "-id", post_id);
 	localStorage.setItem(hpt + "-title", post_title);
 	
-	if (my_user_id == null) {
-	    var user_s = '<input type="hidden" name="user_id" value="'
-	    var u = data.indexOf(user_s) + user_s.length;
+	if (my_user_id == null || isNaN(my_user_id)) {
+	    var user_s = '<input type="hidden" name="user_id" value='
+	    var u = data.indexOf(user_s) + user_s.length + 1; 
 	    var my_user_id = parseInt(data.substr(u, 20));
 	    localStorage.setItem("my_user_id", my_user_id);
 	}
@@ -1108,7 +1107,14 @@ function phase_two() {
 	console.timeEnd('parseJSON');	
 	console.log(string);
 	$( "#status" ).text(string);
-
+	
+	if (my_user_id == null || isNaN(my_user_id)) {
+	    // Why do I need to set these both? What have I messed up?
+	    document.getElementById("root_comment").body.value =
+		document.getElementById("commentor").body.value =
+		"YOU ARE NOT LOGGED IN FOR THIS SUBSTACK";
+	}
+	
 	var cs = data.comments;
 	// Um, why do I set both comments=data["comments"] and cs=data.comments ??
 
