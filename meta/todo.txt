@@ -1,4 +1,17 @@
 
+// removed comments from manifest.json:
+
+	"https://unpkg.com/*", // not needed on firefox
+	"https://cdn.optimizely.com/*", // not needed on firefox
+
+    "background": {
+	// to stop UI crap
+	"scripts": ["background.js"],
+	"persistent": true // maybe not needed?
+    },
+
+
+
   0. Handle 529 rejections gracefully
      * if my browser restarts, I'll hit from multiple tabs at once and Substack will slow me down and my script will speed up
   1. Local DB of posts

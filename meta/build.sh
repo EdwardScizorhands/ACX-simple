@@ -8,10 +8,20 @@ else
     exit 1
 fi
 
+if  which jq 
+then
+    echo "we have jq..."
+else
+    echo "please install jq"
+    exit
+fi
+
+version=$(jq -r .version src/manifest.json)
 date=$(date "+%Y-%m-%d")
-temp_dir=ACX-Simple-src-$date
-zip_file=ACX-Simple-src-$date.zip
-firefox_file=ACX-Simple-firefox-$date.xpi
+temp_dir=ACX-Simple-src-$version-$date
+zip_file=ACX-Simple-src-$version.zip
+firefox_file=ACX-Simple-firefox-$version.xpi
+chrome_file=ACX-Simple-chrome-$version.zip
 
 mkdir $temp_dir
 mkdir $temp_dir/src
@@ -38,7 +48,16 @@ cp src/icons/acf-simple-128.png \
 mv $firefox_file dist
 # need to manually upload to addons.mozilla.org for signing
 
-# Chrome-based unpacked extension
+# Chrome zip, still need to upload
+(cd $temp_dir/src/;
+ zip -r ../../$chrome_file . ;
+ cd ../..)
+mv $chrome_file dist
+
+
+
+
+# Chrome-based unpacked extension, I think this is useless
 zip -r $zip_file $temp_dir
 mv $zip_file ./dist
 
