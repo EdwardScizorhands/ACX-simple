@@ -1,57 +1,57 @@
-// 
 
 
-var total_replaced = document.URL.startsWith("chrome-extension://") ||
-    document.URL.startsWith("moz-extension://");
-    
-var is_firefox = 2; // I think this variable is unused
-//console.log( typeof(browser) );
-if (typeof(browser) == "undefined") {is_firefox = true;} else {is_firefox = false;}
-// TODO: use is_firefox because we don't need to kill so many things below
-
-
-// changeable in popup
+// SETTINGS FROM POP-UP
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 0; // 0, 1, 2
-//var lastread = "2021-01-02T00:00:00.000Z"; 
+var debug = 0; // 0, 1, 2. 
 
-var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
-var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
 
-// internal only
+// DEVELOPMENT SETTINGS
 var change_icon = false;
 var reload_speed = 15 * 1000;
+
 
 // if we want to change the icon, we need to let a little bit of the
 // original page load in, which means letting some of its scripts run.
 // (Or else do a total-replace).
+var normal_icon = chrome.runtime.getURL("icons/acx-standard-96.png");
+var modded_icon = chrome.runtime.getURL("icons/acx-standard-mod-96.png");
+
 
 var settings_loaded = false;
 
-var this_url = document.URL;
-if (total_replaced) {
-    this_url = window.location.search.split("=")[1];
+
+// SET GLOBALS
+
+var page = {}
+
+
+{
+    var total_replaced = document.URL.startsWith("chrome-extension://") ||
+	document.URL.startsWith("moz-extension://");
+    var this_url = document.URL;
+    if (total_replaced) {
+	this_url = window.location.search.split("=")[1];
+    }
+    
+    var my_domain = this_url.split("/")[2];
+    var post_slug = this_url.split("/")[4];
+    var hpt = btoa(post_slug);
+    var post_id = localStorage.getItem(hpt+"-id");
+    var post_title = localStorage.getItem(hpt+"-title");
+    var my_user_id = localStorage.getItem("my_user_id");
+    var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
+    
+    
+    if (debug) {
+	console.log("*** DEBUG 1");
+	console.log(post_id);
+	console.log(post_title);
+	console.log(my_user_id);
+	console.log("*** DEBUG 2");
+    }
 }
-const my_domain = this_url.split("/")[2];
-
-var post_slug = this_url.split("/")[4];
-var hpt = btoa(post_slug);
-var post_id = localStorage.getItem(hpt+"-id");
-var post_title = localStorage.getItem(hpt+"-title");
-var my_user_id = localStorage.getItem("my_user_id");
-var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
-
-
-if (debug) {
-    console.log("*** DEBUG 1");
-    console.log(post_id);
-    console.log(post_title);
-    console.log(my_user_id);
-    console.log("*** DEBUG 2");
-}
-
 
 // If we have the informnation we need,
 // then
