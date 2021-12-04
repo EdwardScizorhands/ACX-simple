@@ -117,6 +117,7 @@ function eat_page() {
     if (document.head != null) {
 	console.log("stopping all further loading");
 	window.stop(); // we have what we need
+
     }
     
     // can I inject code into the head to catch any stray functions?
@@ -141,7 +142,7 @@ function eat_page() {
     if (document && document.head) {
 	document.head.textContent = ""; // This does nothing, I think.
     }
-
+    console.log("debug eat_page end");
     setTimeout( phase_two, 1);
 }
 
@@ -758,7 +759,8 @@ function phase_two() {
 
     console.log("setting_loaded is " + settings_loaded);
     if (!settings_loaded) {
-	setInterval( phase_two, 2);
+	setTimeout( phase_two, 2);
+	return;
     }
 
     if (change_icon) {
@@ -1398,6 +1400,6 @@ function eatHtml(data, status, xh) {
         localStorage.setItem("my_user_id", my_user_id);
     }
 
-    // XXX I really want to stop reloading here
+    // XXX I really want to stop reloading here, and instead go to the magical place
     location.reload();
 }
