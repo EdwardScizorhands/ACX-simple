@@ -23,10 +23,6 @@ var settings_loaded = false;
 
 
 // SET GLOBALS
-
-var page = {}
-
-
 {
     var total_replaced = document.URL.startsWith("chrome-extension://") ||
 	document.URL.startsWith("moz-extension://");
@@ -42,7 +38,6 @@ var page = {}
     var post_title = localStorage.getItem(hpt+"-title");
     var my_user_id = localStorage.getItem("my_user_id");
     var lastread = localStorage.getItem("lastread-" + post_id) || "2021-01-03T00:00:00.000Z";
-    
     
     if (debug) {
 	console.log("*** DEBUG 1");
@@ -67,11 +62,8 @@ var page = {}
 //   then start all over.
 
 
-// TODO: let anonymous browsing by not requiring user_id!
-// otherwise this loops endlessly
 if (post_id == null || post_title == null || my_user_id == null) {
-    console.log("NEED TO RELOAD [ " + post_id + " / " + post_title + " / " +
-		my_user_id);
+    console.log("NEED TO LOAD [ " + post_id + " / " + post_title + " / " + my_user_id);
     setTimeout( check_jQuery, 0 );
 } else {
     setTimeout(eat_page, 1);
@@ -724,62 +716,29 @@ function check_jQuery() {
 function retrieve_meta_data() {
     
     console.log("could not find post_id");
-    // Yo dawg, load the same page we are on
-    // (Is there a better way to do this? Can I read the HTML somehow?)
-    
-    
-    var url = this_url;
+    // https://astralcodexten.substack.com/api/v1/posts/apply-for-an-acx-grant
+    let url = this_url;
     url = url.replace(/simple$/, '');
-//    url = url.replace(/simple$/, 'comments'); // this line does nothing?
-    
-    
-    if (debug) {
-	console.log(url);
-	console.log("wiping out document...?");
-    }
 
-    var body = document.createElement('body');
-    document.body = body;
-    
-    var eatHtml = function(data, status, xh) {
-	console.log("got html response");
-	if (debug) {
-	    console.log(data);
-	}
-	// very crude JSON parsing, but fast. TODO: have a backup
-	var i = data.indexOf('"post":');
-	var id_s = '"id":';
-	var j = data.indexOf(id_s, i) + id_s.length;
-	var post_id = parseInt(data.substr(j,20));
-	console.log("got a post_id of " + post_id);
-	var title_s = "<title data-preact-helmet>";
-	var k = data.indexOf(title_s) + title_s.length;
-	var post_title = data.substr(k, 15);
-
-	localStorage.setItem(hpt + "-id", post_id);
-	localStorage.setItem(hpt + "-title", post_title);
-	
-	if (my_user_id == null || isNaN(my_user_id)) {
-	    var user_s = '<input type="hidden" name="user_id" value='
-	    var u = data.indexOf(user_s) + user_s.length + 1; 
-	    var my_user_id = parseInt(data.substr(u, 20));
-	    localStorage.setItem("my_user_id", my_user_id);
-	}
-
-	
-	location.reload();
-	// TODO: try just going to eat_page instead.
-	//setTimeout( eat_page, 1 );
-    }
-
-    console.log("launching AJAX!!!22");
-    console.log("abc");
-    console.log("jquery is " + typeof jQuery);
+    // if we do not have our own user_id, load the post again.
+    // TODO, if we do have user_id, see LoadPostData()
     $.ajax({
 	url: url,
 	success: eatHtml,
 	dataType: "html"
     });
+    
+    
+    // load something like 
+
+    if (debug) {
+	console.log("wiping out document...?");
+    }
+
+    var body = document.createElement('body');
+    document.body = body;
+    document.body.innerHTML = "doing initial load...";
+    
     
 }//
 //else {
@@ -1520,3 +1479,34 @@ function phase_two() {
 }
 
 
+// helper functions below which need to stay in-file
+
+function eatHtml(data, status, xh) {
+    console.log("got html response");
+    if (debug > 2) {
+        console.log(data);
+    }
+    // very crude JSON parsing, but fast. TODO: have a backup
+    let i = data.indexOf('"post":');
+    let id_s = '"id":';
+    let j = data.indexOf(id_s, i) + id_s.length;
+    post_id = parseInt(data.substr(j,20)); /* CHECK IF MUST BE VAR */
+    console.log("got a post_id of " + post_id);
+    let title_s = "<title data-preact-helmet>";
+    let k = data.indexOf(title_s) + title_s.length;
+    let k_end = data.indexOf('"', k+1);
+    post_title = data.substring(k, k_end); /* SAME */
+    
+    localStorage.setItem(hpt + "-id", post_id);
+    localStorage.setItem(hpt + "-title", post_title);
+    
+    if (my_user_id == null) {
+        let user_s = '<input type="hidden" name="user_id" value="'
+        let u = data.indexOf(user_s) + user_s.length;
+        my_user_id = parseInt(data.substr(u, 20)); /* SAME */
+        localStorage.setItem("my_user_id", my_user_id);
+    }
+
+    // XXX I really want to stop reloading here
+    location.reload();
+}

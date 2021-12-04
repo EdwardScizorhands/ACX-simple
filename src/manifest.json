@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.4.16.7",
+    "version" : "0.4.17.1",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
@@ -58,6 +58,7 @@
 		"https://*.substack.com/p/*/simple"
 	    ],
 	    "js": [
+		"extra.js",
 		"new-ui.js",
 		"common.js",
 		"jquery-3.5.1.min.js"
