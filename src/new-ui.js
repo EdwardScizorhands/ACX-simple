@@ -389,15 +389,14 @@ function reply(xid) {
 
 var global_latest = "";
 
-// Hash of all comments (by DOM), key is ID.
+// Hash of all comments, key is ID, value is date
 var comment_table = { }
 
-// Sorted array of all comments (by DOM??), key is creation time, used for showing ~new~ stats.
+// Sorted array of all comment times
 // UNUSED FOR NOW but hope springs eternal
 var sorted_comments = [ ] 
 
 
-var null_name = [" "]
 
 // given a (JSON?) data structure, make an (unplaced) DOM object of a comment
 function make_comment(c, flag="") {
@@ -413,20 +412,20 @@ function make_comment(c, flag="") {
 	// firefox distribution uses "c.date undefined"? 
 	//&& c.date != null && c.date != undefined)  <-- for dynamic loading
 	comment_table[id] = dd;
-	// console.log("new comment");
+	modded = true;
+	// sorted_array.push(dd)
     } else {
 	// already populated!
-	// console.log("existing comment 1");
 	return null; // this isn't right; we still need to iterate on the kids 
     }
-    
+
     if (c.date > global_latest) {
 	if (reload_comments && debug) {
 	    console.log("NEW LATEST POST! " + id);
 	}
 	global_latest = c.date;
 	if (debug > 0) {
-	    console.log(global_latest);
+	    console.log("latest comment:" + global_latest);
 	}
     } 
     if (debug > 1) {
@@ -445,14 +444,17 @@ function make_comment(c, flag="") {
     // user pic, td1
     var avatar = c.photo_url;
     var img;
-    var never_load_avatars = false;
+    let never_load_avatars = false  // Not a user-controlled option, but it could be
+
     // on a fast reference machine, loading ~100 root comments with ~275 comments:
     //      * takes 800ms to render without avatars
     //      * takes 900ms to render with avatars
-    // always do the dummy avatar, for faster loading
+    // Maybe I could delay loading the avatars?
+    let null_name = [" "]
+
     if (never_load_avatars || c.photo_url == null) {
 	try {
-	    var names = c.name ? c.name.split(/\s+/) : null_name;
+	    let names = c.name ? c.name.split(/\s+/) : null_name;
 	    letter = names.length > 1 ? names[0][0] + names[1][0] : names[0][0]
 	} catch (err) {
 	    console.log(err.message);
