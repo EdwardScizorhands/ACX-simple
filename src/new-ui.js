@@ -91,44 +91,8 @@ chrome.storage.local.get(
 
 
 
-function settingsChanged(things) {
-    console.log("things is " + things);
-    console.log(things);
-    let c;
-/*
-    if (c = things.lastread) {
-	if (c.oldValue != c.newValue) {
-	    console.log("UPDATE NEW!~");
-	    mark_as_new(c.newValue);
-	}
-	}*/
-    
-    if (c = things.reload) {
-	reload_comments = things.reload.newValue;
-	console.log("read now set to " + reload_comments);
-	// TODO: make sure we don't accidentally set up multiple timers.
-	// this also makes us wait the timer instead of checking immediately.
-	spin_comments(); 
-
-    } //     // 850 so far
-    if (c = things.sort) {
-	if (c.oldValue != c.newValue) {
-	    console.log("sorted???");
-//	    mark_as_new(c.newValue);
-	}
-    }
-    if (c = things.checknow) {
-	// TODO: make this timeout bigger but per-tab
-	if (c.newValue > c.oldValue + 3000) {
-	    load_comments(true);
-	} else {
-	    console.log("slow down, man");
-	}
-    }
-}
-chrome.storage.onChanged.addListener(settingsChanged);
-
-
+// settings_changed defined in extra.js
+chrome.storage.onChanged.addListener(settings_changed);
 
 if (debug) {
     console.log("intercept normal UI here");
@@ -139,31 +103,13 @@ if (change_icon == false) {
     // firefox still loads some of the original page in the background??
 }
 
-function comment_order(cs) {
-
-    function sort_new(a, b) { return b.date.localeCompare(a.date); }
-    function sort_old(a, b) { return a.date.localeCompare(b.date); }
-    function sort_top(a, b) { return b.score - a.score; }
-    
-    if (sort == "new")
-	return cs.sort( sort_new );
-    if (sort == "old")
-	return cs.sort( sort_old );
-    return cs.sort( sort_top );
-}
-
 
 window.fred = 0;
+// if this is acting up, check old_eat_page()
 function eat_page() {
-    // This is more complex than it has to be. But it works.
-    // TODO: Figure out how to simplify but let it still work.
-
     console.log("eat page?  " + window.fred);
 
     window.fred += 1;
-    if (debug) {
-	console.log("document.head is " + document.head);
-    }
     if (window.fred > 200) {
 	setTimeout( phase_two, 1);
 	return;
@@ -175,39 +121,28 @@ function eat_page() {
     
     // can I inject code into the head to catch any stray functions?
     console.log("jQuery is " + jQuery);
-    if (debug && jQuery) {
-	console.log("html is " + $("#html") );
-	console.log( $("#html") );
-
-    	console.log("document is" + $("document") );
-   	console.log( $("document") );
-    }
-    console.log("document body is " + document.body);
-    if (document.body == null) {
-//	console.log("debug is " + debug);
-	console.log("not loaded yet");
-	setTimeout(eat_page, change_icon ? 0: 0);
-	return;
-    }
-    console.log("prep");
     console.log("document body is " + document.body);
     //console.log("document body.innerHTML is " + document.body.innerHTML);
     
-    var s = document.body.innerHTML.substring(0,50);
-    console.log("CHECKING " + s);
-    if (s == "<h1>Loading ACX Simple</h1>") {
-	console.log("phase 1 done, go to phase 2");
-//	setTimeout( eat_page, 0);
-	setTimeout( phase_two, 0);
-	return;
+    if (document && document.body) {
+	let s = document.body.innerHTML.substring(0,50);
+	
+	console.log("CHECKING " + s);
+	if (s == "<h1>Loading ACX Simple</h1>") {
+	    console.log("phase 1 done, go to phase 2");
+	    setTimeout( phase_two, 0);
+	    return;
+	}
+	document.body.textContent = "";
+	let header = document.createElement('h1');
+	header.textContent = "Loading ACX Simple";
+	document.body.appendChild(header);
     }
-    document.head.textContent = ""; // This does nothing, I think.
-    document.body.textContent = "";
-    var header = document.createElement('h1');
-    header.textContent = "Loading ACX Simple";
-    document.body.appendChild(header);
+    if (document && document.head) {
+	document.head.textContent = ""; // This does nothing, I think.
+    }
 
-    setTimeout(eat_page, 1 * 1000);
+    setTimeout( phase_two, 1);
 }
 
 
