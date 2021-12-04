@@ -1,4 +1,20 @@
 
+// hash takes <1ms
+function hash_color(str) {
+    if (!str) return 0xa0a0a0; // bland gray
+
+    let hash = new Number(0);
+    let l = str.length;
+    for (let i = 0; i < l; i++) {
+        let char = str.charCodeAt(i);
+	hash = ((hash*32)-hash) + str.charCodeAt(i);
+	hash = hash & 0x7FFFFFFF;
+	
+    }
+    return hash % (256 * 256 * 256);
+    
+}
+
 function old_eat_page() {
     // This is more complex than it has to be. But it works.
     // TODO: Figure out how to simplify but let it still work.

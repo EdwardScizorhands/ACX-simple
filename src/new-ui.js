@@ -147,6 +147,7 @@ function eat_page() {
 }
 
 
+// I think this should be called "mark_dot()" 
 function change(dot = false) {
     if (change_icon == false) return;
     // check e575618bed9c68139cb92a2b6e69f0db3f0ac7b3 for old debug code
@@ -162,6 +163,7 @@ function change(dot = false) {
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
+// This places a single new comment; get a better name
 function new_comments2(data) {
     if (debug > 0) {
 	console.log("New comment is " + data);
@@ -387,32 +389,25 @@ function reply(xid) {
 
 var global_latest = "";
 
+// Hash of all comments (by DOM), key is ID.
 var comment_table = { }
 
-// hash takes <1ms
-function hash_color(str) {
-    if (!str) return 0xa0a0a0; // bland gray
+// Sorted array of all comments (by DOM??), key is creation time, used for showing ~new~ stats.
+// UNUSED FOR NOW but hope springs eternal
+var sorted_comments = [ ] 
 
-    var hash = new Number(0);
-    var l = str.length;
-    for (var i = 0; i < l; i++) {
-        var char = str.charCodeAt(i);
-	hash = ((hash*32)-hash) + str.charCodeAt(i);
-	hash = hash & 0x7FFFFFFF;
-	
-    }
-    return hash % (256 * 256 * 256);
-    
-}
 
 var null_name = [" "]
 
+// given a (JSON?) data structure, make an (unplaced) DOM object of a comment
 function make_comment(c, flag="") {
     // TODO: Is it faster to prebuild one root comment, and then copy it?
     //       Or build one dynamically from scratch each time?
     var id = c.id;
     var dd = new Date(c.date);
-    // ugh, the instant reply I get back doesn't have a date.
+    // Ugh, the instant reply I get back doesn't have a date.
+    // Need to simulate a date, but that date shouldn't affect the "most
+    // recently read" timer, because there could be other comments waiting
 
     if (comment_table[id] == undefined) {
 	// firefox distribution uses "c.date undefined"? 
