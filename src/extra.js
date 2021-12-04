@@ -1,4 +1,49 @@
 
+function mark_as_new(time) {
+    console.time("marknew");
+
+    let c = 0;
+    let n_new = 0;
+    $(".comment-meta").each ( function(i,e) {
+	let zdate = e.getAttribute("zdate");
+	let old = zdate < time;
+	if (!old) {
+	    n_new += 1;
+	}
+	// I am doing string manip instead of what's probaby the better way of
+	// adding/removing classes using jQuery tricks like Pycea does.
+	let date_node = e.childNodes[1];
+	if (!date_node) return;
+	
+	let dd = new Date(zdate); // TODO: see if this is a useless string object
+	// TODO: my old-v-new logic is duped, need to consolidate
+	let new_date_s = flagged_date_string(dd, old ? "" : "~new~");
+	if (new_date_s != date_node.textContent) {
+	    c += 1;
+	    date_node.textContent = new_date_s;
+	}
+    });
+    console.log("done, changed text on " + c);
+    console.timeEnd("marknew");
+
+    console.time("refresh");
+    // should these be in the refresh thing, or here?
+    $( "#applyTime ").prop( "disabled", false).text("APPLY");
+    $( "#newTime ").prop( "disabled", false);
+
+    // this seems to help chrome refresh its UI faster. Maybe?
+    setTimeout( function() {
+	console.log("refresh?");
+	console.timeEnd("refresh");
+    }, 1 );
+    
+}
+
+function flagged_date_string(dd, flag) {
+    return dd.toDateString() + " " + dd.toLocaleTimeString() + (flag ? (" " + flag) : "");
+}
+
+
 function LoadPostData() {
     // unused, for now
         var eatMetaData = function(data, status, xh) {

@@ -35,7 +35,7 @@ cp src/manifest.json \
    src/background.js \
    src/simple2.html \
    src/main.css  src/style.css src/clean.css \
-   src/new-ui.js src/popup.html src/popup.js src/common.js   $temp_dir/src
+   src/new-ui.js src/popup.html src/popup.js src/common.js src/extra.js   $temp_dir/src
 cp src/icons/acf-simple-128.png \
    src/icons/acf-simple-mod-128.png \
    src/icons/acx-standard-96.png \

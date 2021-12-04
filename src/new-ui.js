@@ -69,72 +69,27 @@ if (post_id == null || post_title == null || my_user_id == null) {
     setTimeout(eat_page, 1);
 }
 
-
-
 chrome.storage.local.get(
     [ "debug", "likes", "reload", "sort", "lastread" ], function(x) {
-
+	
 	debug = x.debug;
 	console.log("debug is now " + debug);
-
+	
 	have_scores = (x.likes == 1);
 	console.log("have_scores is now " + have_scores);
 	
 	reload_comments = !(x.reload == 0); // default true
 	console.log("reload_comments is now " + reload_comments);
-
+	
 	sort = (x.sort ? x.sort : "new");
 	console.log("sort is now " + sort);
-
+	
 	settings_loaded = true;
 	console.log("settings are loaded!");
     });
 
 
 
-function flagged_date_string(dd, flag) {
-    return dd.toDateString() + " " + dd.toLocaleTimeString() + (flag ? (" " + flag) : "");
-}
-
-function mark_as_new(time) {
-    console.time("marknew");
-
-    var c = 0;
-    var n_new = 0;
-    $(".comment-meta").each ( function(i,e) {
-	zdate = e.getAttribute("zdate");
-	old = zdate < time;
-	if (!old) {
-	    n_new += 1;
-	}
-	// I am doing string manip instead of what's probaby the better way of
-	// adding/removing classes using jQuery tricks like Pycea does.
-	var date_node = e.childNodes[1];
-	if (!date_node) return;
-	
-	var dd = new Date(zdate); // TODO: see if this is a useless string object
-	// TODO: my old-v-new logic is duped, need to consolidate
-	var new_date_s = flagged_date_string(dd, old ? "" : "~new~");
-	if (new_date_s != date_node.textContent) {
-	    c += 1;
-	    date_node.textContent = new_date_s;
-	}
-    });
-    console.log("done, changed text on " + c);
-    console.timeEnd("marknew");
-
-    console.time("refresh");
-    // should these be in the refresh thing, or here?
-    $( "#applyTime ").prop( "disabled", false).text("APPLY");
-    $( "#newTime ").prop( "disabled", false);
-
-    // this seems to help chrome refresh its UI faster. Maybe?
-    setTimeout( function() {
-	console.log("refresh?");
-	console.timeEnd("refresh");
-    }, 1 );
-    
-}
 
 function settingsChanged(things) {
     console.log("things is " + things);
@@ -906,7 +861,7 @@ function phase_two() {
     
     newHTML = `<html>
   <head>
-    <title id=title1>Simple ACX: ` + escapeHTML(post_title) + `</title>
+    <title id=title1>Simple: ` + escapeHTML(post_title) + `</title>
 <!--  access these if they are neither part of manifest.json nor part of the web-accessible-resources? -->
    <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="main.css">
@@ -1478,6 +1433,7 @@ function phase_two() {
     
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // helper functions below which need to stay in-file
 
@@ -1494,7 +1450,7 @@ function eatHtml(data, status, xh) {
     console.log("got a post_id of " + post_id);
     let title_s = "<title data-preact-helmet>";
     let k = data.indexOf(title_s) + title_s.length;
-    let k_end = data.indexOf('"', k+1);
+    let k_end = data.indexOf('</title>', k+1);
     post_title = data.substring(k, k_end); /* SAME */
     
     localStorage.setItem(hpt + "-id", post_id);
