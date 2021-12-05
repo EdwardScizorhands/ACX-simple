@@ -569,13 +569,13 @@ function make_comment(c, flag="") {
 }
 
 function make_comment_list_from_array(cs) {
-    var comment_list = jQuery( '<div/>', { class: "comment-list" } )
+    let comment_list = jQuery( '<div/>', { class: "comment-list" } )
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser" } ).
 			 append( jQuery('<div/>',
 					{ class: "comment-list-collapser-line"} )) )
     comment_list.append( jQuery( '<div/>', { class: "comment-list-collapser hidden" } ))
     
-    var comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
+    let comment_list_items = jQuery( '<div/>', { class: "comment-list-items" } )
 
     comment_order(cs).forEach( function(c) {
 	comment_list_items.append( make_comment(c, "dynamic") );
@@ -586,9 +586,10 @@ function make_comment_list_from_array(cs) {
     return comment_list;
 }
 
-
+// This waits for jQuery to load.
+// TODO: Is this actually ever needed? Can't I just set the order in manifest.json?
 function check_jQuery() {
-    var a = typeof jQuery;
+    let a = typeof jQuery;
     if (debug > 0) {
 	console.log("a is " + a);
     }
@@ -599,7 +600,7 @@ function check_jQuery() {
     }
 }
 
-
+// If we have not seen this post before, parse the information
 function retrieve_meta_data() {
     
     console.log("could not find post_id");
@@ -615,57 +616,20 @@ function retrieve_meta_data() {
 	dataType: "html"
     });
     
-    
-    // load something like 
-
     if (debug) {
 	console.log("wiping out document...?");
     }
 
-    var body = document.createElement('body');
+    let body = document.createElement('body');
     document.body = body;
     document.body.innerHTML = "doing initial load...";
-    
-    
-}//
-//else {
-//    console.log("post_title is " + post_title);
-//    console.log("post_id is " + post_id);
-//}
-
-function init_page() {
-    console.log("READY TO INIT");
-    //var x = $( '#test_new_comment' );
-    var x = document.getElementById( 'test_new_comment' );
-    console.log("x is " + x);
-    console.log(x);
-    x.click = make_comment;
-    x.onclick = make_comment;
-    x.onClick = make_comment;
 }
 
-function wait_to_init() {
-    console.log("initialing? in new-ui scope");
-    var t1 = document.getElementById("title1");
-    console.log("t1 is " + t1);
-    var t2 = document.getElementById("last");
-    console.log("t2 is " + t2);
-    if (t1 == null || t2 == null) {
-	console.log("not ready yet, try again!");
-	setTimeout( wait_to_init, 10);
-    } else {
-	init_page();
-    }
 
-}
-
-function escapeHTML(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// I don't think hte order matters here. This just finds unused comments.
+// ??? What is this for?
+// I don't think the order matters here. This just finds unused comments.
 function scan_c(c) {
-    var id = c.id; // compare to start of make_comment()
+    let id = c.id; // compare to start of make_comment()
     if (comment_table[id] == undefined) {
 	//changeFavicon('http://www.google.com/favicon.ico');
 	console.log("NEW DYNAMIC COMMENT");
@@ -677,16 +641,14 @@ function scan_c(c) {
     }
     if (c.date > global_latest) {
 	console.log("NEW LATEST POST2! " + id);
-//	console.log(dd);
 	global_latest = c.date;
-//	console.log(global_latest);
     } 
     c.children.forEach (scan_c); // recurse
 }
 
 // "scan" just means to iterate through themn
 function scan_comments(data) {
-    var comments = data["comments"];
+    let comments = data["comments"];
     if (comments !== undefined) {
 	console.log("resetted global_latest");
 	global_latest = ""; // reset

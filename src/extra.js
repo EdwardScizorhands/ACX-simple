@@ -1,4 +1,35 @@
 
+// init_page() and wait_to_init() seems to be unused?
+function init_page() {
+    console.log("READY TO INIT");
+    //var x = $( '#test_new_comment' );
+    let x = document.getElementById( 'test_new_comment' );
+    console.log("x is " + x);
+    console.log(x);
+    x.click = make_comment;
+    x.onclick = make_comment;
+    x.onClick = make_comment;
+}
+function wait_to_init() {
+    console.log("initialing? in new-ui scope");
+    var t1 = document.getElementById("title1");
+    console.log("t1 is " + t1);
+    var t2 = document.getElementById("last");
+    console.log("t2 is " + t2);
+    if (t1 == null || t2 == null) {
+	console.log("not ready yet, try again!");
+	setTimeout( wait_to_init, 10);
+    } else {
+	init_page();
+    }
+
+}
+
+function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+
 // hash takes <1ms
 function hash_color(str) {
     if (!str) return 0xa0a0a0; // bland gray
