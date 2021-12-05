@@ -253,16 +253,16 @@ function submit_comment2(x) {
     }
     console.log("ha hah");
     x.disabled = true; // no double posts.
-    var body = x.form.body.value;
-    var token = null;
-    var id = x.form.parent_id.value;
-    var post_id = document.post_id;  // does this work?
+    let body = x.form.body.value;
+    let token = null;
+    let id = x.form.parent_id.value;
+    let post_id = document.post_id;  // does this work?
 
-    var url = 'https://' + my_domain + '/api/v1/post/' + post_id + '/comment'
+    let url = 'https://' + my_domain + '/api/v1/post/' + post_id + '/comment'
 
     // TODO: make sure jQuery has loaded 
     console.log("jquery is " + jQuery);
-    var  data = { body: body,
+    let  data = { body: body,
                   token: token,
                   parent_id: id };
     if (debug > 0) {
@@ -312,27 +312,27 @@ function like(xid) {
     console.log(xid);
     xid.disabled = true;
     
-    var nid = xid.target.name; // "comment-123"
+    let nid = xid.target.name; // "comment-123"
     console.log("nid is " + nid);
     $("#" + nid).off( "click" );
-    var id = nid.split("-")[1];
-    var url = 'https://' + my_domain + '/api/v1/comment/' + id + '/reaction';
+    let id = nid.split("-")[1];
+    let url = 'https://' + my_domain + '/api/v1/comment/' + id + '/reaction';
     data = { reaction: "❤"};
     $.ajax({ type: "POST",
 	     url: url,
 	     async: true,
 	     data: data
-	     //success: function() { do_delete(id) }
-	     // TODO: warn user on failure
+	     //success: TODO turn on & increment heart: function() { do_heart???(id) }
+	     //failure: TODO warn user on failure
 	   });
 }
 	
 function deleet(xid) {
     console.log("delete " + xid);
     if ( confirm("Do you wish to delete this comment?") ) {
-	var nid = xid.target.name; // "comment-123"
-	var id = nid.split("-")[1];
-	var url =  'https://' + my_domain + '/api/v1/comment/' + id;
+	let nid = xid.target.name; // "comment-123"
+	let id = nid.split("-")[1];
+	let url =  'https://' + my_domain + '/api/v1/comment/' + id;
 	// TODO: replace "DELETE" button with "deleting"  
 	$.ajax({ type: "DELETE",
 		 url: url,
@@ -341,11 +341,10 @@ function deleet(xid) {
 		 // TODO: warn user on failure
 	       });
     }
-
 }
 
 function reply(xid) {
-    // raw Jav<aScript, not jQuery
+    // raw JavaScript, not jQuery. why?
     if (debug > 0) {
 	console.log("reply3ing to id " + xid);
 	console.log(xid);
@@ -354,12 +353,12 @@ function reply(xid) {
 	console.log("target.name is " + xid.target.name);
 	console.log(xid.target.name);
     }
-    var nid = xid.target.name; // "comment-123"
-    var id = nid.split("-")[1];
-    var newform = document.getElementById("commentor").cloneNode(true);
+    let nid = xid.target.name; // "comment-123"
+    let id = nid.split("-")[1];
+    let newform = document.getElementById("commentor").cloneNode(true);
     //newform.style.display = "block";
     newform.parent_id.value = id;
-    var target = document.getElementById(nid);
+    let target = document.getElementById(nid);
     if (debug > 0) {
 	console.log(target)
 	console.log("===")
@@ -377,7 +376,7 @@ function reply(xid) {
     newform.cancel.style.display = "block";
     newform.cancel.addEventListener("click", function() { newform.remove(); });
     // deleted
-    var ins = target.parentElement.childNodes[2];
+    let ins = target.parentElement.childNodes[2];
     if (debug > 0) {
 	console.log("going to put at " + ins);
 	console.log( ins );
@@ -646,6 +645,7 @@ function scan_c(c) {
     c.children.forEach (scan_c); // recurse
 }
 
+// ??? What is scan_c versus scan_comments ?
 // "scan" just means to iterate through themn
 function scan_comments(data) {
     let comments = data["comments"];
