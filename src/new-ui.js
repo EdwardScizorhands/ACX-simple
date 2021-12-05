@@ -402,8 +402,8 @@ var sorted_comments = [ ]
 function make_comment(c, flag="") {
     // TODO: Is it faster to prebuild one root comment, and then copy it?
     //       Or build one dynamically from scratch each time?
-    var id = c.id;
-    var dd = new Date(c.date);
+    let id = c.id;
+    let dd = new Date(c.date);
     // Ugh, the instant reply I get back doesn't have a date.
     // Need to simulate a date, but that date shouldn't affect the "most
     // recently read" timer, because there could be other comments waiting
@@ -435,15 +435,15 @@ function make_comment(c, flag="") {
     }
 
     // This is the object that gets returned.
-    var comment = jQuery('<div/>', { class: "comment" } )
+    let comment = jQuery('<div/>', { class: "comment" } )
 
-    var div1 = jQuery('<div/>', { id: "comment-" + id } )
-    var div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
-    var ctable = jQuery("<table/>", { class: "comment-content" })
+    let div1 = jQuery('<div/>', { id: "comment-" + id } )
+    let div2 = jQuery('<div/>', { id: "comment-" + id + "-reply" } )
+    let ctable = jQuery("<table/>", { class: "comment-content" })
     
     // user pic, td1
-    var avatar = c.photo_url;
-    var img;
+    let avatar = c.photo_url;
+    let img;
     let never_load_avatars = false  // Not a user-controlled option, but it could be
 
     // on a fast reference machine, loading ~100 root comments with ~275 comments:
@@ -460,12 +460,12 @@ function make_comment(c, flag="") {
 	    console.log(err.message);
 	    letter = "?";
 	}
-	var fakeimgclass = `fakeimg${letter.length}`
-	var color = hash_color(c.name);
-	var r = (color / 256 / 256);
-	var g = (color / 256) % 256;
-	var b = color % 256;
-	var hsp = Math.sqrt(.3 * r * r + .59 * g * g + .114 * b * b);
+	let fakeimgclass = `fakeimg${letter.length}`
+	let color = hash_color(c.name);
+	let r = (color / 256 / 256);
+	let g = (color / 256) % 256;
+	let b = color % 256;
+	let hsp = Math.sqrt(.3 * r * r + .59 * g * g + .114 * b * b);
 	make_white = (hsp > 126) ? "" : "color: white;";
 	if (debug) {
 	    console.log(letter + ": " + c.name + " is " + color + " and " + make_white);
@@ -476,31 +476,30 @@ function make_comment(c, flag="") {
     } else {
 	img = jQuery('<img/>', { src: c.photo_url } );
     }
-//    console.log("c.photo_url is " + c.photo_url);
-    var imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
+
+    let imgwrap = jQuery('<td/>', { class: "profile-img-wrap" } ).
 	append( img );
-    var td1 = jQuery('<td/>', { class: "comment-head" }).
+    let td1 = jQuery('<td/>', { class: "comment-head" }).
 	append( jQuery('<div/>', { class: "user-head" }).
 		append ( jQuery('<a/>' ).
 			 append( imgwrap )));
     // comment, td2
 
 
-    var td2;
+    let td2;
     if (c.deleted) {
-	// TODO: make this neater
-	// TODO: hide if all children deleted
+	// TODO: make this prettier in the UI
 	td2 = jQuery ('<td/>').
 	    text("deleted");
     } else {
-	var score = Math.floor( c.score * 10000 ) / 100.0;
-	var display_name = have_scores ? `${c.name} : ${score}` : c.name;
-	var tag = (flag == "dynamic") ?
+	let score = Math.floor( c.score * 10000 ) / 100.0;
+	let display_name = have_scores ? `${c.name} : ${score}` : c.name;
+	let tag = (flag == "dynamic") ?
 	    ( c.date < lastread ? "" : "~new~" ) :
 	    flag;
-	var date_s = flagged_date_string(dd, tag);
+	let date_s = flagged_date_string(dd, tag);
 	// TODO: any difference between making this an attribute vs a JS-element property?
-	var meta = jQuery('<div/>', { class: "comment-meta", zdate: c.date }).
+	let meta = jQuery('<div/>', { class: "comment-meta", zdate: c.date }).
 	    append( jQuery('<span/>', { style: "font-weight: bold;" } ).
 		    text( display_name )).
 	    append( jQuery('<span/>', { style: "font-family: Georgia; color: #888;" } ).
@@ -509,15 +508,16 @@ function make_comment(c, flag="") {
 	    meta.append( jQuery('<span/>').
 			 text (flag) );
 	}
-	var cbody = jQuery('<div/>', { class: "comment-body"} ).
+	let cbody = jQuery('<div/>', { class: "comment-body"} ).
 	    append( jQuery('<p/>').
 		    text(c.body) );
-	var actions = jQuery('<div/>', { class: "comment-actions"} );
+	let actions = jQuery('<div/>', { class: "comment-actions"} );
 
 	if (have_scores) {
-	    var count = c.reactions["❤"];
-	    var count_text = count > 0 ? `${count} ♥` : "♥";
-	    var anchor_like = jQuery( '<a/>', { name: "like-" + id,
+	    let count = c.reactions["❤"];
+	    let count_text = count > 0 ? `${count} ♥` : "♥";
+	    // TODO: toggle when I like, and display properly
+	    let anchor_like = jQuery( '<a/>', { name: "like-" + id,
 						id: "like-" + id }).
 		text( count_text ).
 		appendTo( actions );
@@ -530,7 +530,7 @@ function make_comment(c, flag="") {
 	jQuery( "<b>&nbsp;</b>" ).
 	    appendTo( actions );
 
-	var anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
+	let anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
 	    text( "REPLY" ).
 	    click( reply ).
 	    appendTo( actions );
@@ -538,7 +538,6 @@ function make_comment(c, flag="") {
 	jQuery( "<b>&nbsp;</b>" ).
 	    appendTo( actions );
 
-	
 	
 	// Only show DELETE on your own comments ;)
 	if (c.user_id == my_user_id) {
@@ -553,7 +552,7 @@ function make_comment(c, flag="") {
 	    append(actions);
     }
     
-    var row = jQuery('<tr/>' ).
+    let row = jQuery('<tr/>' ).
 	append(td1).
 	append(td2);
     
@@ -562,7 +561,7 @@ function make_comment(c, flag="") {
     comment.append(div1).append(div2).append(ctable);
     
     if (c.children.length > 0) {
-	var cl = make_comment_list_from_array(c.children);
+	let cl = make_comment_list_from_array(c.children);
 	comment.append( cl );
     }
     
