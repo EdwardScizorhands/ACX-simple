@@ -680,6 +680,7 @@ function dump_it(data, status, xh, now = false) {
     }
 }
 
+// I think this is only called the first time
 function load_comments(now = false) {
     if (!reload_comments && !now) {
 	return;
@@ -819,7 +820,8 @@ function phase_two() {
       </div> <!-- .comment-list-container -->
     </div> <!-- .container --> 
    </div> <!-- .comments-page -->
-   <div id=hidden>Loading comments, this will go faster in the future, I promise...</div>
+   <div id=hidden>Preparing to request comments...</div>
+   <div class==hidden id=JsonBlob></div>
 
   <div id=test_new_comment />
   <div id=last style="display:none;" />
@@ -894,16 +896,16 @@ function phase_two() {
     function eatJson(data, status, xh) {
 	console.log("we have the reply");
 
-
+	$("#hidden").text("Loaded comments, parsing them...");
 	console.timeEnd('requestComments');
 	console.time('parseJSON');
 	resdata = data;
 	if (debug || true) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
-	    $("#hidden").hide().text(JSON.stringify(data));
+	    $("#JsonBlob").hide().text(JSON.stringify(data));
 	    // In console, type:
-	    //    var b = JSON.parse($("#hidden").innerHTML)
+	    //    var b = JSON.parse($("#JsonBlob").innerHTML)
 	    // to play with this.
 	    console.log("status is " + status);
 	    console.log("jqXHR is " + xh);
@@ -912,6 +914,7 @@ function phase_two() {
 	var comments = data["comments"];
 	
 	var string = "there are " + comments.length + " top comments";
+	$("#hidden").text(string);
 	string = this_url;
 	console.timeEnd('parseJSON');	
 	console.log(string);
@@ -961,6 +964,7 @@ function phase_two() {
 		console.log(comment_table);
 	    }
 	}
+	$("#hidden").hide();
     }
     
     
@@ -1217,7 +1221,7 @@ function phase_two() {
     function newXhr() { 
 	return xhr;
     }
-    
+    $("#hidden").text("Requesting comments...");
     console.time('requestComments');
     $.ajax({
 	url: url,
