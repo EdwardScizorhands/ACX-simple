@@ -281,27 +281,56 @@ function submit_comment2(x) {
     return true;
 }
 
+// When the server has confirmed the comment is deleted
 function do_delete(id) {
     console.log("remove " + id + " from UI!");
     // 1.  we set the author and body to "deleted"
     // 2.  remove all reactions
     // 3.  optional: totally remove from UI if all children deleted
-    var temp = document.getElementById("comment-" + id);
-    var comment = temp.parentNode;
+    let temp = document.getElementById("comment-" + id);
+    let comment = temp.parentNode;
     console.log("comment is " + comment);
     console.log(comment);
-    var content = comment.childNodes[2];
+    let content = comment.childNodes[2];
     console.log("content is " + content);
     console.log(content);
-    var smurf = content.childNodes[0].childNodes[1];
+    let smurf = content.childNodes[0].childNodes[1];
     // 1a. delete author
-    var meta = smurf.childNodes[0];
+    let meta = smurf.childNodes[0];
     meta.innerHTML = "<i>deleted</i>";
     // 1b. delete body
-    var body = smurf.childNodes[1];
+    let body = smurf.childNodes[1];
     body.innerHTML = "<i>deleted</i>";
     // 2. delete reactions
-    var actions = smurf.childNodes[2];
+    let actions = smurf.childNodes[2];
+    actions.remove();
+    console.log("comment deleted");
+    
+}
+
+
+// When the server has confirmed the comment is edited
+function do_edit(id) {
+    console.log("remove " + id + " from UI!");
+    // 1.  we set the author and body to "deleted"
+    // 2.  remove all reactions
+    // 3.  optional: totally remove from UI if all children deleted
+    let temp = document.getElementById("comment-" + id);
+    let comment = temp.parentNode;
+    console.log("comment is " + comment);
+    console.log(comment);
+    let content = comment.childNodes[2];
+    console.log("content is " + content);
+    console.log(content);
+    let smurf = content.childNodes[0].childNodes[1];
+    // 1a. delete author
+    let meta = smurf.childNodes[0];
+    meta.innerHTML = "<i>deleted</i>";
+    // 1b. delete body
+    let body = smurf.childNodes[1];
+    body.innerHTML = "<i>deleted</i>";
+    // 2. delete reactions
+    let actions = smurf.childNodes[2];
     actions.remove();
     console.log("comment deleted");
     
@@ -352,7 +381,7 @@ function edit(xid) {
 	let url =  'https://' + my_domain + '/api/v1/comment/' + id;
 	let data = { body:  "XXX edit" };
 	$.ajax({ type: "PATCH",
-		 data: data
+		 data: data,
 		 url: url,
 		 async: true,
 		 success: function() { do_delete(id) }
@@ -547,6 +576,8 @@ function make_comment(c, flag="") {
 	jQuery( "<b>&nbsp;</b>" ).
 	    appendTo( actions );
 
+	// TODO: Stop users from being able to double-click this
+	//       to make multiple pop-up windows
 	let anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
 	    text( "REPLY" ).
 	    click( reply ).
@@ -558,10 +589,14 @@ function make_comment(c, flag="") {
 	
 	// Only show DELETE on your own comments ;)
 	if (c.user_id == my_user_id) {
+	    // I don't need to even declare these variables, right?
 	    let anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
 		text( "DELETE" ).
 		click( deleet ).
 		appendTo( actions );
+	    jQuery( "<b>&nbsp;</b>" ).
+		appendTo( actions );
+
 	    let anchor_edit = jQuery( '<a/>', { name: "edit-" + id }).
 		text( "EDIT" ).
 		click( edit ).
