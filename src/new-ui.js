@@ -4,7 +4,7 @@
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 0; // 0, 1, 2. 
+var debug = 0; // 0, 1, 2.
 
 
 // DEVELOPMENT SETTINGS
@@ -243,6 +243,48 @@ function new_comments2(data) {
     
 }
 
+// When the user edits a comment
+// TODO: dupe code with submit_comment2
+function submit_edit(x) {
+    console.log("SUBMIT EDIT");
+    if (debug > 0) {
+	console.log("trying to submit: " + x);
+	console.log(x);
+	document.abc = x; // so the console can play with it. (Does this work?)
+	   
+    }
+    console.log("ha hah");
+    x.disabled = true; // no double posts.
+    let body = x.form.body.value;
+    let token = null;
+    let id = x.form.parent_id.value;
+    let post_id = document.post_id;  // does this work?
+
+    let ___ = 'https://' + my_domain + '/api/v1/comments/' + post_id + '/comment'
+    let url = 'https://' + my_domain + '/api/v1/comment/' + id;
+
+    //         https://astralcodexten.substack.com/api/v1/comment/4047752
+    
+    // TODO: make sure jQuery has loaded 
+    console.log("jquery is " + jQuery);
+    let  data = { body: body };
+    if (debug > 0) {
+	console.log("id is " + id);
+	console.log("posting to " + url + " with " + data);
+	console.log(data);
+    }
+    $.ajax({ type: "PATCH",
+             url: url,
+             data: data,
+             datatype: "json",
+             success: new_comments2
+	     // TODO: warn user on failure
+	   });
+    
+    return true;
+}
+
+// When the user submits a top/post? a reply? both
 function submit_comment2(x) {
     console.log("SUBMIT COMMENT");
     if (debug > 0) {
@@ -309,8 +351,8 @@ function do_delete(id) {
 }
 
 
-// When the server has confirmed the comment is edited
-function do_edit(id) {
+// When the server has confirmed the comment is edited???
+function do_edit_obsolete(id) {
     console.log("remove " + id + " from UI!");
     // 1.  we set the author and body to "deleted"
     // 2.  remove all reactions
@@ -336,6 +378,8 @@ function do_edit(id) {
     
 }
 
+// when the user clicks on the heart
+// TODO: don't assumes it succeeds; give feedback; let user un-like
 function like(xid) {
     console.log("like " + xid);
     console.log(xid);
@@ -355,7 +399,8 @@ function like(xid) {
 	     //failure: TODO warn user on failure
 	   });
 }
-	
+
+// called whtn the user clicks on DELETE
 function deleet(xid) {
     console.log("delete " + xid);
     if ( confirm("Do you wish to delete this comment?") ) {
@@ -372,10 +417,12 @@ function deleet(xid) {
     }
 }
 
-
-function edit(xid) {
+// called whtn the user submits their edit
+function submit_edit_obsolete(xid) {
     console.log("edit " + xid);
+    console.log(xid)
     if ( confirm("Do you wish to edit this comment?") ) {
+
 	let nid = xid.target.name; // "comment-123"
 	let id = nid.split("-")[1];
 	let url =  'https://' + my_domain + '/api/v1/comment/' + id;
@@ -383,13 +430,57 @@ function edit(xid) {
 	$.ajax({ type: "PATCH",
 		 data: data,
 		 url: url,
-		 async: true,
-		 success: function() { do_delete(id) }
+		 async: true
+//		 success: function() { do_delete(id) }
 		 // TODO: warn user on failure
 	       });
     }
 }
 
+// when the user clicks on EDIT
+// This is patterned on REPLY
+function edit(xid) {
+    // raw JavaScript, not jQuery. why?
+    console.log("DOING EDIT! " + debug);
+    if (debug > 0) {
+	console.log("editing to id " + xid);
+	console.log(xid);
+	console.log("target is " + xid.target);
+	console.log(xid.target);
+	console.log("target.name is " + xid.target.name);
+	console.log(xid.target.name);
+    }
+    let nid = xid.target.name; // "comment-123"
+    console.log("XXX nid is " + nid);
+
+    let id = nid.split("-")[1];
+    let editform = document.getElementById("commentor").cloneNode(true);
+
+    editform.parent_id.value = id;
+    let target = document.getElementById(nid);
+    console.log("target is " + target);
+    console.log(target);
+    if (debug > 0) {
+	console.log("post button is " + editform.post);
+	console.log(editform.post);
+    }
+    editform.post.addEventListener("click", function(){ submit_edit(editform.post); });
+    editform.cancel.style.display = "block";
+    editform.post.textContent = "EDIT ABOVE COMMENT";
+    editform.body.value = "old text";
+    editform.cancel.addEventListener("click", function() { editform.remove(); });
+    // deleted
+    let ins = target.parentElement.childNodes[2];
+    if (debug > 0) {
+	console.log("going to put at " + ins);
+	console.log( ins );
+    }
+    $(editform).insertAfter( ins );
+    
+	
+}
+
+// when the user clicks on REPLY?
 function reply(xid) {
     // raw JavaScript, not jQuery. why?
     if (debug > 0) {
@@ -401,19 +492,11 @@ function reply(xid) {
 	console.log(xid.target.name);
     }
     let nid = xid.target.name; // "comment-123"
-    let id = nid.split("-")[1];
+    let id = nid.split("-")[1];    
     let newform = document.getElementById("commentor").cloneNode(true);
     //newform.style.display = "block";
     newform.parent_id.value = id;
     let target = document.getElementById(nid);
-    if (debug > 0) {
-	console.log(target)
-	console.log("===")
-	console.log(jQuery);
-	console.log(jQuery());
-	console.log(jQuery().jquery);
-	
-    }
     //	newform.post.click = submit_comment2;
     if (debug > 0) {
 	console.log("post button is " + newform.post);
@@ -596,8 +679,8 @@ function make_comment(c, flag="") {
 		appendTo( actions );
 	    jQuery( "<b>&nbsp;</b>" ).
 		appendTo( actions );
-
-	    let anchor_edit = jQuery( '<a/>', { name: "edit-" + id }).
+	    // I think it's okay that multiple elements have the same name
+	    let anchor_edit = jQuery( '<a/>', { name: "comment-" + id }).
 		text( "EDIT" ).
 		click( edit ).
 		appendTo( actions );
