@@ -336,7 +336,25 @@ function deleet(xid) {
 	// TODO: replace "DELETE" button with "deleting"  
 	$.ajax({ type: "DELETE",
 		 url: url,
-		 async: true, 
+		 async: true,
+		 success: function() { do_delete(id) }
+		 // TODO: warn user on failure
+	       });
+    }
+}
+
+
+function edit(xid) {
+    console.log("edit " + xid);
+    if ( confirm("Do you wish to edit this comment?") ) {
+	let nid = xid.target.name; // "comment-123"
+	let id = nid.split("-")[1];
+	let url =  'https://' + my_domain + '/api/v1/comment/' + id;
+	let data = { body:  "XXX edit" };
+	$.ajax({ type: "PATCH",
+		 data: data
+		 url: url,
+		 async: true,
 		 success: function() { do_delete(id) }
 		 // TODO: warn user on failure
 	       });
@@ -540,9 +558,13 @@ function make_comment(c, flag="") {
 	
 	// Only show DELETE on your own comments ;)
 	if (c.user_id == my_user_id) {
-	    var anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
+	    let anchor_delete = jQuery( '<a/>', { name: "delete-" + id }).
 		text( "DELETE" ).
 		click( deleet ).
+		appendTo( actions );
+	    let anchor_edit = jQuery( '<a/>', { name: "edit-" + id }).
+		text( "EDIT" ).
+		click( edit ).
 		appendTo( actions );
 	}
 	td2 = jQuery('<td/>').
