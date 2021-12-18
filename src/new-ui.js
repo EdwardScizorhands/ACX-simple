@@ -4,7 +4,7 @@
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 0; // 0, 1, 2.
+var debug = 1; // 0, 1, 2.
 
 
 // DEVELOPMENT SETTINGS
@@ -444,49 +444,55 @@ function submit_edit_obsolete(xid) {
 }
 
 // when the user clicks on EDIT or REPLY
-// returns a function
-function edit_or_reply(_kind) {
-    let IS_REPLY = (_kind == 'r') ? "REPLY" : "KIND";
-    return function(xid) {
-	// raw JavaScript, not jQuery. why?
-	console.log("DOING " + _kind + "! " + debug);
-	if (debug > 0) {
-	    console.log("editing to id " + xid);
-	    console.log(xid);
-	    console.log("target is " + xid.target);
-	    console.log(xid.target);
-	    console.log("target.name is " + xid.target.name);
-	    console.log(xid.target.name);
-	}
-	let nid = xid.target.name; // "comment-123"
-	let id = nid.split("-")[1];
-	let the_form = document.getElementById("commentor").cloneNode(true);
-	the_form.parent_id.value = id; 
-	let target = document.getElementById(nid);
-	console.log("target is " + target);
-	console.log(target);
-	if (debug > 0) {
-	    console.log("post button is " + the_form.post);
-	    console.log(the_form.post);
-	}
-	the_form.post.addEventListener("click",
-				       IS_REPLY ?
-				       function(){ submit_comment2( the_form.post ); } :
-				       function(){ submit_edit(     the_form.post ); });
-	the_form.cancel.style.display = "block";
-	if (! IS_REPLY) {
-	    the_form.post.textContent = "EDIT ABOVE COMMENT";
-	    the_form.body.value = "old text";
-	}
-	the_form.cancel.addEventListener("click", function() { the_form.remove(); });
-	// deleted
-	let ins = target.parentElement.childNodes[2];
-	if (debug > 0) {
-	    console.log("going to put at " + ins);
-	    console.log( ins );
-	}
-	$(the_form).insertAfter( ins );
-    };
+function edit(xid) {
+    edit_or_reply('e', xid);
+}
+function reply(xid) {
+    edit_or_reply('r', xid);
+}
+
+function edit_or_reply(_kind, xid) {
+    console.log("_kind is " + _kind);
+    let IS_REPLY = (_kind == 'r');
+    console.log("IS_REPLY IS " + IS_REPLY);
+    // raw JavaScript, not jQuery. why?
+    console.log("DOING " + _kind + "! " + debug);
+    if (debug > 0) {
+	console.log("editing to id " + xid);
+	console.log(xid);
+	console.log("target is " + xid.target);
+	console.log(xid.target);
+	console.log("target.name is " + xid.target.name);
+	console.log(xid.target.name);
+    }
+    let nid = xid.target.name; // "comment-123"
+    let id = nid.split("-")[1];
+    let the_form = document.getElementById("commentor").cloneNode(true);
+    the_form.parent_id.value = id; 
+    let target = document.getElementById(nid);
+    console.log("target is " + target);
+    console.log(target);
+    if (debug > 0) {
+	console.log("post button is " + the_form.post);
+	console.log(the_form.post);
+    }
+    the_form.post.addEventListener("click",
+				   IS_REPLY ?
+				   function(){ submit_comment2( the_form.post ); } :
+				   function(){ submit_edit(     the_form.post ); });
+    the_form.cancel.style.display = "block";
+    if (! IS_REPLY) {
+	the_form.post.textContent = "EDIT ABOVE COMMENT";
+	the_form.body.value = "old text";
+    }
+    the_form.cancel.addEventListener("click", function() { the_form.remove(); });
+    // deleted
+    let ins = target.parentElement.childNodes[2];
+    if (debug > 0) {
+	console.log("going to put at " + ins);
+	console.log( ins );
+    }
+    $(the_form).insertAfter( ins );
 }
 
 // when the user clicks on REPLY?
@@ -672,7 +678,8 @@ function make_comment(c, flag="") {
 	//       to make multiple pop-up windows
 	let anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
 	    text( "REPLY" ).
-	    click( edit_or_reply('r') ).
+	    //	    click( edit_or_reply('r') ).
+	    click( reply ).
 	    appendTo( actions );
 	
 	jQuery( "<b>&nbsp;</b>" ).
@@ -691,7 +698,7 @@ function make_comment(c, flag="") {
 	    // I think it's okay that multiple elements have the same name
 	    let anchor_edit = jQuery( '<a/>', { name: "comment-" + id }).
 		text( "EDIT" ).
-		click( edit_or_reply('e') ).
+		click( edit ).
 		appendTo( actions );
 	}
 	td2 = jQuery('<td/>').
