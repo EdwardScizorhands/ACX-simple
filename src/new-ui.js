@@ -163,6 +163,12 @@ function change(dot = false) {
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
+
+
+// see stuff for edit.json
+function handle_edit(data) {
+    alert(data);
+}
 // This places a single new comment; get a better name
 function new_comments2(data) {
     if (debug > 0) {
@@ -277,7 +283,7 @@ function submit_edit(x) {
              url: url,
              data: data,
              datatype: "json",
-             success: new_comments2
+             success: handle_edit // unimplemented
 	     // TODO: warn user on failure
 	   });
     
@@ -437,51 +443,54 @@ function submit_edit_obsolete(xid) {
     }
 }
 
-// when the user clicks on EDIT
-// This is patterned on REPLY
-function edit(xid) {
-    // raw JavaScript, not jQuery. why?
-    console.log("DOING EDIT! " + debug);
-    if (debug > 0) {
-	console.log("editing to id " + xid);
-	console.log(xid);
-	console.log("target is " + xid.target);
-	console.log(xid.target);
-	console.log("target.name is " + xid.target.name);
-	console.log(xid.target.name);
-    }
-    let nid = xid.target.name; // "comment-123"
-    console.log("XXX nid is " + nid);
-
-    let id = nid.split("-")[1];
-    let editform = document.getElementById("commentor").cloneNode(true);
-
-    editform.parent_id.value = id;
-    let target = document.getElementById(nid);
-    console.log("target is " + target);
-    console.log(target);
-    if (debug > 0) {
-	console.log("post button is " + editform.post);
-	console.log(editform.post);
-    }
-    editform.post.addEventListener("click", function(){ submit_edit(editform.post); });
-    editform.cancel.style.display = "block";
-    editform.post.textContent = "EDIT ABOVE COMMENT";
-    editform.body.value = "old text";
-    editform.cancel.addEventListener("click", function() { editform.remove(); });
-    // deleted
-    let ins = target.parentElement.childNodes[2];
-    if (debug > 0) {
-	console.log("going to put at " + ins);
-	console.log( ins );
-    }
-    $(editform).insertAfter( ins );
-    
-	
+// when the user clicks on EDIT or REPLY
+// returns a function
+function edit_or_reply(_kind) {
+    let IS_REPLY = (_kind == 'r') ? "REPLY" : "KIND";
+    return function(xid) {
+	// raw JavaScript, not jQuery. why?
+	console.log("DOING " + _kind + "! " + debug);
+	if (debug > 0) {
+	    console.log("editing to id " + xid);
+	    console.log(xid);
+	    console.log("target is " + xid.target);
+	    console.log(xid.target);
+	    console.log("target.name is " + xid.target.name);
+	    console.log(xid.target.name);
+	}
+	let nid = xid.target.name; // "comment-123"
+	let id = nid.split("-")[1];
+	let the_form = document.getElementById("commentor").cloneNode(true);
+	the_form.parent_id.value = id; 
+	let target = document.getElementById(nid);
+	console.log("target is " + target);
+	console.log(target);
+	if (debug > 0) {
+	    console.log("post button is " + the_form.post);
+	    console.log(the_form.post);
+	}
+	the_form.post.addEventListener("click",
+				       IS_REPLY ?
+				       function(){ submit_comment2( the_form.post ); } :
+				       function(){ submit_edit(     the_form.post ); });
+	the_form.cancel.style.display = "block";
+	if (! IS_REPLY) {
+	    the_form.post.textContent = "EDIT ABOVE COMMENT";
+	    the_form.body.value = "old text";
+	}
+	the_form.cancel.addEventListener("click", function() { the_form.remove(); });
+	// deleted
+	let ins = target.parentElement.childNodes[2];
+	if (debug > 0) {
+	    console.log("going to put at " + ins);
+	    console.log( ins );
+	}
+	$(the_form).insertAfter( ins );
+    };
 }
 
 // when the user clicks on REPLY?
-function reply(xid) {
+function reply_obsolete(xid) {
     // raw JavaScript, not jQuery. why?
     if (debug > 0) {
 	console.log("reply3ing to id " + xid);
@@ -663,7 +672,7 @@ function make_comment(c, flag="") {
 	//       to make multiple pop-up windows
 	let anchor_reply = jQuery( '<a/>', { name: "comment-" + id }).
 	    text( "REPLY" ).
-	    click( reply ).
+	    click( edit_or_reply('r') ).
 	    appendTo( actions );
 	
 	jQuery( "<b>&nbsp;</b>" ).
@@ -682,7 +691,7 @@ function make_comment(c, flag="") {
 	    // I think it's okay that multiple elements have the same name
 	    let anchor_edit = jQuery( '<a/>', { name: "comment-" + id }).
 		text( "EDIT" ).
-		click( edit ).
+		click( edit_or_reply('e') ).
 		appendTo( actions );
 	}
 	td2 = jQuery('<td/>').
