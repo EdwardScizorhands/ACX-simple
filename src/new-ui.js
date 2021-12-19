@@ -476,23 +476,56 @@ function edit_or_reply(_kind, xid) {
 	console.log("post button is " + the_form.post);
 	console.log(the_form.post);
     }
+    let prior_comment_table = the_form.parentElement.children[2];
     the_form.post.addEventListener("click",
 				   IS_REPLY ?
 				   function(){ submit_comment2( the_form.post ); } :
-				   function(){ submit_edit(     the_form.post ); });
+				   function(){ hide_comment(prior_comment_table, false);
+					       submit_edit(     the_form.post ); });
     the_form.cancel.style.display = "block";
-    if (! IS_REPLY) {
-	the_form.post.textContent = "EDIT ABOVE COMMENT";
-	the_form.body.value = "old text";
-    }
-    the_form.cancel.addEventListener("click", function() { the_form.remove(); });
-    // deleted
+    console.log("YYY");
+    console.log(the_form);
     let ins = target.parentElement.childNodes[2];
+    $(the_form).insertAfter( ins );
+    if (! IS_REPLY) {
+	the_form.post.textContent = "EDIT";
+	// I pull this out of the DOM, but I could pull it out of data structures instead
+	// also, this DOM manipulation is hacky and will break if the style changes
+	console.log("table is " + prior_comment_table);
+	console.log(prior_comment_table);
+	let prior_tr = prior_comment_table.children[0].children[1];
+	console.log("prior_tr is " + prior_tr);
+	console.log("prior_tr");
+	let prior_comment = prior_tr.children[1];
+	//prior_comment_table.style.display = "none"; // need to unhide on post/cancel
+	hide_comment(prior_comment_table);
+	console.log(prior_comment);
+	// Check XSS and HTML safeness here
+	the_form.body.value = prior_comment.innerText;
+    }
+    console.log("BBB pct is " + prior_comment_table);
+    the_form.cancel.addEventListener("click", function() {
+	the_form.remove();
+	if (! IS_REPLY) {
+	    console.log("CCC pct is " + prior_comment_table);
+	    hide_comment(prior_comment_table, false);
+	}
+    });
+
+    // deleted
     if (debug > 0) {
 	console.log("going to put at " + ins);
 	console.log( ins );
     }
-    $(the_form).insertAfter( ins );
+}
+
+// takes a <table> element of a comment, and a boolean
+function hide_comment(comment_table, hide=true) {
+    if (hide) {
+	comment_table.style.display = "none"; // need to unhide on post/cancel
+    } else {
+	comment_table.style.display = ""; // need to unhide on post/cancel
+    }
 }
 
 // when the user clicks on REPLY?
