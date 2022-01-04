@@ -4,7 +4,7 @@
 var reload_comments = true;
 var have_scores = false;
 var sort = "new";
-var debug = 1; // 0, 1, 2.
+var debug = 0; // 0, 1, 2.
 
 
 // DEVELOPMENT SETTINGS
@@ -167,8 +167,11 @@ function change(dot = false) {
 
 // see stuff for edit.json
 function handle_edit(data) {
+    // 
     alert(data);
 }
+
+
 // This places a single new comment; get a better name
 function new_comments2(data) {
     if (debug > 0) {
@@ -460,7 +463,7 @@ function edit_or_reply(_kind, xid) {
     if (debug > 0) {
 	console.log("editing to id " + xid);
 	console.log(xid);
-	console.log("target is " + xid.target);
+	console.log("1target is " + xid.target);
 	console.log(xid.target);
 	console.log("target.name is " + xid.target.name);
 	console.log(xid.target.name);
@@ -470,23 +473,25 @@ function edit_or_reply(_kind, xid) {
     let the_form = document.getElementById("commentor").cloneNode(true);
     the_form.parent_id.value = id; 
     let target = document.getElementById(nid);
-    console.log("target is " + target);
+    console.log("2target is " + target);
     console.log(target);
     if (debug > 0) {
 	console.log("post button is " + the_form.post);
 	console.log(the_form.post);
     }
-    let prior_comment_table = the_form.parentElement.children[2];
-    the_form.post.addEventListener("click",
-				   IS_REPLY ?
-				   function(){ submit_comment2( the_form.post ); } :
-				   function(){ hide_comment(prior_comment_table, false);
-					       submit_edit(     the_form.post ); });
     the_form.cancel.style.display = "block";
     console.log("YYY");
     console.log(the_form);
     let ins = target.parentElement.childNodes[2];
     $(the_form).insertAfter( ins );
+    let prior_comment_table = the_form.parentElement.children[2];
+    console.log("pct is " + prior_comment_table);
+    console.log(prior_comment_table);
+    the_form.post.addEventListener("click",
+				   IS_REPLY ?
+				   function(){ submit_comment2( the_form.post ); } :
+				   function(){ hide_comment(prior_comment_table, false);
+					       submit_edit(     the_form.post ); });
     if (! IS_REPLY) {
 	the_form.post.textContent = "EDIT";
 	// I pull this out of the DOM, but I could pull it out of data structures instead
