@@ -1,7 +1,7 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.5.1.14",
+    "version" : "0.5.1.15",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
@@ -17,6 +17,9 @@
 	"https://*.thedispatch.com/p/*/simple",  
 	"https://*.substack.com/p/*/comments",  
 	"https://*.substack.com/p/*/simple",
+	"https://*.inquiremore.com/p/*/comments",
+	"https://*.inquitemore.com/p/*/simple",
+	
 	"https://unpkg.com/*",
 	"https://cdn.optimizely.com/*",
 	"webRequest","webRequestBlocking",
@@ -55,7 +58,9 @@
 		"https://*.thedispatch.com/p/*/comments",
 		"https://*.thedispatch.com/p/*/simple",
 		"https://*.substack.com/p/*/comments",
-		"https://*.substack.com/p/*/simple"
+		"https://*.substack.com/p/*/simple",
+		"https://*.inquiremore.com/p/*/comments",
+		"https://*.inquitemore.com/p/*/simple"
 	    ],
 	    "js": [
 		"extra.js",

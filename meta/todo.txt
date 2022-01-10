@@ -57,8 +57,9 @@ x 10. status window
   13. Only show top comments (heck, this was the old default functionality I had!)
 x 14. figure out how to work on slowboring.com
 x 15. stop the infinite loop if I pull up https://freddiedeboer.substack.com/p/planet-of-cops/comments/
+  16. NOT LOGGED IN incorrectly for Zaid  
+  17. "LOAD NOW" reloads on all tabs (makes since, since it's part of the widget, not part of the page, but that's not what users want) (and by "users" I mean "me")
   
-
   Things that make me able to change the icon
 
   1, I think I need to load the icon naturally. I can window.stop() 

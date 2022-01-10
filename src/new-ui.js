@@ -633,8 +633,9 @@ function make_comment(c, flag="") {
     //      * takes 900ms to render with avatars
     // Maybe I could delay loading the avatars?
     let null_name = [" "]
+    let default_avatar = "https://bucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com/public/images/f15027c4-69aa-4c9a-ac39-13924c8c33f6_144x144.png"
 
-    if (never_load_avatars || c.photo_url == null) {
+    if (never_load_avatars || c.photo_url == null || c.photo_url == default_avatar ) {
 	try {
 	    let names = c.name ? c.name.split(/\s+/) : null_name;
 	    letter = names.length > 1 ? names[0][0] + names[1][0] : names[0][0]
