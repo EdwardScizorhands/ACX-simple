@@ -1,12 +1,13 @@
 {
 
     "manifest_version": 2,
-    "version" : "0.5.1.15",
+    "version" : "0.5.1.23",
     "name": "ACX Simple",
     "description": "ACX Simple Interface",
 
     
     "permissions": [
+	"http://localhost/*", 
 	"https://*.theinsight.org/p/*/comments",
 	"https://*.theinsight.org/p/*/simple",
 	"https://*.blockedandreported.org/p/*/comments",

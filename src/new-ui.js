@@ -5,7 +5,7 @@ var reload_comments = true;
 var have_scores = false;
 var sort = "new";
 var debug = 0; // 0, 1, 2.
-
+var local_db = 1;
 
 // DEVELOPMENT SETTINGS
 var change_icon = false;
@@ -1085,20 +1085,40 @@ function phase_two() {
     // is this the proper scope?
 
 
-    
+    // XXX remove from published code
+    function postToLocalDb(blob) {
+	console.log("XXX postin to DB!");
+	console.log("length is " + blob.length);
+	$.ajax({ type: "POST",
+		 url: "http://localhost:8001/",
+		 data: blob,
+		 datatype: "json"
+	       });
+    }
     
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
 	console.log("we have the reply");
 
+
+	
 	$("#hidden").text("Loaded comments, parsing them...");
 	console.timeEnd('requestComments');
 	console.time('parseJSON');
-	resdata = data;
+
+	let blob = JSON.stringify(data); // I 
+	if (local_db > 0) {
+	    console.log("XXX blob is " + typeof blob);
+	    setTimeout( function() {
+		console.log("XXX blob is " + typeof blob);
+		console.log("XXX inside sto, data length is " + blob.length);
+		postToLocalDb(blob);
+	    }, 4000);
+	}
 	if (debug || true) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
-	    $("#JsonBlob").hide().text(JSON.stringify(data));
+	    $("#JsonBlob").hide().text(blob);
 	    // In console, type:
 	    //    var b = JSON.parse($("#JsonBlob").innerHTML)
 	    // to play with this.
