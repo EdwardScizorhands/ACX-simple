@@ -5,7 +5,7 @@ var reload_comments = true;
 var have_scores = false;
 var sort = "new";
 var debug = 0; // 0, 1, 2.
-var local_db = 1;
+var local_db = 0;
 
 // DEVELOPMENT SETTINGS
 var change_icon = false;
@@ -1084,17 +1084,20 @@ function phase_two() {
 
     // is this the proper scope?
 
-
-    // XXX remove from published code
+    // PUBLISH-REMOVE-START
     function postToLocalDb(blob) {
 	console.log("XXX postin to DB!");
 	console.log("length is " + blob.length);
 	$.ajax({ type: "POST",
 		 url: "http://localhost:8001/",
 		 data: blob,
-		 datatype: "json"
+		 datatype: "json",
+		 error: function(a,b,c) { alert("failed to upload comments"); },
+		 success: function() { console.log("write was successful!"); },
+		 timeout: 6000
 	       });
     }
+    // PUBLISH-REMOVE-END
     
     // obj data, string status, jqXHR xh
     function eatJson(data, status, xh) {
@@ -1106,7 +1109,8 @@ function phase_two() {
 	console.timeEnd('requestComments');
 	console.time('parseJSON');
 
-	let blob = JSON.stringify(data); // I 
+	let blob = JSON.stringify(data);
+	// PUBLISH-REMOVE-START
 	if (local_db > 0) {
 	    console.log("XXX blob is " + typeof blob);
 	    setTimeout( function() {
@@ -1115,6 +1119,7 @@ function phase_two() {
 		postToLocalDb(blob);
 	    }, 4000);
 	}
+	// PUBLISH-REMOVE-START
 	if (debug || true) {
 	    console.log("data is " + typeof data);
 	    console.log(data);
